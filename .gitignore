@@ -1,0 +1,5 @@
+.idea/
+*.iml
+*.svg
+*.svg.cache
+*.html
