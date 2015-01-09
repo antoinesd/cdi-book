@@ -1,0 +1,77 @@
+:doctype: book
+:numbered:
+:icons: font
+:source-language: java
+:experimental:
+:toc2:
+
+= Contexts and Dependency Injection 2.0 in Action
+
+Antoine Sabot-Durand <antoine@sabot-durand.net>
+
+
+
+= Part 1 First step with CDI
+
+== Introduction to CDI
+=== What is CDI?
+=== Problems solved by CDI
+=== The CDI specification
+=== The CDI implementations
+=== CDI and Java EE
+=== Alternatives to CDI
+
+
+== Getting started
+=== Getting and installing Tools used in this book
+=== CDI website and resources
+=== Choosing your implementation
+=== Example, from scratch to full CDI
+
+== The example Application
+=== Meet SeeDeeEye the private Social network
+=== Requirements for the application
+
+
+= Part 2 CDI from A to Z
+
+== Basic CDI
+=== Vocabulary
+=== Setting up CDI in your app
+=== Defining a CDI bean
+=== Contexts and beans lifecycle
+=== Injecting a bean
+=== More decoupling with Events
+
+== Advanced CDI
+=== Interceptor and Decorators
+=== Specialization and alternatives
+=== CDI SPI
+=== Using SPI in your development
+
+== Extending CDI
+=== Introducing portable extensions
+=== CDI Lifecycle
+=== Portable extension examples
+
+
+
+= Part 3 CDI in real life
+
+== CDI environment
+=== Java SE
+=== Java EE
+=== OSGi
+
+== CDI eco-system
+=== Other Java EE spec & CDI
+=== Weld specific
+=== OWB specific
+=== Apache DeltaSpike
+=== Other Frameworks
+
+== CDI in your projects
+=== Good practices
+=== Design patterns
+=== Architectures example
+=== Tips and Tricks
