@@ -14,11 +14,34 @@ Antoine Sabot-Durand <antoine@sabot-durand.net>
 = Part 1 First step with CDI
 
 == Introduction to CDI
+=== Dependency injection
+* The organization of classes, dependencies between classes
+* Inheritance vs delegation, collaboration
+* Why dependency injection got some attention
+* Some pitfalls that make DI impossible to use (inh vs deleg)
+* The question of testing : dependency injection makes the use of mocks so easy
+* Dependency injection everywhere 
+* Three ways to inject objects
+* Discussion
+
 === What is CDI?
+* Injection frameworks in Java (a little history : Fortress, Pico container, Hivemind, Spring)
+* Dependency injection useful in the Java EE world, Java SE left aside (for now)
+* Managed environment vs unmanaged : the need for a special object to handle the building of objects
+* A first notion of container
+* Injecting means producing
+
 === Problems solved by CDI
+* Injection, interception, decoration, events : back to the roots
+
 === The CDI specification
-=== The CDI implementations
+* Talk a little about the way specifications appear in the Java EE world
+* The structure of the specification
+* Specification and TCK
+
+=== CDI implementations
 === CDI and Java EE
+=== Bootstraping CDI : Java SE, Web profile
 === Alternatives to CDI
 
 
@@ -26,6 +49,10 @@ Antoine Sabot-Durand <antoine@sabot-durand.net>
 === Getting and installing Tools used in this book
 === CDI website and resources
 === Choosing your implementation
+=== Using CDI with Java SE
+* Bootstraping using Weld / OWB
+=== Using CDI with Java EE
+* Arquillian
 === Example, from scratch to full CDI
 
 == The example Application
