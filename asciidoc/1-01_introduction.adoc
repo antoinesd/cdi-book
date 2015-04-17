@@ -1,0 +1,15 @@
+== Introduction to CDI
+
+=== What is CDI?
+
+=== Problems solved by CDI
+
+=== Code samples
+
+=== The CDI specification
+
+=== The CDI container
+
+=== The CDI implementations
+
+=== Alternatives to CDI

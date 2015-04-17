@@ -1,0 +1,21 @@
+:doctype: book
+:numbered:
+:icons: font
+:source-language: java
+:experimental:
+:toc2:
+
+= Contexts and Dependency Injection 2.0 in Action
+
+Antoine Sabot-Durand <antoine@sabot-durand.net>
+José Paumard <jose.paumard@gmail.com>
+
+
+include::1-00_part_1.adoc[]
+
+include::2-00_part_2.adoc[]
+
+include::3-00_part_3.adoc[]
+
+include::4-00_part_4.adoc[]
+

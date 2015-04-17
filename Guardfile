@@ -8,7 +8,7 @@ require 'asciidoctor-diagram'
 
   guard :shell do
 #    watch (/^.+\.adoc$/) { |m| Asciidoctor::Cli::Invoker.new(%W(-T asciidoctor-backends/slim -a data-uri -a linkcss! #{m[0]})).invoke! }
-     watch (/^.+\.adoc$/) { |m| Asciidoctor::Cli::Invoker.new(%W( -a data-uri book.adoc)).invoke! }
+     watch (/^.+\.adoc$/) { |m| Asciidoctor::Cli::Invoker.new(%W(-T asciidoc/templates -a data-uri asciidoc/0-book.adoc)).invoke! }
   end
 
   guard 'livereload' do

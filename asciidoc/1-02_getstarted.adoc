@@ -1,0 +1,6 @@
+== Getting started
+=== Getting and installing Tools used in this book
+=== CDI website and resources
+=== Choosing your implementation
+=== Using CDI with Java SE
+=== Example, from scratch to full CDI

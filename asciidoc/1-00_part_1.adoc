@@ -1,0 +1,8 @@
+= Part I - first steps with CDI
+
+include::1-01_introduction.adoc[]
+
+include::1-02_getstarted.adoc[]
+
+include::1-03_sample.adoc[]
+

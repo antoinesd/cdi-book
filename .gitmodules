@@ -1,0 +1,3 @@
+[submodule "asciidoc/templates"]
+	path = asciidoc/templates
+	url = git@github.com:antoinesd/asciidoc-manning-templates.git
