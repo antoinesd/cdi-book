@@ -1,4 +1,7 @@
-= Part 2 Basic CDI concepts
+= Part II - Basic CDI concepts
+
+Contains basic concept for CDI
+
 == Getting started with CDI
 	
 === Understanding the concept of “Bean”?
@@ -63,9 +66,9 @@
 
 === Wrap-up
 
-= Intercepting and decorating beans
+== Intercepting and decorating beans
 
-== Why do we need method interception?
+=== Why do we need method interception?
 
 * Security
 * Logging

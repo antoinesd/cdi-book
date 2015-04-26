@@ -1,5 +1,7 @@
 = Part 4 CDI in Real Life
 
+CDI in a day to day approach
+
 == Booting CDI in your environment
 
 === Using CDI in Java SE

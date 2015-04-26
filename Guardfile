@@ -1,16 +1,10 @@
-require 'erb'
-require 'asciidoctor'
-require 'asciidoctor/cli'
-require 'asciidoctor-diagram'
-# require 'tilt/asciidoc'
+guard 'rake', :task => :html5 do
+  watch %r{input/.+\.\w+$}
+end
 
+guard 'livereload' do
+  watch %r{output/.+\.(html|png)}
+end
 
-
-  guard :shell do
-#    watch (/^.+\.adoc$/) { |m| Asciidoctor::Cli::Invoker.new(%W(-T asciidoctor-backends/slim -a data-uri -a linkcss! #{m[0]})).invoke! }
-     watch (/^.+\.adoc$/) { |m| Asciidoctor::Cli::Invoker.new(%W(-T asciidoc/templates -a data-uri asciidoc/0-book.adoc)).invoke! }
-  end
-
-  guard 'livereload' do
-    watch(%r{.+\.(css|js|html?|php|inc|theme)$})
-  end
+guard 'process', :name => 'webrick', :command => 'ruby -run -e httpd output/ -p 3000' do
+end

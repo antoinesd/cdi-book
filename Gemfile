@@ -1,12 +1,14 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
+gem 'rake'
+gem 'tilt'
 gem 'asciidoctor'
 gem 'asciidoctor-diagram'
-# gem 'tilt'
-# gem 'slim'
-# gem 'thread_safe'
-gem 'guard'
-gem 'guard-shell'
-gem 'guard-livereload'
-gem 'rb-inotify'
-gem 'yajl-ruby'
+gem 'nokogiri'
+gem 'pygments.rb'
+
+group :development do
+  gem 'guard-rake'
+  gem 'guard-livereload'
+  gem 'guard-process'
+end

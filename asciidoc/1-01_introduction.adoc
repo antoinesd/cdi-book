@@ -8,6 +8,42 @@
 
 === The CDI specification
 
+As we already said, CDI is a Java EE specification.
+CDI 1.0 was released as part of Java EE 6 in 2009.
+CDI 1.1 and its maintenance release CDI 1.2 were released as part of Java EE 7 specification in 2013 and 2014
+CDI 2.0 is part of the Java EE 8 specification and allows user to use it outside Java EE as well.
+Being a specification and part of Java EE umbrella spec has consequences on the way CDI is designed and will evolve.
+Let's go thought this concept of specification to understand the impact on CDI
+
+==== The JCP
+
+In early Java days, Sun Microsystem, which owned Java at the time, decided to to create a community gathering all interested actors in the Java platform.
+So they created the Java Community Process (JCP) to organize Java language and platform evolution.
+Today, under Oracle government, the JCP pursue it's work in specifying Java SE and Java EE platform.
+Here is how the JCP defines itself: 
+
+[quote, JCP definition by JCP,https://www.jcp.org]
+____
+The JCP program holds the responsibility for the development of Java technology.
+As an open, inclusive organization of active members and non-member public input, it primarily guides the development and approval of Java technical specifications.
+Anyone can register and join the JCP and have a part in its process, and you don't even have to join to contribute as a public participant.
+ 
+The work of the Java Community under the JCP program helps to ensure Java technology's standard of stability and cross-platform compatibility, enabling it to operate on hundreds of millions of devices, from desktop computers to consumer electronics to industrial robots.
+
+(...) Anyone can sign up to become a JCP Member and then participate on the Expert Group of a JSR or even submit their own JSR Proposals.
+____
+
+So, each specification in Java SE or EE have been proposed by someone (most of the time a company) by a JSR submission.
+
+==== JSR
+
+A JSR is a Java Specification Request. It's a   
+
+==== CDI JSRs
+
+Regarding the CDI specification, 
+
+
 === The CDI container
 
 === The CDI implementations

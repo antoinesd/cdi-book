@@ -1,5 +1,7 @@
 = Part 3 Advanced CDI
 
+Advanced CDI concepts
+
 == Deploying your CDI Application
 
 === Discovery modes
