@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.cdi2inaction</groupId>
+    <artifactId>book</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>Book generator</name>
+    <description>project hosting source of CDI 2 in action book with generation of docBook and HTMl versions</description>
+
+
+    <properties>
+        <asciidoctor.version>1.5.2</asciidoctor.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor.version}</version>
+                <executions>
+                    <execution>
+                        <id>output-docbook</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>docbook45</backend>
+                            <templateDir>asciidoc/templates/</templateDir>
+                            <templateEngine>erb</templateEngine>
+                            <eruby>erb</eruby>
+                            <outputDirectory>docbook</outputDirectory>
+                            <attributes>
+                                <numbered>true</numbered>
+                                <docinfo>true</docinfo>
+                                <experimental>true</experimental>
+                                <toc>true</toc>
+                            </attributes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>output-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <sourceHighlighter>highlightjs</sourceHighlighter>
+                            <backend>html</backend>
+                            <attributes>
+                                <toc2>left</toc2>
+                                <pygments>true</pygments>
+                                <toclevels>3</toclevels>
+                            </attributes>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>asciidoc</sourceDirectory>
+                    <sourceDocumentName>0-book.adoc</sourceDocumentName>
+                    <doctype>book</doctype>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

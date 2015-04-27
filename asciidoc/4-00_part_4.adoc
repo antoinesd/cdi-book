@@ -2,8 +2,10 @@
 
 CDI in a day to day approach
 
+[[booting]]
 == Booting CDI in your environment
 
+[[java_se_boot]]
 === Using CDI in Java SE
 
 * available features under SE
