@@ -1,9 +1,9 @@
 guard 'rake', :task => :html5 do
-  watch %r{input/.+\.\w+$}
+  watch %r{asciidoc/.+\.\w+$}
 end
 
 guard 'livereload' do
-  watch %r{output/.+\.(html|png)}
+  watch %r{target/.+\.(html|png|gif)}
 end
 
 guard 'process', :name => 'webrick', :command => 'ruby -run -e httpd output/ -p 3000' do
