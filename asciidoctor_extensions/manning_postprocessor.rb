@@ -41,7 +41,7 @@ class ManningPostprocessor < Asciidoctor::Extensions::Postprocessor
     root['label'] = '' if root.name == 'chapter'
     label_nodes = nodes('preface',document) + nodes('chapter',document) + nodes('appendix',document)
     label_nodes.each do |node|
-      node['label'] = ''
+      node['label'] = '1'
     end
 
     nodes('part',document).each do |part|
