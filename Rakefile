@@ -13,27 +13,30 @@ end
 
 INPUT_DIRECTORY = "asciidoc"
 OUTPUT_DIRECTORY = "target"
+XML_OUTPUT_DIRECTORY = "docbook"
 INPUT_PATH = "#{FileUtils.pwd}/#{INPUT_DIRECTORY}"
 OUTPUT_PATH = "#{FileUtils.pwd}/#{OUTPUT_DIRECTORY}"
+XML_OUTPUT_PATH = "#{FileUtils.pwd}/#{XML_OUTPUT_DIRECTORY}"
 TEMPLATES_PATH = "#{FileUtils.pwd}/templates"
 
 BOOK_HTML5 = "#{OUTPUT_PATH}/book.html"
-BOOK_DOCBOOK = "#{OUTPUT_PATH}/book.xml"
-BOOK_PDF = "#{OUTPUT_PATH}/book.pdf"
+BOOK_DOCBOOK = "#{XML_OUTPUT_PATH}/book.xml"
+BOOK_PDF = "#{XML_OUTPUT_PATH}/book.pdf"
 
 BOOK_XSD = "#{OUTPUT_PATH}/manning-book.xsd"
 BOOK_XSLT = "#{FileUtils.pwd}/docbook-to-manning-book.xslt"
 
 BOOK_SCHEMA = 'https://author.manning.com/resources/schemas/manning-book.xsd'
 
-BOOK_TITLE = "#{INPUT_PATH}/0-book.adoc"
+BOOK_TITLE = "#{INPUT_PATH}/book.adoc"
 BOOK_README = "#{INPUT_PATH}/README.md"
 BOOK_PATHS = FileList["#{INPUT_PATH}/*.*"].exclude(BOOK_TITLE).exclude(BOOK_README)
 BOOK_FILES = BOOK_PATHS.sub("#{INPUT_PATH}/", '')
-BOOK_XML_PATHS = BOOK_PATHS.sub(INPUT_PATH, OUTPUT_PATH).ext('.xml')
-BOOK_XML_FILES = BOOK_XML_PATHS.sub("#{OUTPUT_PATH}/", '')
-BOOK_IMAGES = FileList["#{INPUT_PATH}/**/*.{eps,png}"]
+BOOK_XML_PATHS = BOOK_PATHS.sub(INPUT_PATH, XML_OUTPUT_PATH).ext('.xml')
+BOOK_XML_FILES = BOOK_XML_PATHS.sub("#{XML_OUTPUT_PATH}/", '')
+BOOK_IMAGES = FileList["#{INPUT_PATH}/**/*.{eps,png,gif}"]
 BOOK_OUTPUT_IMAGES = BOOK_IMAGES.sub(INPUT_PATH, OUTPUT_PATH)
+XML_BOOK_OUTPUT_IMAGES = BOOK_IMAGES.sub(INPUT_PATH, XML_OUTPUT_PATH)
 
 MAX_CODE_LINE_LENGTH = 71
 
@@ -113,13 +116,13 @@ rule '.pdf' => '.xml' do |input|
   puts 'AAMakePDF/AAMakePDF.sh', input.source, input.name, 'AAMakePDF/'
   
   sh 'AAMakePDF/AAMakePDF.sh', input.source, input.name, 'AAMakePDF/'
-  FileUtils.rm "#{OUTPUT_DIRECTORY}/#{basename}.xml.temp.xml"
+  FileUtils.rm "#{XML_OUTPUT_DIRECTORY}/#{basename}.xml.temp.xml"
   FileUtils.rm 'c:\sw\text.txt'
   FileUtils.rm 'AAMakePDF/temp.xml'
   FileUtils.ln_sf input.name, "#{basename}.pdf"
 end
 
-file BOOK_DOCBOOK => [BOOK_TITLE, *BOOK_XML_PATHS, *BOOK_OUTPUT_IMAGES] do
+file BOOK_DOCBOOK => [BOOK_TITLE, *BOOK_XML_PATHS, *XML_BOOK_OUTPUT_IMAGES] do
   FileUtils.cd INPUT_PATH do
     asciidoctor :docbook45, BOOK_DOCBOOK, BOOK_TITLE, BOOK_FILES
     validate BOOK_DOCBOOK
@@ -137,8 +140,25 @@ rule '.xml' => [input_files_for_xml, BOOK_XSD] do |input|
   validate xml
 end
 
-rule /#{OUTPUT_DIRECTORY}\/.+\.(eps|png)/ \
+rule /#{OUTPUT_DIRECTORY}\/.+\.(eps|png|gif)/ \
      => proc {|f| f.sub(OUTPUT_PATH, INPUT_PATH) } do |input|
+  output_image = input.name
+  FileUtils.mkdir_p File.dirname(output_image)
+  FileUtils.cp input.source, output_image
+
+  if File.extname(output_image) == '.eps'
+    output_base = output_image.sub(/\.eps$/, '')
+    output_pdf = "#{output_base}.pdf"
+    sh 'pstopdf', output_image, output_pdf
+    output_png = "#{output_base}.png"
+    sh 'sips', output_pdf, '-s', 'format', 'png', '-s', 'dpiHeight', '72',
+                           '-s', 'dpiWidth', '72', '--out', output_png
+    FileUtils.rm output_pdf
+  end
+end
+
+rule /#{XML_OUTPUT_DIRECTORY}\/.+\.(eps|png|gif)/ \
+     => proc {|f| f.sub(XML_OUTPUT_PATH, INPUT_PATH) } do |input|
   output_image = input.name
   FileUtils.mkdir_p File.dirname(output_image)
   FileUtils.cp input.source, output_image
@@ -160,4 +180,4 @@ end
 
 directory OUTPUT_DIRECTORY
 
-CLEAN.include FileList["*.pdf", "#{OUTPUT_DIRECTORY}/{*.html,*.xml,*.pdf,*/}"]
+CLEAN.include FileList["*.pdf", "#{OUTPUT_DIRECTORY}/{*.html,*.xml,*.pdf,*/}","#{XML_OUTPUT_DIRECTORY}/{*.xml}"]
