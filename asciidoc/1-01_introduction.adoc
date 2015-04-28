@@ -301,7 +301,8 @@ So it just wires that producer to all the injection points of the same type that
 
 This very powerful feature is called convention over configuration. CDI works with a set of general rules that are assumed to hold.
 As architects or developers, we can change these rules, but it might not be a good idea.
-Following those rules will lead to the
+
+// Following those rules will lead to the
 
 
 === Code samples
@@ -309,9 +310,11 @@ Following those rules will lead to the
 === The CDI specification
 
 As we already said, CDI is a Java EE specification.
-CDI 1.0 was released as part of Java EE 6 in 2009.
-CDI 1.1 and its maintenance release CDI 1.2 were released as part of Java EE 7 specification in 2013 and 2014
-CDI 2.0 is part of the Java EE 8 specification and allows user to use it outside Java EE as well.
+
+* CDI 1.0 was released as part of Java EE 6 in 2009.
+* CDI 1.1 and its maintenance release CDI 1.2 were released as part of Java EE 7 specification in 2013 and 2014
+* CDI 2.0 is part of the Java EE 8 specification and allows user to use it outside Java EE as well.
+
 Being a specification and part of Java EE umbrella spec has consequences on the way CDI is designed and will evolve.
 Let's go thought this concept of specification to understand the impact on CDI
 
@@ -401,7 +404,37 @@ Like most framework adding high level service on standard Java classes, CDI use 
 When running CDI in Java EE, this container is automatically provided to you by the Java EE server.
 When running CDI in Java SE, you'll have to boot this container as we will see in <<java_se_boot>>.
 
-Once the container is up, most interaction with it will be done thru the 
+The CDI container is the heart of the framework.
+It contains all the beans defined in your application and all the bean instances (Java Object) that were previously created in active contexts so you can request them again.
+It is also responsible to add powerful features to your components like eventing system, interceptor or decorator, among others.
+
+But to have all the features provided by the container you have to follow the CDI programming model you'll learn in this book.
+For instance, you should never instantiate a bean class by yourself using `new` keyword.
+To get the benefit of CDI you'll have to delegate all instantiation to the CDI container.
+You'll discover other constraint for your code to stick to the CDI programming model.
+By the way, it's why it is called a framework, because it enforces you to observe a collection of rules defining your frame of work.
+These rules are more good practices and code standardization than real constraints as you'll discover in part 2.
+
+Once the container is up and running, it is ready to serve you by providing you with the beans you will request.
+But, strangely you'll discover that for most of the time, the container is invisible for you and that its "magic" is done automatically.
+
+For instance if we write:
+
+[source, java]
+----
+public class MyBean {
+
+    @Inject <1>
+    MyService service; 
+}
+----
+<1> defines an injection point in the field bellow
+
+When `MyBean` is used for the first time, the container must provides a bean of class `MyService` at the injection point.
+that means that the container looks for a bean having `MyService` in its type set.
+When it found it, it checks if an instance of these bean already exist in active context.
+If there are no instance, it creates it and, optionally, add it to an active context.
+And finally it sets the `service` field with the instance it found or just created.
 
 [[implementations]]
 === The CDI implementations
