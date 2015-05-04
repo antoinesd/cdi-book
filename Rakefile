@@ -5,6 +5,7 @@ require 'erb'
 require 'pygments'
 require 'asciidoctor'
 require 'asciidoctor/extensions'
+require 'asciidoctor-diagram'
 require './asciidoctor_extensions/manning_postprocessor'
 
 Asciidoctor::Extensions.register do
