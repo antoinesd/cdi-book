@@ -3,7 +3,6 @@
 *.svg
 *.svg.cache
 *.html
-AAMakePDF/
 target/
 book.pdf
 docbook/
