@@ -68,19 +68,23 @@ class ManningPostprocessor < Asciidoctor::Extensions::Postprocessor
       screen.name = 'programlisting'
       screen.parent = formalpara
       formalpara.name = 'example'
-      setup_long_annotations formalpara
       para.remove
     end
 
     screens = nodes('screen',document) + nodes('programlisting',document)
     screens.each do |screen|
+      next if screen.parent.name == 'example'
       informalexample = document.create_element 'informalexample'
-      setup_long_annotations informalexample
+      informalexample['annotations'] = 'below'
       screen.previous = informalexample
       screen.name = 'programlisting'
       screen.parent = informalexample
     end
-
+    
+    nodes('example',document).each do |example|
+      example['annotations'] = 'below'
+    end
+    
     nodes('appendix',document).each do |appendix|
       part = appendix.parent
       next unless part.name == 'part'
@@ -163,9 +167,11 @@ class ManningPostprocessor < Asciidoctor::Extensions::Postprocessor
     end
   end
 
-  def setup_long_annotations node
-    return unless node['role'].to_s.split.include? 'long-annotations'
+=begin
+  def setup_long_annotations node,node2
+    node2.remove_attribute 'role'
+    return unless node2['role'].to_s.split.include? 'long-annotations'
     node['annotations'] = 'below'
-    node.remove_attribute 'role'
   end
+=end
 end
