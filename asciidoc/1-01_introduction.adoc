@@ -103,7 +103,9 @@ This idea is explained in the popular book _Design Patterns: Elements of Reusabl
 
 In the Template Method pattern, we can read:
 
+[quote]
 The Hollywood Principle refers to how a parent class calls the operations of a subclass and not the other way round.
+
 The Template Method pattern is very widely used. We can see many examples of it in the JDK itself.
 For instance, the `HashMap` class extends the `AbstractMap` class.
 The `AbstractMap` has an abstract method `entrySet()`, that is called by its concrete method `clear()`.
