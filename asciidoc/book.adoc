@@ -11,6 +11,7 @@ José Paumard <jose.paumard@gmail.com>
 :icons: font
 :source-language: java
 :imagesdir: images
+:sourcedir: ../examples/src/main/java
 
 ////
 include::1-00_part_1.adoc[]

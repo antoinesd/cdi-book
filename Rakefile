@@ -38,6 +38,7 @@ BOOK_XML_FILES = BOOK_XML_PATHS.sub("#{XML_OUTPUT_PATH}/", '')
 BOOK_IMAGES = FileList["#{INPUT_PATH}/**/*.{eps,png,gif}"]
 BOOK_OUTPUT_IMAGES = BOOK_IMAGES.sub(INPUT_PATH, OUTPUT_PATH)
 XML_BOOK_OUTPUT_IMAGES = BOOK_IMAGES.sub(INPUT_PATH, XML_OUTPUT_PATH)
+SOURCE_DIR = "#{FileUtils.pwd}/examples/src/main/java"
 
 MAX_CODE_LINE_LENGTH = 71
 
@@ -93,6 +94,7 @@ def asciidoctor backend, output_file, *files
     :attributes => {
       'backend' => backend.to_s,
       'doctype' => 'book',
+      'sourcedir' => SOURCE_DIR,
     },
     :header_footer => files.length > 1,
     :to_file => output_file,
