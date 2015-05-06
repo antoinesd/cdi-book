@@ -6,6 +6,9 @@
     <artifactId>book</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>examples</module>
+    </modules>
 
     <name>Book generator</name>
     <description>project hosting source of CDI 2 in action book with generation of docBook and HTMl versions</description>
