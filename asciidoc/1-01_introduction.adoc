@@ -110,7 +110,8 @@ The Template Method pattern is very widely used. We can see many examples of it 
 For instance, the `HashMap` class extends the `AbstractMap` class.
 The `AbstractMap` has an abstract method `entrySet()`, that is called by its concrete method `clear()`.
 
-[source, java]
+.The Hollywood principle in the JDK `AbstractMap` class
+[source]
 ----
 public abstract class AbstractMap {
     public abstract Set<Entry<K,V>> entrySet();
@@ -121,7 +122,9 @@ public abstract class AbstractMap {
 }
 ----
 
-[source, java]
+
+.The Hollywood principle in the JDK `HashMap` class
+[source]
 ----
 public class HashMap {
   public Set<Map.Entry<K,V>> entrySet() {
@@ -166,7 +169,8 @@ this quick and dirty explanation, an `EntityManager` is much more than that!).
 Thanks to the `@Inject` annotation, every instance of `CustomerDAO` will receive a properly built `EntityManager` before the method `findById()` is called.
 It is the responsibility of the Java EE container to create such an object, with all its dependencies properly built.
 
-[source, java]
+.`CustomerDAO` depending on a JPA `EntityManager`
+[source]
 ----
 public class CustomerDAO {
     @Inject
@@ -186,7 +190,8 @@ Basically, the `CustomerDAO` class would have carried some technical code to cal
 
 To avoid this, another way would have been to write our `CustomerDAO` in this way.
 
-[source, java]
+.`CustomerDAO` without its `EntityManager`
+[source]
 ----
 public class CustomerDAO {
 
@@ -287,7 +292,9 @@ By default, CDI will look for a producer for that field.
 To resolve that, it will check the type of that field, and see if it has a producer for that type.
 How can I declare a producer? Easily: just annotate any kind of element that holds or returns an object of the right type with the `@Produces` annotation.
 
-[source, java]
+
+.A basic producer for an entity manager
+[source]
 ----
 @Stateless
 public class EntityManagerProducer {
@@ -422,15 +429,16 @@ But, strangely you'll discover that for most of the time, the container is invis
 
 For instance if we write:
 
-[source, java]
+.Injection point "magic"
+[source]
 ----
 public class MyBean {
 
-    @Inject <1>
-    MyService service; 
+    @Inject //<1>
+    MyService service;
 }
 ----
-<1> defines an injection point in the field bellow
+<1> `@Inject` transform the field in an injection point
 
 When `MyBean` is used for the first time, the container must provides a bean of class `MyService` at the injection point.
 that means that the container looks for a bean having `MyService` in its type set.
