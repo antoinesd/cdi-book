@@ -70,7 +70,16 @@ class ManningPostprocessor < Asciidoctor::Extensions::Postprocessor
       formalpara.name = 'example'
       para.remove
     end
-
+    
+    authors=nodes('author',document)
+    authors.each do |n|
+      grandpa = n.parent.parent
+      n.parent = grandpa
+    end
+    
+    remove 'bookinfo/authorgroup', document
+    
+    
     screens = nodes('screen',document) + nodes('programlisting',document)
     screens.each do |screen|
       next if screen.parent.name == 'example'
