@@ -1,9 +1,7 @@
 = Contexts and Dependency Injection 2.0 in Action
-Antoine Sabot-Durand <antoine@sabot-durand.net>
-José Paumard <jose.paumard@gmail.com>
-
+Antoine Sabot-Durand <antoine@sabot-durand.net>; José Paumard <jose.paumard@gmail.com>
 :doctype: book
-:toc: left
+:toc: right
 :numbered:
 :sectlink:
 :sectanchors:
