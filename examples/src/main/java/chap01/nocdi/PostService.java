@@ -1,6 +1,12 @@
 package chap01.nocdi;
 
 
+import chap01.Post;
+import chap01.PostRepository;
+import chap01.User;
+import chap01.UserRepository;
+import chap01.NotificationService;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.TransactionManager;

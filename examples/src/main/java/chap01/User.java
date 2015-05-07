@@ -1,4 +1,4 @@
-package chap01.nocdi;
+package chap01;
 
 /**
  *
