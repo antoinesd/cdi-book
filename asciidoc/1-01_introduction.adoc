@@ -451,7 +451,7 @@ This approach (called "Singleton Pattern") could be very tricky to implement fro
 In our example nothing prevent us to instantiate as many `PostService` as we wish.
 A lot of technical code have to be added to our example to enforce this pattern, should we require it as architecture good practices recommend.
 
-===== Technical code included
+===== Technical code inclusion
 
 An other big issue of this raw approach is the mix of technical with business code.
 In <<postservice_without_cdi>>, `postMessage` method have to manage database transaction and message submission at the same time.
@@ -468,9 +468,112 @@ Side effect of this is easy to guess:
 
 ===== Coupling with non or hardly related services
 
+Last issue in <<postservice_without_cdi>>, is probably the notification part in `postMessage` method.
+It's not a real issue, but could become one, if notification goes beyond a simple call.
+
+If a new service is added later tot he application and this service needs to do a task when a post is save, you'll have to change the code of `postMessage` to add these call and of course add the corresponding service as a new field in `PostService`.
+
 ==== With CDI
 
+Here's the CDI version of `PostService`:
 
+[[postservice_with_cdi]]
+.`PostService` with CDI
+[source]
+----
+include::{sourcedir}/chap01/cdi/PostService.java[tags=snippets]
+----
+<1> Solves uniqueness by giving the bean a scope
+<2> Solves instantiation and dependency to implementation
+<3> Solves coupling to non related service with events
+<4> Solves technical code inclusion
+
+Let's check how CDI solve issue or limitations in <<postservice_without_cdi>>.
+
+===== Instantiation
+
+With CDI we don't have to instantiate the service object and other dependent services.
+The CDI container does this job for us by:
+
+* registering a _bean_ for each service class found
+* providing us a _bean instance_ each time the application needs one
+* managing injection of a bean instance at each _injection point_ (place having the `@Inject` annotation).
+
+When registering a bean, the container computes and associates its set of types, including its interfaces and even `Object` type.
+
+For instance the set of types content for the bean defined by `JpaPostRepository` class is:
+
+* `JpaPostRepository`
+* `PostRepository`
+* `Object`
+
+That means that an instance of this bean is potentially (with conditions will detail later) a candidate for any injection point on this types.
+
+Thus we can avoid mentioning implementations wiring in our application.
+It's done naturally by the CDI container.
+
+You might wonder what will be the entry point to this bean world (i.e. how to get the bean instance for PostService)?
+We can get this instance in many ways. the most obvious being:
+
+* If we add `@Named` annotation on the class it will be accessible from user interface by Expression Language `#{postService.getTimeline(user)}`
+* We can add an _observer_ for the beginning of the _Application Context_. It'll be triggered automatically by the container when its boot phase is over.
+* Eventually, we can access the container form outside CDI, thanks to the `CDI` class and its `getCurrent()` static method:
+
+.request an instance of `PostService` from outside CDI
+[source]
+PostService ps = CDI.getCurrent().select(PostService.class).get();
+
+===== Uniqueness
+
+The CDI container handle singleton pattern thanks to scopes and context management.
+When a bean has a normal scope (most scopes except `@Dependent`), the container guarantee that there will be only instance of this bean in the matching context.
+In <<postservice_with_cdi>> example, the `PostService` class has the `@ApplicationScoped` annotation.
+It makes the container to register the bean from that class with application scope.
+So the container will ensure that the Application Context will hold maximum one instance of this bean, making it a singleton for the application.
+
+===== Technical code externalisation
+
+CDI provides two main solutions to externalise technical code.
+It can be done with:
+
+* _portable extensions_ that will deal with the technical part at boot time
+* _interceptors_ that will enrich the business code with transverse technical behaviour
+
+In <<postservice_with_cdi>> example we chose the second approach, by using an interceptor provided by the Java Transactional API (JTA) specification.
+The `@Transactional` annotation is bound to an interceptor which takes care of transaction for us.
+When a method is intercepted, the code of the interceptor is called instead of the method.
+The interceptor receives all needed information on the intercepted method to be able to call it if its behaviour requires it.
+
+As the interceptor code is provided by our JTA implementation, we have nothing else to do to use this feature.
+
+This interceptor start a transaction, then call the original method and eventually commit the transaction with all the required error management around this expected workflow.
+
+===== Decoupling with non or hardly related service
+
+With dependency injection, CDI provides a great way to loose the coupling (inter dependency) between all application beans.
+But it can do even more by allowing a given bean to communicate with another bean without any dependencies between them.
+This feature is done thanks CDI eventing system.
+
+In <<postservice_with_cdi>> we injected the CDI `Event<T>` type with `NewPost` class as Event parameter type.
+
+It allows us to trigger events of type `NewPost` which a simple class containing a `Post` and list of users linked to this `Post`.
+
+.The `NewPost` class
+[source]
+----
+include::{sourcedir}/chap01/cdi/NewPost.java[tags=snippets]
+----
+
+To observe this event an other bean need to define an observer method.
+It's as simple as shown below 
+
+.The `WebSocketNotifService` class
+[source]
+----
+include::{sourcedir}/chap01/cdi/WebSocketNotifService.java[tags=snippets]
+----
+
+With this feature, a bean can send a notification to unknown bean at development time adding more decoupling and modularity to the application.
 
 === The CDI specification
 
