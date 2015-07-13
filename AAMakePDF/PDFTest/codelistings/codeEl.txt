@@ -1,3 +1,0 @@
-<root>
-  <test>${someExpression}</test>
-</root>

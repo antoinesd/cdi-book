@@ -1,1 +1,0 @@
-curl "https://crocodoc.com/api/v2/session/create" --data "sidebar=auto&user=1234,roadnick&editable=true&token=n9Z2ScvQVperiDwyGoRUHkuL&uuid=c3b51414-cc13-4000-a257-8f5a5edb61fe"

@@ -1,7 +1,0 @@
-public class TestComments{
-
-    public static void main(String args[]){ //<co id="testjavacomment" />
-         // Always start here. 
-    }
-
-}
