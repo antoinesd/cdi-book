@@ -708,6 +708,102 @@ And finally it sets the `service` field with the instance it found or just creat
 [[implementations]]
 === The CDI implementations
 
+Specification is nothing without good implementations.
+CDI is lucky here with two excellent implementations: JBoss Weld and Apache OpenWebBeans.
+For CDI 1.0 there's also a third implementation: Caucho CanDI
 
-[[alternatives]]
+[[intro_weld]]
+==== JBoss Weld
+
+JBoss Weld is the CDI reference implementation (RI).
+It is developed by Red Hat as an open source project under Apache License.
+Weld provides a very powerful and well documented SPI and API to extend and integrate Weld in your own stack or application server.
+
+The Weld documentation is very exhaustive showing how CDI works in a more "real world" way than the spec and describes the specific parts in Weld as well.
+
+Weld also contains a great tool to learn CDI or check what is happening in your CDI deployment: Weld Probe.
+Probe gives a graphical UI to monitor your bean graph and all the internal CDI configuration in your deployment
+
+Weld is used in the following application servers:
+
+* Oracle Glassfish
+* JBoss Wildfly
+* Oracle Weblogic
+* JBoss EAP
+* IBM WebSphere liberty profile (from 8.5.6)
+
+To learn more on Weld see <<weld_specific>> or visit JBoss Weld website (http://weld.cdi-spec.org).
+
+
+[[intro_owb]]
+==== Apache OpenWebBeans
+
+OpenWebBeans got its name from early CDI project name.
+The implementation from the Apache foundation is of course under Apache License.
+It's a fast and very modular implementation.
+The implementation is organized around a core engine and a series of plugin for integration with various Java EE specification.
+
+Apache OpenWebBeans is used in the following server:
+
+* Apache TomEE
+* IBM WebSphere Liberty profile (until 8.5.6)
+
+To learn more on OpenWebBeans see <<owb_specific>> or visit Apache OpenWebBeans web page (http://openwebbeans.apache.org/).
+
+[[intro_candi]]
+==== Caucho CanDI
+
+CanDI is a CDI 1.0 implementation at the heart of Caucho Resin 4.x.
+It is used to configure the server and provide all the integration layer between all the server technology.
+Unfortunately CanDI is not available as standalone solution.
+
+[[cdi_alternatives]]
 === Alternatives to CDI
+
+CDI is not the first or only solution to add dependency injection to your project.
+Other frameworks provide similar features with different flavours.
+
+In this section we are introducing the 3 majors alternatives to CDI.
+As CDI, they all implement JSR 330 (AtInject) specification.
+
+We are giving short introduction for each of these. If you need more information on this solution please refer to their website/documentation
+
+[[spring]]
+==== Spring Framework
+
+Spring is the open source framework who made the concept of Dependency Injection popular more than 10 years ago.
+The project is led by Pivotal under Apache License.
+Spring is probably the most popular dependency injection framework for Java.
+
+The IoC approach in Spring is very close to CDI one.
+The major difference being that CDI support only strong typed injection where Spring also support injection based on Id (string).
+
+You'll find more information on Spring on the project website: http://spring.io
+
+
+[[guice]]
+==== Google Guice
+
+Google launched Guice a few years after Spring.
+The project is also published under Apache License.
+
+Guice has a strong typed approach for IoC like CDI does, but provides more programmatic solution for configuration and injection.
+
+It was also a good solution for adding IoC to Android platform, but today it is surpassed by Dagger.
+
+You'll find more information on Guice on the project website: https://github.com/google/guice/wiki/Motivation
+
+
+[[dagger]]
+==== Google Dagger
+
+Introduced in 2012 by Square, Dagger is one of the youngest in the Java IoC open source frameworks family.
+It is also developed under the Apache License.
+Dagger was thought for Android platform, and is the lightest solution out there to do IoC.
+
+The framework generates static code at compilation time by processing the annotations.
+The counter part of this lightness is less dynamic aspect than other framework at runtime.
+
+Dagger 2 is now led by Google.
+
+You'll find more information on Dagger on the project website: http://google.github.io/dagger/
