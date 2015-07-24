@@ -6,10 +6,11 @@ This community has been developing countless wonderful tools, frameworks and API
 Some of those were in the end integrated in the JDK itself, some others have become _de facto_ standards.
 
 Some of those standards were integrated in the Java Enterprise Edition plarform (Java EE), both as a specification and a reference implementation.
-This is the case for CDI. The Context and Dependency Injection specification was first brought to the Java EE platform as a tool to glue together web page templates and middleware Java code.
+This is the case for CDI.
+The Context and Dependency Injection specification was first brought to the Java EE platform as a tool to glue together web page templates and middleware Java code.
 
 How does new ideas take shape in the Java space? The process is nearly always the same. As soon as new ideas emerge, some Open source implementation is produced.
-This implementation is watched by the community, some more contributors show up, bringing new ideas and improvments.
+This implementation is watched by the community, some more contributors show up, bringing new ideas and improvements.
 Other implementations may be built, taking into account the good ideas and the drawbacks of the previous ones.
 This darwinist-like process of selection and rejection is just how Open source works and brings more and more innovations every day.
 
@@ -326,12 +327,11 @@ This set of posts is called user's timeline.
 We could build a simple schema of such an application like this:
 
 .basic micro-blogging example
-[plantuml, generated_chap01-1, png]
+[plantuml, generated_chap01-1, svg , width=750]
 ----
 @startuml
 
 
-skinparam defaultFontName Consolas
 
 PostService ..> UserRepository : Uses
 PostService ..> PostRepository : Uses
@@ -618,7 +618,7 @@ The JCP defines a very detailed lifecycle for JSR which is specified in a JCP pr
 
 [[jsr_lifecycle_fig]]
 .Lifecycle of a JSR (jcp.org)
-image::jsr_lifecycle.gif[JSR Lifecycle]
+image::jsr_lifecycle.png[JSR Lifecycle]
 
 Without going in too many details, let's review the main steps of this lifecycle to better understand how CDI is designed.
 A JSR is initiated by a company or an individual, by proposing a JSR proposal to the JCP.
