@@ -2,10 +2,10 @@
 
 This part introduce general CDI concepts
 
-////
+
 include::1-01_introduction.adoc[]
 
 include::1-02_getstarted.adoc[]
 
 include::1-03_sample.adoc[]
-////
+

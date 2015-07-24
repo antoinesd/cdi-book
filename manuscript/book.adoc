@@ -6,12 +6,13 @@ Antoine Sabot-Durand <antoine@sabot-durand.net>; José Paumard <jose.paumard@gma
 :sectlink:
 :sectanchors:
 :sectid:
+:data-uri:
 :icons: font
 :source-language: java
-:imagesdir: images
-:sourcedir: ../examples/src/main/java
+:imagesdir: ../images
+:sourcedir: ../code/src/main/java
 
-////
+
 include::1-00_part_1.adoc[]
 
 include::2-00_part_2.adoc[]
@@ -19,4 +20,3 @@ include::2-00_part_2.adoc[]
 include::3-00_part_3.adoc[]
 
 include::4-00_part_4.adoc[]
-////

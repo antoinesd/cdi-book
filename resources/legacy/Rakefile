@@ -12,9 +12,9 @@ Asciidoctor::Extensions.register do
   postprocessor ManningPostprocessor
 end
 
-INPUT_DIRECTORY = "asciidoc"
+INPUT_DIRECTORY = "manuscript"
 OUTPUT_DIRECTORY = "target"
-XML_OUTPUT_DIRECTORY = "docbook"
+XML_OUTPUT_DIRECTORY = "target/docbook"
 INPUT_PATH = "#{FileUtils.pwd}/#{INPUT_DIRECTORY}"
 OUTPUT_PATH = "#{FileUtils.pwd}/#{OUTPUT_DIRECTORY}"
 XML_OUTPUT_PATH = "#{FileUtils.pwd}/#{XML_OUTPUT_DIRECTORY}"

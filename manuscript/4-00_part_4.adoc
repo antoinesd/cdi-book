@@ -29,6 +29,7 @@ CDI in a day to day approach
 
 == Exploring CDI ecosystem
 
+[[weld_specific]]
 === Learning Weld specific features
 
 === Learning OWB specific features
