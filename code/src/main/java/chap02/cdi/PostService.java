@@ -1,10 +1,10 @@
-package chap01.cdi;
+package chap02.cdi;
 
 
-import chap01.Post;
-import chap01.PostRepository;
-import chap01.User;
-import chap01.UserRepository;
+import chap02.Post;
+import chap02.PostRepository;
+import chap02.User;
+import chap02.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;

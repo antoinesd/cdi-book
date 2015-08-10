@@ -1,7 +1,4 @@
-package chap01;
-
-import chap01.Post;
-import chap01.User;
+package chap02;
 
 import java.util.List;
 

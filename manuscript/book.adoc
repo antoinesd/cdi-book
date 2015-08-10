@@ -10,7 +10,9 @@ Antoine Sabot-Durand <antoine@sabot-durand.net>; José Paumard <jose.paumard@gma
 :icons: font
 :source-language: java
 :imagesdir: ../images
-:sourcedir: ../code/src/main/java
+:codedir: ../code
+:sourcedir: {codedir}/src/main/java
+:testdir: {codedir}/src/test/java
 
 
 include::1-00_part_1.adoc[]

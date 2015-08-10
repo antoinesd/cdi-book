@@ -1,8 +1,8 @@
-package chap01.cdi;
+package chap02.cdi;
 
-import chap01.NotificationService;
-import chap01.Post;
-import chap01.User;
+import chap02.NotificationService;
+import chap02.Post;
+import chap02.User;
 
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
