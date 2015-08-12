@@ -562,4 +562,10 @@ Yet Arquillian is a very interesting topic, if you want to learn more about it c
 * the excellent "Arquillian in action" book.
 
 
+[[installation]]
+=== Installing your environment
+
+[[ide_support]]
+=== CDI Support in major IDE 
+
 
