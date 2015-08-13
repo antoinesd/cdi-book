@@ -1,0 +1,36 @@
+[[chap04-getting-started]]
+== Getting started with CDI
+
+=== Understanding the concept of “Bean”?
+
+* Definition / metadata / instance
+* Bean archive
+
+=== Writing your minimal CDI application
+
+* beans.xml with all
+* Bootstrapping Weld
+
+=== Defining a first CDI bean: choose your bean type
+
+* @Produces / @Inject
+* Works on the type
+* Injection by field
+
+=== Dealing with more than one bean per type
+
+* Injection by identifier vs injecting by type
+* @Qualifier @Typed
+* @Alternative
+* @Specializes
+* Using @Alternative to inject mock objets
+
+=== Getting more flexibility with Programmatic lookup
+
+* @Any
+* Instance<T>
+* AnnotationLiteral, TypeLiteral
+
+=== Using @Stereotype to simplify @Alternative
+=== Wrap-up
+

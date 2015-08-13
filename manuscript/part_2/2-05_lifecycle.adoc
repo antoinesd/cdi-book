@@ -1,0 +1,12 @@
+[[chap05-lifecycle]]
+
+
+== Lifecycle
+=== Why do you need a lifecycle?
+
+* Notion of managed bean
+* Definition of the life cycle in the context of CDI
+
+=== Setting  up Callbacks on the bean lifecycle
+=== Parallel with @Produces / @Disposes
+=== Wrap-up

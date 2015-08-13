@@ -2,102 +2,17 @@
 
 Contains basic concept for CDI
 
-== Getting started with CDI
-	
-=== Understanding the concept of “Bean”?
+include::part_2/2-04_getting-started-with-cdi.adoc[]
 
-* Definition / metadata / instance
-* Bean archive
+include::part_2/2-05_lifecycle.adoc[]
 
-=== Writing your minimal CDI application
-	
-* beans.xml with all
-* Bootstrapping Weld
+include::part_2/2-06_contexts.adoc[]
 
-=== Defining a first CDI bean: choose your bean type
+include::part_2/2-07_intercepting-and-decorating-beans.adoc[]
 
-* @Produces / @Inject
-* Works on the type
-* Injection by field
-
-=== Dealing with more than one bean per type
-
-* Injection by identifier vs injecting by type
-* @Qualifier @Typed
-* @Alternative 
-* @Specializes
-* Using @Alternative to inject mock objets
-
-=== Getting more flexibility with Programmatic lookup
-	
-* @Any
-* Instance<T>
-* AnnotationLiteral, TypeLiteral
-
-=== Using @Stereotype to simplify @Alternative
-=== Wrap-up
+include::part_2/2-08_using-events.adoc[]
 
 
-== Lifecycle
-=== Why do you need a lifecycle?
-	
-* Notion of managed bean
-* Definition of the life cycle in the context of CDI
-
-=== Setting  up Callbacks on the bean lifecycle
-=== Parallel with @Produces / @Disposes
-=== Wrap-up
 
 
-== Contexts
 
-=== Understanding context?
-
-* Contexts and scopes
-
-=== See the contexts in action
-
-* Request / Session / Application
-* Conversation (tabbed navigation)
-* Transaction
-* Build your own context
-
-=== Setting contexts with @Stereotype
-
-=== Wrap-up
-
-== Intercepting and decorating beans
-
-=== Why do we need method interception?
-
-* Security
-* Logging
-* Auditing
-
-
-=== How interception differs from decoration
-	
-* Why do we need both?
-
-=== How to set up interception
-* Interception and contexts: transaction
-
-=== How to set up decoration
-
-=== Setting @Stereotype to intercept and decorate
-
-=== Wrap-up
-
-== Using events to decouple your application modules
-
-=== Firing and observing events
-
-=== Asynchronous events
-
-=== Setting observers priority
-
-=== Conditional observers
-
-=== Transactional observers
-
-=== Wrap-up
