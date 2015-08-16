@@ -1,6 +1,6 @@
 = Part I - first steps with CDI
 
-This part introduce general CDI concepts
+
 
 
 include::part_1/1-01_introduction.adoc[]

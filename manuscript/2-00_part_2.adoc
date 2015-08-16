@@ -1,6 +1,6 @@
 = Part II - Basic CDI concepts
 
-Contains basic concept for CDI
+
 
 include::part_2/2-04_getting-started-with-cdi.adoc[]
 

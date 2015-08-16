@@ -1,3 +1,5 @@
+:sourcedir: code/src/main/java
+
 [[chap02-getting-started]]
 == Getting started
 
