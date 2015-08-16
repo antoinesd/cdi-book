@@ -1,15 +1,220 @@
 [[chap04-getting-started]]
 == Getting started with CDI
 
-=== Understanding the concept of “Bean”?
+=== Understanding the concept of “Bean”
 
-* Definition / metadata / instance
-* Bean archive
+The concept of _bean_ is central to CDI. It is also quite complex, and the goal of this introduction is just to give you a first idea. Do not worry, nothing will be left in the shadow with the bean concept, we just feel that it is a bit too early to tell you everything about it.
+
+First, a bean is a Java object. So, as all Java objects, it is an instance of a class. From this point of view, there is no difference between a plain Java object and a CDI bean. Of course things are going to change on this point. If not, what would be the point in creating such a complex framework as CDI?
+
+As all Java Objects, a CDI bean has a type. An through the inheritance type system, it can have multiple types, given by a class and several interfaces. Of course CDI relies on the Java standard type system. So the type of a bean is its Java type at first. But CDI brings many refinements to the Java type system. In fact, the type of a CDI beans is built on its Java type, and special CDI annotations. CDI brings the possibility to create your own annotated types, thus the possibility to create your own type from scratch.
+
+The second important point is that a CDI bean is provided by a CDI container. You should not create a bean by yourself in a CDI application. Merely, you should make a request on the CDI container to get an instance of a bean, just as in the factory pattern. In fact, CDI implements the factory design pattern on this point.
+
+A consequence of that is that a CDI bean is bound to the CDI container that created it. It brings the notion of lifecycle, that will be seen in details later in this part. A CDI bean has a lifecycle, composed of several steps, each with its own callbacks. It allows a very fine control on the building of CDI beans, with many possibilities for your applications.
+
+So a bean is an instance of a Java object, provided by a container (the CDI container). It can also be called a managed bean, since the container takes care of the creation of this bean. The container also provides many things for beans. Since this object is managed, the container can see everything we do with a managed bean. For instance, it can see that a method is called, thus allowing the interception of this call.
+
+In the Java EE context, and for backward compatibility reasons, some special types of beans have been defined in the CDI context. We will see these beans in further details, let us just mention them here:
+
+* All the Java EE resources defined at the Java EE container level. This is basically any resource accessible through JNDI. It includes for instance data sources, JMS queues, and also any global variable. Some of those resources may also be accessible through other means.
+* Persistence units and persistence contexts are exposed through special beans. A persistence unit bean is of type `EntityManagerFactory`, and a persistence context bean is of type `EntityManager`. In the Java EE context, an`EntityManager` is bound to a transaction.
+* EJBs are also special beans in the Java EE context. EJB are defined in their own Java EE specification, and carry special semantics regarding how their methods are called.
+* Web services are the last special type of beans handled by CDI in the Java EE context.
+
+==== Definition / metadata / instance
+
+It is very simple to define a simple bean in CDI. But the overall, complete process, is very complex. It relies on many notions that needs to be explained one by one before you can understand everything.
+
+In the early versions of CDI, the bean definitions were carried in XML metadata, namely in a `beans.xml` file. Since version 1.2 this XML file has been made optional, everything can be done using annotations. For backward compatibility reasons, the `beans.xml` file is still there, and still supported. For some cases it is still needed: not everything can be done with annotations. But in many cases, we do not need it anymore.
+
+==== Bean archive
+
+The notion of bean archive is the first notion to understand if you want to build a working CDI application. That is, an application that relies on the use of a CDI container. This notion is used by the CDI container. A CDI container analyzes the content of a bean archive, looking for its supported annotations and descriptors. It then builds the object graph that your
+application will use. A JAR or any other archive is the most general sense that is not a bean archive is not analyzed
+ by CDI.
+
+Most of the time, when you get a CDI error telling you that your bean is not known, or has not been discovered, it comes from an archive problem: the JAR with the faulty bean has not been analyzed by CDI. So understanding how a bean archive works is important prior to understanding anything else in CDI.
+
+Once again, we must consider two cases: the case of a CDI application that is part of a Java EE application, and the case of a standalone CDI application.
+
+In all cases, an archive is a classical Java language notion. An archive can be:
+
+* a JAR file on the Java SE world, or
+* an EAR, a WAR, or a RAR in the Java EE world.
+
+Those are the classical examples of archives. But it can also be a directory on the classpath, including the `WEB-INF/classes` special directory of a web archive. This special directory can be in a WAR file, but not necessarily.
+
+So what makes a Java archive, a CDI bean archive? The answer is simple: the presence of a special file, the `beans.xml` file. Where should this file be put? There are several places for it. In the Java SE world, it should be put in the `META-INF` directory of an archive. Remember, in the Java SE world, an archive can be a JAR or a directory on the classpath.
+
+It the Java EE world, there are other kind of archives, so more places to put a `beans.xml` file. But basically the rule is the same: the `beans.xml` file should be put in a `META-INF` directory. There is one exception to this rule though. In the case of a WAR archive, the `beans.xml` file can also be put in the `WEB-INF` directory directly.
+
+What probably comes to mind now is: what happens if we have more than one `beans.xml` file? The answer is quite simple, and there are indeed error cases.
+
+In both the Java SE and Java EE cases, as long as an archive (in the Java sense) has only one `beans.xml` file, everything will be handled properly. An error case can be raised if a configuration has more than one `beans.xml` file in one given
+archive.
+
+===== The Web archive (WAR) case
+
+The case of the WAR is quite complex, since there are several places where the `beans.xml` can be put. Usually a WAR
+relies on home made classes, that can be packaged in JAR files put in the `WEB-INF/lib`, or put directly in the
+`WEB-INF/classes`. Thus it is logical to enable to put the `beans.xml` file in the `WEB-INF/classes` directory.
+
+On the other hand, if you want to build a WAR that depends on JAR files that already contain `beans.xml` files, you
+will probably want to be able to override the definitions from those files. Taking into account the  `beans.xml` file from the `WEB-INF/classes` directory would not make sense: it would give a global scope to something defined locally. So the
+decision has been taken to allow  a global `beans.xml` file in the `WEB-INF` directory.
+
+In a nutshell, the `beans.xml` can be put:
+
+* in the `WEB-INF` directory
+* in the `WEB-INF/classes/META-INF` directory
+* in the `META-INF` directory of any JAR put in the `WEB-INF/lib` directory.
+
+If a `beans.xml` file is found in the `WEB-INF` directory, then it overrides the `beans.xml` files that can be found
+in the JAR files of the `WEB-INF/lib` directory.
+
+If a `beans.xml` file is found in the `WEB-INF/classes/META-INF` directory, then the `WEB-INF/classes` is considered
+a bean archive by CDI. The classes from this directory will be analyzed by the CDI container.
+
+If two `beans.xml` are found in both the `WEB-INF` directory and the `WEB-INF/classes/META-INF`
+directory, then an error is raised. As a web archive designer, you should not be doing that.
+
+Of course, any JAR from the `WEB-INF/lib` that contains a `beans.xml` file in its META-INF` directory is a bean
+archive.
+
+If a `beans.xml` file is found in the `WEB-INF` directory, it overrides all the `beans.xml` files that could
+ be found in the JAR of the `WEB-INF/lib` directory.
+
+
+===== The EJB JAR case
+
+An EJB JAR is a special kind of JAR that contains EJB. It can contains a descriptor file: the `ejb-jar.xml` file.
+This file has been made optional in EJB 3.0, since the information is contains can now be setup in the EJB annotations.
+
+If this file is present, it should be put in the `META-INF` directory of the EJB JAR archive.
+
+Normal rules apply to this archive. Thus, it is a bean archive if it has a `beans.xml` file in its `META-INF`
+directory. In that case, the content of this archive, and all the archives it depends on will be analyzed by the CDI
+container.
+
+===== The Connector archive (RAR) case
+
+A RAR archive file contains Java EE connectors used to access enterprise information system. Typically, one such
+connector exists for each type of resource needed by a Java EE resource. The architecture of the Java EE platform
+defines the notion of Java EE Connector, the Java EE standard for such adapter components. Those components are
+packaged in a special archive file: the RAR file.
+
+In this case, the CDI container looks for all the JAR that this RAR depends on. All the previous rules stand in
+telling if a JAR is a bean archive or not. There is no `beans.xml` file defined at the RAR level, as it is the case
+for the WAR file.
+
+===== The Enterprise archive (EAR) case
+
+An Enterprise Archive can contain any kind of archive previously defined: JAR, WAR or RAR. Some of those JAR have a
+special semantic: they are called EJB JAR.
+
+All the previous rules stand for the archives that an EAR depends on.
+
+The EJB JAR files need to have a `beans.xml` file to be considered as bean archives and thus analyzed by the CDI
+container.
+
+There is no `beans.xml` file defined at the EAR level, as it is the case for the WAR file.
+
+
+===== Embedded EJB
+
+An embedded EJB container uses a system property called `javax.ejb.embeddable.modules`. This property works as
+a classpath, and defines all the archives this EJB container depends on. If this property is not defined, then the
+classpath is used instead of this property.
+
+In the case of an embedded EJB container, all the java archives are seen as bean archives.
+
+
+===== What happens if a class is present in more than one archive?
+
+Enterprise applications may be so complex that it becomes more and more frequent to have classes present in more than
+ on archive. This is especially true for outside dependencies. It is nor rare to see a given library present more
+ than once in the dependency tree of an application, sometimes with different version numbers!
+
+If a class is present in more than one bean archive, then non defined behavior will occur. You may have different
+behaviors with different CDI implementations. In one word: avoid this case at all cost!
+
 
 === Writing your minimal CDI application
 
-* beans.xml with all
-* Bootstrapping Weld
+Now that we have gone through the complex rules of making a Java archive a bean archive in the CDI sense, what about
+building a first, simple bean archive?
+
+==== The content of the `beans.xml` file
+
+First, we need a `beans.xml` file. We have talked a lot about where to put this file so that our CDI application will
+ work, but we still need to write such a file.
+
+The `beans.xml` is a very simple XML file. Let us see a first example.
+
+[[app-listing]]
+[source,xml]
+.A first beans.xml file for CDI 1.0
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                           http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+</beans>
+
+
+It is indeed a very classical XML file. The namespace is `http://java.sun.com/xml/ns/javaee` and the schema location is `http://java.sun.com/xml/ns/javaee/beans_1_0.xsd`.
+
+Be careful, because between version 1.0 and 1.1 something odd happened: the namespace changed and the location of the
+ XML schema changed also. Let us have a look at those new values right now.
+
+[[app-listing]]
+[source,xml]
+.A second beans.xml file for CDI 1.1 and CDI 1.2
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                           http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd">
+</beans>
+
+
+So if you need to migrate a CDI 1.0 application to a more recent version, you know what to do with your `beans.xml`
+files.
+
+Now you could think that the XML Schema for CDI 1.2 is `beans_1_2.xsd` at the same address than the previous version.
+ In fact there is no such `beans_1_2.xsd` schema. CDI 1.2 is a maintenance release, the schema has not been modified.
+
+
+==== Version and bean discovery mode
+
+The root element of this file is `beans`. In CDI 1.0 it has no attribute defined. This changed in CDI 1.1, where two
+attributes were introduced:
+
+* `version`, set to 1.1 by default;
+* `bean-discovery-mode`, which is mandatory.
+
+This `bean-discovery-mode` may take three values: `annotated`, `all` and `none`. Let us see that in details.
+
+The bean discovery mode `none` means that no type from this archive will be analyzed. This bean archive is
+just empty. You may wonder what is the purpose of adding a `beans.xml` file in an archive to make it a bean archive,
+and then to tell CDI: dont do anything with this! There is indeed a case where we need this kind if thing. Remember
+that in web archives, you may have JAR in your `WEB-INF/lib` with `beans.xml` files in them. If you do not want them
+to be seen as bean archives, then you can put a `beans.xml` file in your `WEB-INF` directory that will override those
+ local `beans.xml` files. And in this global `beans.xml` file, you can set the bean discovery mode to none to shut
+ down everything.
+
+The bean discovery mode `annotated` means that only the annotated types will be considered by CDI. This is the
+recommended value. It just works as you expect it. All your annotated beans will be taken into account by the CDI
+container.
+
+The last mode is the `all` mode and you should be very careful with it, because all the types in the archive will be
+used by the CDI container. So if you have crafted your archive very carefully and you know that indeed all your types
+ are CDI types, then you can use it. In all the other cases, use the `annotated` mode.
+
+There are no other attributes added to this `beans` element. We will see the subelements later in this chapter.
+
+==== Bootstrapping Weld
 
 === Defining a first CDI bean: choose your bean type
 
