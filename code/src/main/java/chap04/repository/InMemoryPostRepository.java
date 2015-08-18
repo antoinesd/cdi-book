@@ -8,14 +8,7 @@ import java.util.Map;
 public class InMemoryPostRepository implements PostRepository {
 
     private long id = 0L;
-    private Map<Long, Post> posts;
-
-    public InMemoryPostRepository() {
-    }
-
-    public InMemoryPostRepository(int size) {
-        posts = new HashMap<>(size);
-    }
+    private Map<Long, Post> posts = new HashMap<>();
 
     @Override
     public void save(Post post) {
