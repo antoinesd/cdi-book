@@ -1,4 +1,6 @@
+:projectdir: ../..
 :sourcedir: ../../code/src/main/java
+:testdir: ../../code/src/test/java
 
 [[chap02-getting-started]]
 == Getting started
@@ -519,7 +521,7 @@ First, let's start by how we added Arquillian engine in the project `pom.xml:`
 .Micro blogging `pom.xml` file with Arquillian dependencies
 [source, xml]
 ----
-include::{codedir}/pom.xml[]
+include::{projectdir}/pom.xml[]
 ----
 <1> To support unit testing we have to add `Junit` framework as a dependency
 <2> The Arquillian Junit container allow Arquillian to be used in Junit tests
