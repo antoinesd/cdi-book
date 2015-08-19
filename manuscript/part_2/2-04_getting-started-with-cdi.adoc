@@ -199,7 +199,21 @@ Bootstraping Weld is done by using the following pattern. We have written it in 
 .A minimal code to bootstrap Weld 2
 [source,java]
 ----
-include::{sourcedir}/chap04/BootstrapingWeld.java[]
+package chap04;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
+public class BootstrapingWeld {
+
+    public static void main(String... args) {
+
+        Weld weld = new Weld();
+        WeldContainer container = weld.initialize();
+
+        weld.shutdown();
+    }
+}
 ----
 
 Of course this code does not do much. It basically creates the Weld container, and shuts it down.
@@ -348,8 +362,10 @@ public class BootstrapingWeld {
         Weld weld = new Weld();
         WeldContainer container = weld.initialize();
 
-        PostRepository repository = container.instance().select(PostRepository.class).get(); // <1>
-        PostService postService = container.instance().select(PostService.class).get();
+        PostRepository repository =
+            container.instance().select(PostRepository.class).get(); // <1>
+        PostService postService =
+            container.instance().select(PostService.class).get();
 
         postService.post(new Post()); // <2>
 
@@ -369,9 +385,191 @@ Let us browse through all what CDI did for us.
 * It was able to set the annotated field with an instance of the right interface, once again, without any help from us.
 * When we ran our example, it just worked as expected.
 
-All these we barely any configuration. 
+All these we barely any configuration.
+
+=== Producing home made beans
+
+We can go in several directions from this point. Let us choose one: how can we tell CDI that is should not rely on the default instantiation of a bean to create an instance. Suppose we have a special process that we want to use to create our own instance of a bean.
+
+This is where the notion or producer is used. CDI knows that it should set the value of a field because it is annotated with the `@Inject` annotation. We can also use a `@Produce` annotation to tell it how to create an instance of a given bean.
+
+Let us show this on an example. Suppose that our `InMemoryPostRepository` needs a parameter to be built: namely the size of the underlying `HashMap` used to save our posts.
+
+[[app_listing]]
+.The `InMemoryPostRepository` class with no empty constructor
+[source,java]
+----
+public class InMemoryPostRepository implements PostRepository {
+
+    private Map<Long, Post> posts;
+
+    public InMemoryPostRepository(int size) {
+        posts = new HashMap<>(size);
+    }
+
+    // the rest of the class is not touched
+----
+
+The main difference between this version of this class and the previous one is that CDI cannot build it on its own. Why? Because the empty constructor that was present in the previous version is not here anymore. So CDI cannot rely on the Java reflection API to build instances of this bean. And indeed, if we run our example again, we get this error message.
+
+[[app_listing]]
+.Error met with a bean with no empty constructor
+[source,txt]
+----
+Exception in thread "main" org.jboss.weld.exceptions.DeploymentException: WELD-001408: Unsatisfied dependencies for type PostRepository with qualifiers @Default
+  at injection point [BackedAnnotatedField] @Inject private chap04.service.PostServiceImpl.postRepository
+  at chap04.service.PostServiceImpl.postRepository(PostServiceImpl.java:0)
+----
+
+Since CDI could not find a way to build an instance of the `PostRepository` type, it could not build the `PostService` neither.
+
+How can we solve that? In fact there are three ways of solving it.
+
+==== Annotated constructor
+
+First, we can annotate the constructor CDI should use with the `@Inject` annotation.
+
+[[app_listing]]
+.Annotating the constructor of the `InMemoryPostRepository` class
+[source,java]
+----
+public class InMemoryPostRepository implements PostRepository {
+
+    private Map<Long, Post> posts;
+
+    @Inject
+    public InMemoryPostRepository(int size) {
+        posts = new HashMap<>(size);
+    }
+
+    // the rest of the class is not touched
+----
+
+Of course, if our class has several constructors, only one should be annotated. If more than one constructor is annotated, then CDI will raise an error.
+
+CDI will then call this constructor to build an instance of `InMemoryPostRepository`, and will need values for the parameters of this constructor. These parameters will have to be injected, so CDI will look for values for them. If it cannot find ways to build them, an error will be raised. The example we just wrote is very naive, and we will have trouble to make it work, because CDI will have trouble finding an `int` value to inject in this constructor. So in this particular case, using an annotated constructor is certainly not the best way to go! Do not worry, we are going to see others.
+
+==== Using a producer
+
+Providing a _producer_ to tell CDI how to create the missing instance is another possibility, and in our case, the right one.
+
+What is a `Producer`? It is just an annotation put on something CDI will use to create an instance of a type. Here CDI needs to create an instance of the `PostRepository` type, so we need to annotate such a way.
+
+The `@Producer` annotation can be put on several elements of a class.
+
+* It can be put on a method. This method should return an instance of the right type. CDI will call this method to get that instance and use it.
+* It can also be put on a field. This time, CDI will simply read that field to get that instance.
+
+Let us see examples of those two cases.
+
+==== Producer methods
+
+So let us add the following class to our example.
+
+[[app_listing]]
+.The `PostRepositoryProducer` class
+[source,java]
+----
+package chap04.producer;
+
+import chap04.repository.InMemoryPostRepository;
+import chap04.repository.PostRepository;
+
+import javax.enterprise.inject.Produces;
+
+public class PostRepositoryProducer {
+
+    @Produces // <1>
+    public PostRepository buildPostRepository() {
+        return new InMemoryPostRepository(16);
+    }
+}
+----
+<1> Putting the `@Producer` annotation here informs CDI that it should call this method to build instances of `PostRepository`
+
+If we run our example again, the error message is gone.
+
+Note that a producer method (that is, a method annotated with `@Produces`) is one way among others for CDI to build a bean. If we add an explicit no-arg constructor to our `InMemoryPostRepository` class, then CDI will have two ways to build an instance of `PostRepository`, leading to an ambiguous dependency, and another error. We will see ways of dealing with this later in this chapter
+
+A producer method can be nearly any kind of method. It can be static or non-static, private, protected, public or package protected. It should be _seen_ by CDI, so it should be a method of a managed bean, or a method of an EJB.
+
+A producer method might return a null value. Of course in that case, odd things may happen. This is still possible, and handled by CDI. There are restrictions though, that we will see later in this book.
+
+A producer method may have parameters. Since this method is called by CDI, those parameter have to be injected. So all the parameters of a producer method are treated as injection points when CDI calls this method.
+
+==== Producer fields
+
+The `@Produces` annotation can also be put on a field. This may looks odd, because a method call may look so much logical! There is in fact one case where it is extremely useful: the case where this field is itself injected. Let us look at the following example.
+
+[[app_listing]]
+.An injected producer field
+[source,java]
+----
+@Stateless
+public class PostEJB {
+
+    @PersistenceContext(unitName="PostPersistenceUnit") @Produces
+    private EntityManager entityManager;
+
+    // rest of the class
+}
+----
+
+The field `entityManager` if an EJB field, due to the `@Stateless` annotation. So the Java EE container will set the `entityManager` field prior to any method call on this EJB. It is in fact the recommended way of getting a JPA entity manager in a Java EE context.
+
+The fact is: we can use this field to create a CDI producer, just by putting the `@Produces` annotation on this field.
+
+This pattern is extremely useful to add any kind of Java EE resource (whether it is a datasource, a web service, a JMS queue) to a CDI application and use it directly.
+
+This pattern can be used in any application: an injected field can become itself a producer for other types.
 
 === Defining a first CDI bean: choose your bean type
+
+Probably the first question that comes to mind at this point is the following: what happens if I have more that one implementation for a given interface? CDI will probably be in trouble to choose from those implementations. It is quite easy to test that, so let us do it, and write another implementation for our repository. This time we will not repeat the mistake we did: it will be concurrent aware!
+
+[[app_listing]]
+.A second, concurrent aware, implementation of the `PostRepository` interface
+[source,java]
+----
+package chap04.repository;
+
+import chap04.model.Post;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class InMemoryConcurrentPostRepository implements PostRepository {
+
+    private AtomicLong id = new AtomicLong(0L);
+    private ConcurrentMap<Long, Post> posts = new ConcurrentHashMap<>();
+
+    @Override
+    public void save(Post post) {
+        long postId = id.getAndIncrement();
+        posts.put(postId, post);
+    }
+}
+----
+
+What happens if we run the same code, without any other modification? Well, it does not work too well. In fact, an error is raised, which is the following.
+
+[[app_listing]]
+.Error raised for two implementations of the same interface
+[source]
+----
+Exception in thread "main" org.jboss.weld.exceptions.DeploymentException: WELD-001409: Ambiguous dependencies for type PostRepository with qualifiers @Default
+  at injection point [BackedAnnotatedField] @Inject private chap04.service.PostServiceImpl.postRepository
+  at chap04.service.PostServiceImpl.postRepository(PostServiceImpl.java:0)
+  Possible dependencies:
+  - Managed Bean [class chap04.repository.InMemoryPostRepository] with qualifiers [@Any @Default],
+  - Managed Bean [class chap04.repository.InMemoryConcurrentPostRepository] with qualifiers [@Any @Default]
+----
+
+There are details that we cannot understand yet in this error message, we will see all these later in this part. But in a nutshell, CDI complains because it sees two possible implementations for the `PostRepository` dependency, and has no rule on which one to choose from.
+
+How can we explain to CDI which bean to choose from when more than one type (here `InMemoryPostRepository` and `InMemoryConcurrentPostRepository`) matches the type we need, namely `PostRepository`? This is what we are going to describe now.
+
 
 
 * @Produces / @Inject
