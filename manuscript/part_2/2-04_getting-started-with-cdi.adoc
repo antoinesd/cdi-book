@@ -408,6 +408,7 @@ public class InMemoryPostRepository implements PostRepository {
     }
 
     // the rest of the class is not touched
+}
 ----
 
 The main difference between this version of this class and the previous one is that CDI cannot build it on its own. Why? Because the empty constructor that was present in the previous version is not here anymore. So CDI cannot rely on the Java reflection API to build instances of this bean. And indeed, if we run our example again, we get this error message.
