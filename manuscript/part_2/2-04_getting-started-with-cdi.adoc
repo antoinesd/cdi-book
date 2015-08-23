@@ -676,13 +676,13 @@ public @interface DBPost {
 
 A qualifier might look a little tricky to create. The use of this meta-annotation is not a very common pattern. The fact is: CDI relies a lot on annotations, and uses this pattern in many places. So this is the right time to get used to it. In fact it is quite easy to follow. Just create the annotation you need, add this special CDI annotation to it, `@Qualifier` in our example, and that is all you need to do.
 
-===== Qualifiers with annotation members
+===== Qualifiers with attributes
 
-It is legal for a qualifier to define annotation members. In that case, CDI will compare the two annotations along with the values of their members. Those values are compared with their respective `equals()` method, as we expected.
+It is legal for a qualifier to define attributes. In that case, CDI will compare the two annotations along with the values of their attributes. Those values are compared with their respective `equals()` method, as we expected.
 
-A qualifier may also define members that are not taken into account in the comparison. In this case, this member should be annotated with `@Nonbinding`.
+A qualifier may also define attributes that are not taken into account in the comparison. In this case, this attribute should be annotated with `@Nonbinding`.
 
-In the case an annotation member type is an array, then it should be annotated with `@Nonbinding`. If not, then non predictable or implementation dependent result will occur.
+In the case an annotation attribute type is an array, then it should be annotated with `@Nonbinding`. If not, then non predictable or implementation dependent results will occur.
 
 Let us see that on an example. We could have created one annotation `@DB` with a default value to tell from the user database and the post database.
 
@@ -744,7 +744,7 @@ public class PostAndUserEJB {
     // rest of the class
 }
 ----
-<1> We do not need to tell that his member is the `value()` attribute, due to the way annotations work in Java
+<1> We do not need to tell that its attribute is the `value()` attribute, due to the way annotations work in Java
 <2> Since we set a non-default value for the `comment()` attribute, we need to tell that `DBType.USER` is the value of the `value` attribute
 
 ===== Adding a qualifier on a producer
