@@ -395,13 +395,13 @@ Let us see more details about this `@Inject` annotation right now, because we ar
 
 The first example we saw is probably the simplest one: putting `@Inject` on a field. CDI will find how to build a bean of the right type to match the one of this field, create an instance of this bean, and store it in the field. Easy and simple.
 
- There are two other possibilities.
+There are two other possibilities.
 
- The first one is to put this `@Inject` annotation on a constructor. In this case, CDI will use that constructor to build an instance of this bean. All the parameters of this constructor (it can have more than one) will have to be resolved by CDI. In other words, CDI will have to build instances of the right type for each of those parameters. We will see an example of such a case, with more details. Let us just say here that injecting through a constructor can only be done on one constructor among all the constructors this class may have.
+The first one is to put this `@Inject` annotation on a constructor. In this case, CDI will use that constructor to build an instance of this bean. All the parameters of this constructor (it can have more than one) will have to be resolved by CDI. In other words, CDI will have to build instances of the right type for each of those parameters. We will see an example of such a case, with more details. Let us just say here that injecting through a constructor can only be done on one constructor among all the constructors this class may have.
 
- And the second one is to put the `@Inject` annotation on a method. The simplest case is a setter method. In this case, it really looks like annotating the corresponding field, the only difference being: in that case CDI calls the setter instead of setting the value of this field directly using the Java Reflection API. But it is not the only case supported by CDI. In fact, any method with any number of parameters can be annotated by `@Inject`, thus becoming an _initializer_ method. As it is the case for the annotated constructor, all the parameters of the this method have to be resolved and injected.
+And the second one is to put the `@Inject` annotation on a method. The simplest case is a setter method. In this case, it really looks like annotating the corresponding field, the only difference being: in that case CDI calls the setter instead of setting the value of this field directly using the Java Reflection API. But it is not the only case supported by CDI. In fact, any method with any number of parameters can be annotated by `@Inject`, thus becoming an _initializer_ method. As it is the case for the annotated constructor, all the parameters of the this method have to be resolved and injected.
 
- A given class may have any number of initializer methods, all of them will be called by CDI as part of the bean initialization process. Note that an initializer method can be private, protected, public or package protected. It cannot be abstract, and certainly not static.
+A given class may have any number of initializer methods, all of them will be called by CDI as part of the bean initialization process. Note that an initializer method can be private, protected, public or package protected. It cannot be abstract, and certainly not static.
 
 So in a nutshell, this `@Inject` annotation can be put on three elements:
 
@@ -409,7 +409,7 @@ So in a nutshell, this `@Inject` annotation can be put on three elements:
 * one constructor of the class
 * any number of methods (including zero), that become _initializer_ methods.
 
-In all cases, CDI needs to resolve the elements been injected. If it cant, then an error will be raised. 
+In all cases, CDI needs to resolve the elements been injected. If it cant, then an error will be raised.
 
 === Producing home made beans
 
