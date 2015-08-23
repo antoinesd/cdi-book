@@ -525,7 +525,7 @@ This pattern is extremely useful to add any kind of Java EE resource (whether it
 
 This pattern can be used in any application: an injected field can become itself a producer for other types.
 
-=== Defining a first CDI bean: choose your bean type
+=== Defining a first CDI bean: choose your bean type using Qualifiers
 
 Probably the first question that comes to mind at this point is the following: what happens if I have more that one implementation for a given interface? CDI will probably be in trouble to choose from those implementations. It is quite easy to test that, so let us do it, and write another implementation for our repository. This time we will not repeat the mistake we did: it will be concurrent aware!
 
@@ -601,7 +601,7 @@ public class PostAndUserEJB {
 }
 ----
 
-If we use those two fields as CDI producers, we will get an error, since the type of those fields is the same.
+If we use those two fields as CDI producers, we will get an error, since the type of those fields is the same: `EntityManager`.
 
 We need to add semantic, telling CDI exactly what are those fields: the first one deals with posts, and the second one with users. This is exactly what qualifiers are for.
 
@@ -624,7 +624,7 @@ public class PostAndUserEJB {
 }
 ----
 
-On this second example, we put the `@Produces` annotation on each field, making them CDI produces. Along with the `@Produces` annotation, we add another annotation `@DBPost` and `@DBUser`. Those annotations are qualifiers, and CDI uses them to tell `postEntityManager` from `userEntityManager`.
+On this second example, we put the `@Produces` annotation on each field, making them CDI produces. Along with the `@Produces` annotation, we add another annotation `@DBPost` and `@DBUser`. Those annotations are qualifiers, and CDI uses them to tell `postEntityManager` from `userEntityManager`. We will see in a moment how these annotations are built.
 
 The rest is very easy to guess: we use the exact same way to qualify an injection point, so that CDI can tell which bean it should put in that field.
 
@@ -676,6 +676,76 @@ public @interface DBPost {
 
 A qualifier might look a little tricky to create. The use of this meta-annotation is not a very common pattern. The fact is: CDI relies a lot on annotations, and uses this pattern in many places. So this is the right time to get used to it. In fact it is quite easy to follow. Just create the annotation you need, add this special CDI annotation to it, `@Qualifier` in our example, and that is all you need to do.
 
+===== Qualifiers with annotation members
+
+It is legal for a qualifier to define annotation members. In that case, CDI will compare the two annotations along with the values of their members. Those values are compared with their respective `equals()` method, as we expected.
+
+A qualifier may also define members that are not taken into account in the comparison. In this case, this member should be annotated with `@Nonbinding`.
+
+In the case an annotation member type is an array, then it should be annotated with `@Nonbinding`. If not, then non predictable or implementation dependent result will occur.
+
+Let us see that on an example. We could have created one annotation `@DB` with a default value to tell from the user database and the post database.
+
+[[app_listing]]
+.Defining the `DBType` enumeration
+[source,java]
+----
+public enum DBType {
+
+    POST, USER
+}
+----
+
+[[app_listing]]
+.Defining the `DB` qualifier, with a `DBype` attribute
+[source,java]
+----
+import javax.enterprise.util.Nonbinding;
+import javax.inject.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Qualifier // <1>
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD,
+         ElementType.FIELD,
+         ElementType.PARAMETER,
+         ElementType.TYPE})
+public @interface DB {
+
+    DBType value(); // <2>
+
+    @Nonbinding String comment() default ""; // <3>
+}
+----
+<1> The definition of this qualifier is the same as the previous one
+<2> Here we declare the `value()` attribute
+<3> And here the `comment()` attribute, which is made optional
+
+So we can now use this qualifier on the produce side in this way.
+
+[[app_listing]]
+.Redefining the entity manager producers
+[source,java]
+----
+@Stateless
+public class PostAndUserEJB {
+
+    @PersistenceContext(unitName="PostPersistenceUnit")
+    @Produces @DB(DBType.POST) // <1>
+    private EntityManager postEntityManager;
+
+    @PersistenceContext(unitName="UserPersistenceUnit")
+    @Produces @DB(value=DBType.USER, comment="This is the User DB") // <2>
+    private EntityManager userEntityManager;
+
+    // rest of the class
+}
+----
+<1> We do not need to tell that his member is the `value()` attribute, due to the way annotations work in Java
+<2> Since we set a non-default value for the `comment()` attribute, we need to tell that `DBType.USER` is the value of the `value` attribute
 
 ===== Adding a qualifier on a producer
 
@@ -702,9 +772,9 @@ public class InMemoryConcurrentPostRepository implements PostRepository {
 
 The two annotations `@SimpleRepository` and `@ConcurrentRepository` are two qualifiers that CDI uses to tell those two implementations. Using them on the injection points will tell CDI which one to use on which place.
 
-===== The case of the injected constructor
+===== Qualifiers on the injected constructor
 
-We also saw the case of a CDI bean that has no empty constructor, due to the presence of one or more constructors with arguments. We saw that one of those constructors can be annotated with `@Inject`, allowing CDI to use this constructor to build this bean using this constructor. And at last, we saw that, in this case, all the parameters of this constructor are injected, since CDI needs correct values to call this constructor.
+We also saw the case of a CDI bean that has no empty constructor, due to the presence of one or more constructors with arguments. We saw that one of those constructors can be annotated with `@Inject`, allowing CDI to use this constructor to build this bean using this constructor. And at last, we saw that, in this case, all the parameters of this constructor are injected by CDI, since it is CDI itself that calls this constructor.
 
 We do not need to annotate those parameters with `@Inject`, since this is the default CDI behavior. But we can put qualifiers on them. CDI will use those qualifiers to tell which bean it should inject. The pattern is the following.
 
@@ -726,8 +796,9 @@ public class PostServiceImpl implements PostService {
 <1> Tells CDI that it should use this constructor to create an instance of `PostService`
 <2> Tells CDI to use the `InMemoryConcurrentPostRepository` bean to call this constructor
 
-
 ===== Adding a qualifier on an injection point
+
+Any number of qualifiers can be added on a CDI injection point. CDI will look for a bean that matches all the present qualifiers. In no bean, or more than one bean matches the definition, then an error will be raised.
 
 ==== Existing qualifiers
 
