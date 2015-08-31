@@ -1,4 +1,4 @@
-:sourcedir: ../../code/src/main/java
+include::../header.adoc[]
 
 [[chap02-getting-started]]
 == Getting started
@@ -32,58 +32,7 @@ This set of posts is called user's timeline.
 
 We could build a simple schema of such an application like this:
 
-.basic micro-blogging example
-[plantuml, generated_chap01-1, svg]
-----
-@startuml
-
-
-
-PostService ..> UserRepository : Uses
-PostService ..> PostRepository : Uses
-PostService .> NotificationService : Uses
-NotificationService <|-- WebSocketNotificationService
-UserRepository <|-- JpaUserRepository
-PostRepository <|-- JpaPostRepository
-
-
-
-class PostService{
-    +List<Post> getTimeLine(User)
-    +postMessage(User, Post)
-}
-
-interface NotificationService{
-    notifyUsers(List<User>, Post)
-}
-
-class WebSocketNotificationService{
-    +notifyUsers(List<User>, Post)
-    -RemoteEndPoint getEndPoint()
-}
-
-interface UserRepository{
-    List<User> findFollowers(User)
-}
-
-interface PostRepository{
-    Post savePost(User, Post)
-    List<Post> getAllPostFromUser(User)
-}
-
-class JpaUserRepository{
-    +List<User> findFollowers(User)
-    -EntityManager getEntityManager()
-}
-
-class JpaPostRepository{
-    +Post savePost(User, Post)
-    +List<Post> getAllPostFromUser(User)
-    -EntityManager getEntityManager()
-}
-
-@enduml
-----
+include::1-02_schema_microblogging.adoc[]
 
 The `PostService` class is the main service entry point.
 For this class we can get the timeline and submit a new post for a given user.
