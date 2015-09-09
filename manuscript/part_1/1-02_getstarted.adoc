@@ -235,7 +235,7 @@ With this feature, a bean can send a notification to unknown bean at development
 [[tools]]
 === Tools used in this book
 
-As the world of Java IDE is moving rather fast (roughly a new major version each year), we decided to focus the example on the book on command line tools.
+As the world of Java IDE (Integrated Development Environment) is moving rather fast (roughly a new major version each year), we decided to focus the example on the book on command line tools.
 
 In addition to JDK 8, these tools are:
 
@@ -250,6 +250,7 @@ This choice has many advantages:
 * this tools are commons to most professional development environment, so our example are also ready to be added to your continuous integration solution
 
 This said, we recommend that you use an IDE to work on our example, but you are free to choose the IDE that suits your need.
+As the command line tools we use in the book are perfectly integrated with the major Java IDE, there won't be any issue to use these tools and your IDE.
 In <<ide_support>> you'll get all the information to choose the best IDE for you.
 
 Now let's discover the tools used all along  this book. 
@@ -500,7 +501,7 @@ include::{testdir}/chap02/cdi/PostServiceTest.java[tags=snippets]
 <3> here we build the archive by adding all the class in the `chap02` package
 <4> and a `beans.xml` to be sure that CDI will be activated in this archive
 <5> the arquillian nature of the test allows us to inject CDI beans in test class
-<6> eventually we can use the injected beans to initiate code and test the ouctome.
+<6> eventually we can use the injected beans to initiate code and test the outcome.
 
 ===== To learn more on Arquillian
 
@@ -516,7 +517,178 @@ Yet Arquillian is a very interesting topic, if you want to learn more about it c
 [[installation]]
 === Installing your environment
 
+As we already said, the minimum tool requirement to follow the book example will be Maven.
+As maven needs a java compiler, you'll first need to install a the Java Development kit (JDK).
+
+==== Install Java 8.x
+
+CDI implementations and all the software used in this book support both Open JDK and Oracle JDK 8.x.
+
+Both JDK use the same code base (Oracle JDK is built upon Open JDK), the difference between both comes mainly from extra tools in Oracle Version.
+
+Installing Java will depend on your operating system.
+
+===== Windows and Mac OS X
+
+The simplest JDK to install on windows or Mac OS X is the one provided by Oracle.
+Go to http://www.oracle.com/technetwork/java/javase/downloads, click on the Java Download button.
+
+On the next screen choose the Java SE Development Kit matching your platform.
+You may also need to Accept (and thus read) the Oracle License Agreement before downloading the installer.
+
+Installation is a classical executable (a dmg file containing an executable for Mac OS X) so the installation is quite straight forward.
+
+Should you encounter issues during the process, go back to the download page http://www.oracle.com/technetwork/java/javase/downloads and check the _Installation Instructions_ link.
+
+===== Linux
+
+While it's possible to install Oracle JDK under Linux (check the _Installation Instructions_ link on http://www.oracle.com/technetwork/java/javase/downloads if you want to do so), you might prefer install Open JDK packaged for your linux distribution.
+
+
+By doing that you'll be sure that all required dependencies for Java are also install by the process.
+
+====== Fedora, Red Hat enterprise Linux, Oracle Linux and CentOS
+
+Since version 22 Fedora uses `dnf` as package manager.
+To install Open JDK 8 you'll have to issue the following command:
+
+
+[source, console]
+----
+$ sudo dnf install java-1.8.0-openjdk
+----
+
+Before version 22 and on RHEL/CentOS you'll have to use `yum` package manager
+
+[source, console]
+----
+$ sudo yum install java-1.8.0-openjdk
+----
+
+====== Debian, Unbuntu and Linux Mint
+
+For these distribution you'll use the `apt` package manager:
+
+[source, console]
+----
+$ sudo apt-get install openjdk-8-jdk
+----
+
+==== Install Maven 3.x
+
+Maven is a java executable, so its only requirement is a JDK and the fact that the `JAVA_HOME` environment variable is configured to the proper path.
+
+the more straightforward way to install Maven is to download it from https://maven.apache.org/download.cgi and follow the install instruction on the page https://maven.apache.org/install.html
+ 
+For Linux or Mac OS X you may prefer install it from your package manager
+
+===== Linux
+
+Depending your distribution you'll use `yum`, `fdn` or `apt`
+
+On Debian, Ubuntu or Linux Mint:
+
+[source, console]
+----
+$ sudo apt-get install maven
+----
+
+On Fedora (before version 22), RHEL, Oracle Linux or CentOS:
+
+[source, console]
+----
+$ sudo yum install maven
+----
+
+On Fedora from version 22 you may use:
+
+[source, console]
+----
+$ sudo fdn install maven
+----
+
+===== Mac OS X
+
+On Mac OS X you may use package manager like HomeBrew or MacPorts.
+Depending your solution you may easily install maven with
+
+[source, console]
+----
+$ brew install maven
+----
+
+or
+
+[source, console]
+----
+$ sudo port install maven3
+----
+
 [[ide_support]]
-=== CDI Support in major IDE 
+=== CDI Support in major IDE
+
+As already said, the code and instruction included in this book don't depend on a given IDE.
+Yet, in your everyday work you'll probably use one of the 3 major IDE available for Java development.
+
+In this section we present you briefly these IDE and the helpers they include to make your life easier when developing CDI application from scratch.
+Keep in mind that even if having these IDE or IDE extension can help you in your day to day work, there usage is not mandatory to develop CDI application.
+
+==== Eclipse with JBoss Tools
+
+Eclipse is probably the most used Java IDE.
+
+This Open Source IDE is freely available on http://eclipse.org.
+Out of the box Eclipse doesn't provide any support for CDI, that's you'll also need JBoss Tools to add this support to Eclipse.
+ 
+JBoss Tools is a collection of free Eclipse plugins that add a lot of interesting features to the IDE.
+CDI support is one of them, but you'll also get helpers for Arquillian and an enhance support for Maven.
+
+As explained on http://tools.jboss.org, you may choose to install JBoss Tools on an existing Eclipse install or directly download JBoss Developer Studio that include Eclipse and JBoss Tools in a single installer.
+
+JBoos Tools adds a lot of helpers to develop CDI application:
+
+* *Wizards* that provide an easy way to create specific CDI elements like bean, interceptor, decorator, qualifier or annotation literal
+* *Validations* that helps you prevent CDI errors at deployment time.
+For instance it can alert you if you define an injection point with multiple matching beans (ambiguous dependency).
+* *Hyperlink Navigation* that allow you to jump from an injection point to the matching bean or from an observer to the corresponding event
+* *EL support* that gives you code completion in JSF or JSP page to point to an existing CDI Bean and the link between the page and the bean code.
+
+==== Oracle NetBeans
+
+NetBeans is also a very popular IDE.
+
+As Eclipse it is an open source software build with Java.
+NetBeans can be freely downloaded at https://netbeans.org
+
+Unlike Eclipse NetBeans doesn't need extra plugins or extension to have a first class citizen CDI support.
+Roughly the features are similar to the ones included in Eclipse:
+
+* *Wizards* that provide an easy way to create specific CDI elements like bean, interceptor, decorator, qualifier or annotation literal
+* *Validations* that helps you prevent CDI errors at deployment time.
+For instance it can alert you if you define an injection point with multiple matching beans (ambiguous dependency).
+* *Hyperlink Navigation* that allow you to jump from an injection point to the matching bean or from an observer to the corresponding event
+* *EL support* that gives you code completion in JSF or JSP page to point to an existing CDI Bean and the link between the page and the bean code.
+
+
+==== IntelliJ IDEA
+
+IDEA is less popular than the previous two IDE.
+Mainly because it is close source and not free software.
+Yet a lot of confirmed developers choose it because it brings a lot of extra tools to work around the code that others don't have.
+
+Recently, IntelliJ started to provide a community edition for IDEA which is open source and free, so everybody can test it without paying for it.
+
+Unfortunately, the community edition doesn't include CDI support, so if you want to get CDI helpers with IDEA you'll have to pay for the ultimate edition.
+
+You'll find all the information on https://www.jetbrains.com/idea/
+
+CDI integration in IDEA is slightly less advanced than in the 2 others IDE.
+As wizard are not in the IDE philosophy, you won't get them, but all the other features are there:
+
+* *Validations* that helps you prevent CDI errors at deployment time.
+For instance it can alert you if you define an injection point with multiple matching beans (ambiguous dependency).
+* *Hyperlink Navigation* that allow you to jump from an injection point to the matching bean or from an observer to the corresponding event
+* *EL support* that gives you code completion in JSF or JSP page to point to an existing CDI Bean and the link between the page and the bean code.
+
 
 
