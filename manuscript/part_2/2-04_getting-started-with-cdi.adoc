@@ -771,6 +771,28 @@ public class PostAndUserEJB {
 <1> We do not need to tell that its attribute is the `value()` attribute, due to the way annotations work in Java
 <2> Since we set a non-default value for the `comment()` attribute, we need to tell that `DBType.USER` is the value of the `value` attribute
 
+==== Injecting by type, injecting by qualifier
+
+CDI has in fact two ways of telling which bean should be injected where.
+
+It can discriminate beans based on their Java type. But soon, you will discover that this is not enough. We saw it on the entity manager example. On one hand, we have the `EntityManager` type, and on the other hand we have different databases that cannot be discriminated solely on the type of the injected object.
+
+So we need more information, and this information is brought by qualifiers. A qualifier can be seen as an element that is there to add the piece of information we need along with the type of a bean. It tells CDI that this injection point needs an `EntityManager` that points to our user database for instance.
+
+==== Qualifiers of a bean
+
+The notion of qualifier is of course linked to the notion of bean. We say, in the CDI context, that a bean has qualifiers. But this is quite an abstract notion, because we never really see this bean. What we see is where and how it is produced, and where and how it is used, or injected.
+
+In fact, a bean has all the qualifiers defined on its producer method, plus a number of qualifiers CDI adds with certain default rules that we are going to see. This defines the qualifiers possessed by a bean.
+
+And on the other hand, when we use a bean, that is, when a bean is injected in our code, this qualifier is bound to have a set of qualifiers defined on the injection point.
+
+So this notion of qualifier can be seen from three points of view:
+
+* the qualifiers that a bean has
+* the qualifiers defined at the producer lever
+* the qualifiers defined at the injection point
+
 ===== Adding a qualifier on a producer
 
 We saw that a producer could be a method or a field, thus adding a qualifier on those two elements makes perfect sense.
@@ -822,20 +844,44 @@ public class PostServiceImpl implements PostService {
 
 ===== Adding a qualifier on an injection point
 
-Any number of qualifiers can be added on a CDI injection point. CDI will look for a bean that matches all the present qualifiers. In no bean, or more than one bean matches the definition, then an error will be raised.
+Any number of qualifiers can be added on a CDI injection point. CDI will look for a bean that matches all the defined qualifiers. If no bean, or more than one bean matches the definition, then an error will be raised. Of course, this bean can have more qualifier than needed to be injected. The set of all the qualifiers a bean has has to be a subset of the needed qualifiers.
 
 ==== Existing qualifiers
 
 CDI defines four qualifiers:
 
+* `@Named`
+* `@New`
 * `@Default`
 * `@Any`
-* `@New`
-* `@Named`
+
+
+===== The `@Named` qualifier
+
+This qualifier has a special status, as giving a name to a bean is mandatory for certain categories of beans in the Java EE world. But we can also give names to our beans outside of this context, just for the sake of the readability of our code.
+
+This annotation defines a `value` attribute, which holds the name of the annotated bean.
+
+===== The `@New` qualifier
+
+This qualifier was defined in CDI 1.0, and deprecated in CDI 1.1. So you should not use it in your code, apart from using it for legacy reasons. We are not going to cover this annotation in details. Instead of injecting `@New` beans, you should inject `@Dependent` beans.
+
+The `@New` annotation can take a default attribute which type is a class. This class is the one to instantiate to inject the annotated bean. If the value attribute is not specified, then the class of the bean will be instantiated.
 
 ===== The `@Default` qualifier
 
-This qualifier is present by default on all producers, and all injection points. Thus the error message we saw when we created ambiguous injection points and producers.
+CDI adds the `@Default` qualifier on all the beans that have no qualifier. There is an exception for the `@Named` qualifier: a bean that has this qualifier will get the `@Default` qualifier also. So any producer that has no qualifier, or that has the `@Named` qualifier as its only qualifier, has this `@Default` qualifier.
+
+Adding this qualifier explicitly is perfectly legal from a pure technical point of view, but would not make a lot of sense: let CDI handle this qualifier for you.
+
+The same goes for the injection point. CDI adds the `@Default` qualifier on any injection point that defines no qualifier. The use of the `@Named` qualifier on injection points is not recommended. The `@Named` qualifier implies string-based bean identification, and this approach is not the recommended one any more.
+
+
+===== The `@Any` qualifier
+
+The `@Any` qualifier is present on all the beans CDI can handle, except for the `@New` beans that you should not use in your application. So one could think that this qualifier is useless, since it is present everywhere. It has in fact a very precise use, that we will see later, when we talk about programatic lookup.
+
+The fact that this qualifier is present on all producers explains the error message we saw when we created ambiguous injection points and producers.
 
 
 * Injection by identifier vs injecting by type
