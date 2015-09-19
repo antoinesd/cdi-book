@@ -2,6 +2,7 @@ package chap04.repository;
 
 import chap04.model.Post;
 
+import javax.enterprise.inject.New;
 import java.util.HashMap;
 import java.util.Map;
 
