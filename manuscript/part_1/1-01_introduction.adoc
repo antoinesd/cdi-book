@@ -1,3 +1,5 @@
+include::../header.adoc[]
+
 [[chap01-introduction-to-cdi]]
 == Introduction to CDI
 

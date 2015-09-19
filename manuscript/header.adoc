@@ -1,0 +1,15 @@
+ifndef::allbook[]
+:doctype: book
+:toc: right
+:numbered:
+:sectlink:
+:sectanchors:
+:sectid:
+:data-uri:
+:icons: font
+:source-language: java
+:imagesdir: ../../images
+:codedir: ../../code
+:sourcedir: {codedir}/src/main/java
+:testdir: {codedir}/src/test/java
+endif::allbook[]

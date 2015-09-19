@@ -1,0 +1,52 @@
+.basic micro-blogging example
+[plantuml, generated_chap02-1, svg]
+----
+@startuml
+
+
+
+PostService ..> UserRepository : Uses
+PostService ..> PostRepository : Uses
+PostService .> NotificationService : Uses
+NotificationService <|-- WebSocketNotificationService
+UserRepository <|-- JpaUserRepository
+PostRepository <|-- JpaPostRepository
+
+
+
+class PostService{
+    +List<Post> getTimeLine(User)
+    +postMessage(User, Post)
+}
+
+interface NotificationService{
+    notifyUsers(List<User>, Post)
+}
+
+class WebSocketNotificationService{
+    +notifyUsers(List<User>, Post)
+    -RemoteEndPoint getEndPoint()
+}
+
+interface UserRepository{
+    List<User> findFollowers(User)
+}
+
+interface PostRepository{
+    Post savePost(User, Post)
+    List<Post> getAllPostFromUser(User)
+}
+
+class JpaUserRepository{
+    +List<User> findFollowers(User)
+    -EntityManager getEntityManager()
+}
+
+class JpaPostRepository{
+    +Post savePost(User, Post)
+    +List<Post> getAllPostFromUser(User)
+    -EntityManager getEntityManager()
+}
+
+@enduml
+----
