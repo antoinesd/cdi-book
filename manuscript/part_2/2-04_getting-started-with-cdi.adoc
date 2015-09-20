@@ -1017,10 +1017,43 @@ public class InMemoryConcurrentPostRepository implements PostRepository, Seriali
 
 This time, the only Java type we have in the CDI Bean Type is `PostRepository`, and this is what we expect.
 
-So the `@Typed`annotation, is another annotation we have in our toolbox to select which Java type CDI gives to a bean, among the available Java types a bean has. 
+So the `@Typed`annotation, is another annotation we have in our toolbox to select which Java type CDI gives to a bean, among the available Java types a bean has.
 
 
-* @Qualifier @Typed
+=== Advanced concepts in qualifying bean
+
+There are two concepts we need to go through on the topic of the CDI Bean Type system. Those two concepts are `@Alternative` and `@Specializes`. These concepts are quite complex, but in some vey precise cases, needed in CDI applications.
+
+==== Introduction
+
+Suppose we have a working CDI application with many producers and injection points. Everything was very carefully designed and written, and the application heavily relies on qualifiers to associate producers and injection points.
+
+And for some reason, testing, debugging, you name it, we need to substitute a bean with another bean. We want to provide a class that should be used by CDI to create a given bean, wherever this bean is used in our application. This can be a real nightmare to do, especially if our application is large an complex.
+
+The solution cannot rely on adding some kind of information (qualifier for instance) on the injection points. First it would be very error prone (suppose we forget one). And it would also be very complex. This would not lead to a reliable solution, also due to the fact that an application can get an instance of a bean by programmatic lookup, a point that we have not seen yet.
+
+So the only reliable way to do that is to act on the producing side. An approach one could think of could be to create a class with the exact same Java types. The simplest way to do that is to extend the class we want to substitute and the same qualifiers to it. But by doing that, we would create an ambiguity in our CDI application, since we would define two beans with the same CDI Bean Type. We cannot add a special qualifier to it, since we would then need to add this qualifier everywhere on the injection side, a solution that we discarded.
+
+This is exactly for this kind of situation that the `@Alternative` concept has been created in CDI.
+
+==== Creating an `@Alternative` bean
+
+From a technical point of view, creating a specialized bean is really simple. We just need to add the `@Alternative` annotation where the bean is produced and we are done.
+
+===== Annotation versus XML declaration
+
+Adding an annotation is very simple, but it requires the compilation of the class where we added the annotation. We must consider two cases here.
+
+The first one is the case where this alternative class is a separate class, created for this case. Adding this annotation to this class is the natural way of doing it. If this class is a test class, it will not be deployed at runtime. If this class is some temporary class that we need to add to our application for debugging or auditing purposes, then we can put it in a separate JAR and remove that JAR when we do not need it anymore. In both cases, we do not need to recompile all our application to declare this alternative.
+
+The second case is a bit more complex. We want a class that is already in our application to become the alternative. If we decide to add this annotation to it, then we will need to recompile everything, a step that might be costly, too costly for our needs.
+
+We might come across this kind of situation quite often in Java EE applications. Another famous example is the declaration of named queries in JPA modules. You have two ways to do that: the first one is to add them using annotations, thus requiring to rebuild your application.
+
+Instead of doing it that way, we can also add the declaration of alternatives in the `beans.xml` file. Using this way, we do not need to recompile our application, we only need to reboot it.  
+
+==== Creating a `@Specializes` bean
+
 * @Alternative
 * @Specializes
 * Using @Alternative to inject mock objets
