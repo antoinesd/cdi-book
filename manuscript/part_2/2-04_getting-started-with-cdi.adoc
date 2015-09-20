@@ -956,8 +956,70 @@ The `@Any` qualifier is present on all the beans CDI can handle, except for the 
 
 The fact that this qualifier is present on all producers explains the error message we saw when we created ambiguous injection points and producers.
 
+==== Injection by identifier vs injecting by type
 
-* Injection by identifier vs injecting by type
+So at this point, we have two ways of producing and injection beans. The first one relies on the Java type system. It works very well, leads to very simple and clean code, as well as robust patterns. But as we saw, most of the time it is not precise enough, since we may want to produce several beans of different kinds, but with the same type. We saw the example of the `EntityManager`, and there are many other. Many configuration parameters of our applications are injected in various places, and they are all `String`, `int`, or other very general Java types.
+
+So CDI introduces the notion of _qualifier_ to add precision on the Java type of a bean. A qualifier is a just a simple annotation, that we can add both on the producing side, and on the injection side.
+
+The full CDI Bean Type is thus the combination of the Java types (classes and interfaces) of a given bean, and its qualifiers.
+
+In some cases, we might want to not take into account all the Java type hierarchy. For instance, we might want to add to the CDI Bean Type, only the interfaces, and not the implementing class, not the `Object` class. And even for the interfaces, some of them do not carry an relevant information for our CDI application. It might be the case for `Serializable` or `Cloneable`.
+
+The question is: can we remove some Java types that a bean has from the CDI Bean Type? It turns out that the answer is yes. We can add an annotation on the production side that we tell CDI what Java types to take into account when building the CDI Bean Type. This annotation is simply `@Typed`, and it gives the list of those Java type. Let us go back to our `InMemoryConcurrentPostRepository` example, and let us add the `Serializable` interface to its declaration.
+
+[[app_listing]]
+.The CDI Bean Type of the `InMemoryConcurrentPostRepository` class
+[source,java]
+----
+package chap04.repository;
+
+import chap04.model.Post;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class InMemoryConcurrentPostRepository implements PostRepository, Serializable {
+
+    // content of the class
+}
+----
+
+How does CDI build the CDI Bean Type of this bean?
+
+First, this class does not have any qualifier, so CDI automatically adds the `@Any` and `@Default` qualifiers to it. If we had added an explicit qualifier, then the `@Default` qualifier would not have been there.
+
+Then CDI adds the Java types: `InMemoryConcurrentPostRepository` of course, but also `Object`, as it is the case for all the beans. Then it also adds the two declared interfaces: `PostRepository` and `Serializable`.
+
+Now the question is: do we really need the `Object` type and the `Serializable` Java types? They are so general, that they do not carry much information. Having general types in our CDI Bean Type set might lead to weird errors in our applications. Suppose we forget to add a dependant JAR for instance, with some important producers in it. The error we might get is that there are too many beans with the type `Object` to inject at a given injection point. What we would like to have is an error stating that this injection point has no matching bean to inject.
+
+So we may add the `@Typed` annotation to the definition of our bean.
+
+[[app_listing]]
+.The CDI Bean Type of the `InMemoryConcurrentPostRepository` class
+[source,java]
+----
+package chap04.repository;
+
+import chap04.model.Post;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Typed(PostRepository.class)
+public class InMemoryConcurrentPostRepository implements PostRepository, Serializable {
+
+    // content of the class
+}
+----
+
+This time, the only Java type we have in the CDI Bean Type is `PostRepository`, and this is what we expect.
+
+So the `@Typed`annotation, is another annotation we have in our toolbox to select which Java type CDI gives to a bean, among the available Java types a bean has. 
+
+
 * @Qualifier @Typed
 * @Alternative
 * @Specializes
