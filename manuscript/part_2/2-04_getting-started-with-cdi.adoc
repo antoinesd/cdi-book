@@ -1034,11 +1034,26 @@ The solution cannot rely on adding some kind of information (qualifier for insta
 
 So the only reliable way to do that is to act on the producing side. An approach one could think of could be to create a class with the exact same Java types. The simplest way to do that is to extend the class we want to substitute and the same qualifiers to it. But by doing that, we would create an ambiguity in our CDI application, since we would define two beans with the same CDI Bean Type. We cannot add a special qualifier to it, since we would then need to add this qualifier everywhere on the injection side, a solution that we discarded.
 
-This is exactly for this kind of situation that the `@Alternative` concept has been created in CDI.
+This is exactly for this kind of situation that the `@Alternative` concept has been created in CDI. The bean we want to substitute to the normal, injected bean, is declared as the _alternative_ of the normal bean, and then, CDI will magically inject this alternative in place of the normal bean.
 
 ==== Creating an `@Alternative` bean
 
-From a technical point of view, creating a specialized bean is really simple. We just need to add the `@Alternative` annotation where the bean is produced and we are done.
+From a technical point of view, creating an alternative bean is really simple. We just need to add the `@Alternative` annotation where the bean is produced and we are done.
+
+[[app_listing]]
+.Declaring the `InMemoryConcurrentPostRepository` class as an alternative using an annotation
+[source,java]
+----
+package chap04.repository;
+
+import javax.enterprise.inject.Alternative;
+
+@Alternative
+public class InMemoryConcurrentPostRepository implements PostRepository, Serializable {
+
+    // content of the class
+}
+----
 
 ===== Annotation versus XML declaration
 
@@ -1050,7 +1065,36 @@ The second case is a bit more complex. We want a class that is already in our ap
 
 We might come across this kind of situation quite often in Java EE applications. Another famous example is the declaration of named queries in JPA modules. You have two ways to do that: the first one is to add them using annotations, thus requiring to rebuild your application.
 
-Instead of doing it that way, we can also add the declaration of alternatives in the `beans.xml` file. Using this way, we do not need to recompile our application, we only need to reboot it.  
+Instead of doing it that way, we can also add the declaration of alternatives in the `beans.xml` file. Using this way, we do not need to recompile our application, we only need to redeploy it with the modified `beans.xml`file. It is good to keep in mind this way of modifying the configuration of Java EE elements, since it may prove much more efficient than having to recompile and rebuild everything.
+
+Declaring an alternative in the `beans.xml` configuration file is really easy. Let us see the following example.
+
+[[app_listing]]
+.Declaring the `InMemoryConcurrentPostRepository` class as an alternative in the `beans.xml`configuration file
+[source,xml]
+----
+<beans xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                           http://xmlns.jcp.org/xml/ns/javaee/beans_2_0.xsd">
+
+   <alternatives>
+      <class>chap04.repository.InMemoryConcurrentPostRepository</class>
+   </alternatives>
+</beans>
+----
+
+===== More than one bean annotated with `@Alternative`
+
+It is possible to have more than one bean with the same CDI Bean Types annotated with `@Alternative`. Of course this case will raise errors due to ambiguities in the resolution of which of those beans should be used to injection. In this case, one of these classes has to be referenced in the `beans.xml` file to resolve the ambiguity.
+
+===== Alternative use cases
+
+Alternatives are a very powerful tool that can be used in several use cases.
+
+The first one of course is when we need to inject of mock object to test a special class. Declaring our mock class as an alternative makes it very easy to inject this mock object instead of the runtime bean. The mocked class is only known in the test context, and will not be deployed at runtime (if it is the case, fix it!). So all we need to do if to extend the class of the real bean, sparkle some mocking magic on it, put the same qualifiers on this class, and add declare it as an alternative, either by annotating it, or by declaring it in the `beans.xml` file.
+
+But we can also imagine other use cases. Suppose our application is internationalized. We could imagine having a bunch of supported locales, each represented by sets of classes, put in different packages. These classes are in fact models for CDI beans, and are meant to be injected, or are referenced by JSF templates. One way of organizing this is to set the correct set of class as the alternative in a given deployment scenario using a given locale. 
 
 ==== Creating a `@Specializes` bean
 
