@@ -1088,6 +1088,11 @@ Declaring an alternative in the `beans.xml` configuration file is really easy. L
 
 It is possible to have more than one bean with the same CDI Bean Types annotated with `@Alternative`. Of course this case will raise errors due to ambiguities in the resolution of which of those beans should be used to injection. In this case, one of these classes has to be referenced in the `beans.xml` file to resolve the ambiguity.
 
+===== Selecting an alternative bean with the `@Priority` annotation
+
+There is still another way to choose from several beans annotated with `@Alternative`. This way consists in adding a `@Priority` annotation along with the `@Alternative` annotation. This annotation will make this bean the chosen one among the other alternatives. The `@Priority` annotation takes an `int` attribute that has no default value. So we must give a value to this priority. The exact meaning of this attribute is left to the specifications that use them. CDI does indeed mention it for alternatives, but does not give precision on the way this attribute is used. So far we assume that only one alternative can be annotated with `@Priority`.
+
+
 ===== Alternative use cases
 
 Alternatives are a very powerful tool that can be used in several use cases.
@@ -1098,9 +1103,86 @@ But we can also imagine other use cases. Suppose our application is internationa
 
 ==== Creating a `@Specializes` bean
 
-* @Alternative
-* @Specializes
-* Using @Alternative to inject mock objets
+Unfortunately, there are still cases where alternatives are not enough to override a given bean definition.
+
+Remember that an alternative is selected as a bean only if both CDI Bean Type are the same. Let us consider the following example.
+
+We are still dealing with our in-memory `PostRepository`. So we have this interface `PostRepository`, and two implementing classes, `InMemoryPostRepository` and `InMemoryConcurrentPostRepository`. We learned about qualifiers and decided to further explain the difference between those two implementations by putting a `@Concurrent` annotation on the `InMemoryConcurrentPostRepository` implementation.
+
+So the declaration of these two classes is the following.
+
+[[app_listing]]
+.Declaring the `InMemoryConcurrentPostRepository` class with the `@Concurrent` qualifier
+[source,java]
+----
+package chap04.repository;
+
+@Concurrent
+public class InMemoryConcurrentPostRepository implements PostRepository {
+
+    // content of the class
+}
+----
+
+[[app_listing]]
+.Declaring the `InMemoryPostRepository` class
+[source,java]
+----
+package chap04.repository;
+
+public class InMemoryPostRepository implements PostRepository {
+
+    // content of the class
+}
+----
+
+Now, for testing purposes, we decide to extend the `InMemoryConcurrentPostRepository` class with a mocking class: `MockInMemoryConcurrentPostRepository`. The definition of this last class is the following.
+
+[[app_listing]]
+.Declaring the `MockInMemoryConcurrentPostRepository` class
+[source,java]
+----
+package chap04.repository;
+
+public class MockInMemoryConcurrentPostRepository extends InMemoryConcurrentPostRepository {
+
+    // content of the class
+}
+----
+
+This is our setup for the definition of the beans we are going to use.
+
+Of course, we have different injection points for these post repositories in our application. Let us see a first one, that just needs a `PostRepository`.
+
+[[app_listing]]
+.Declaring an injection point for a post repository
+[source,java]
+----
+@Inject
+private PostRepository repository;
+----
+
+What is going to happen with our setup? Well, CDI will first register the beans that can be injected in this field. It will find 3 of them: `InMemoryPostRepository`, `InMemoryConcurrentPostRepository` and `MockInMemoryConcurrentPostRepository`. And since it has no information to tell which implementation should be used, an error will be raised. We need to fix our code.
+
+Thanks to our hard work in trying to learn CDI, we know that we have this `@Alternative` annotation that we can add on a type to resolve ambiguities. This is what we do: we add the `@Alternative` annotation on the declaration of `MockInMemoryConcurrentPostRepository`. And indeed it fixes the ambiguity, our testing code is running smoothly.
+
+But then we realize that when this mocking class is not there anymore, the ambiguity is still there: CDI cannot tell from `InMemoryRepository` and `InMemoryConcurrentRepository`. Basically our test was running smoothly, but in production it did not work, due to the fact that this alternative is not there anymore.
+
+We then to resolve this ambiguity again. We could use `@Alternative` agin, bu we prefer to add the `@Concurrent` annotation, since this is what our code needs. This approach is the best one, since is makes our code more readable. This time, our injection point looks like the following.
+
+[[app_listing]]
+.Declaring an injection point for a concurrent post repository
+[source,java]
+----
+@Inject @Concurrent
+private PostRepository repository;
+----
+
+Indeed, this annotation fixes our code in production, since the injected bean has to have the `@Concurrent` qualifier.
+
+And then we realize that our test code does not work anymore! The `MockInMemoryConcurrentPostRepository` is not injected; the test code still injects the`InMemoryConcurrentPostRepository`. Why so? Simply because the qualifiers are not inherited. The `MockInMemoryConcurrentPostRepository` does not have the qualifier `@Concurrent` and thus is not a candidate for injection here.
+
+Sometimes this is what we want, but most of the time this is not. This where the specialization comes to place. 
 
 === Getting more flexibility with Programmatic lookup
 
