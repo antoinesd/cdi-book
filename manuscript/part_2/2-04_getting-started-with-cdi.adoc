@@ -1180,9 +1180,15 @@ private PostRepository repository;
 
 Indeed, this annotation fixes our code in production, since the injected bean has to have the `@Concurrent` qualifier.
 
-And then we realize that our test code does not work anymore! The `MockInMemoryConcurrentPostRepository` is not injected; the test code still injects the`InMemoryConcurrentPostRepository`. Why so? Simply because the qualifiers are not inherited. The `MockInMemoryConcurrentPostRepository` does not have the qualifier `@Concurrent` and thus is not a candidate for injection here.
+And then we realize that our test code does not work anymore! The `MockInMemoryConcurrentPostRepository` is not injected; the test code still injects the`InMemoryConcurrentPostRepository`. Why so? Simply because the qualifiers are not inherited. The `MockInMemoryConcurrentPostRepository` does not have the qualifier `@Concurrent` and thus is not a candidate for injection here. This will probably not look natural for many people. What are we doing here? We extend a class, add the `@Alternative` annotation on it thinking that it will fully override the class we extend, and in fact it does not, because the annotations are not inherited.
 
-Sometimes this is what we want, but most of the time this is not. This where the specialization comes to place. 
+Most of the time this is not what we want. This is precisely to overcome this problem that the specialization has been added to CDI. In a nutshell, adding the `@Specializes` annotation to the overriding class will do the trick: CDI will take it in place of the overridden class, wherever this class is used.
+
+When a bean _specializes_ another bean then we are sure that this other bean is not used as a bean by CDI. It is not seen, not instantiated, nothing.
+
+For a bean to be a specialization of another bean, either its class must directly extends the class of this other bean, either its producing method must directly override the producing method of the first bean. Then the `@Specializes` annotation must be added to the class or to the producing method, as the case may be. Note that it the producer is in fact a field, no specialization can be set up, since a field cannot be overridden.
+
+This specialization has a side effect, which is probably the desired effect in most cases. If the original bean declares itself one or several producing methods, or observers, those will not be seen by CDI, and thus not activated. Once again, this is probably what we want, since specialization will be used, most of the time, in a testing environment.
 
 === Getting more flexibility with Programmatic lookup
 
