@@ -1,0 +1,68 @@
+=== More on the `beans.xml` file
+
+We saw in the previous part that without this `beans.xml` file, our CDI application was not working at all. In fact, this file defines a very important notion in the CDI space: the notion of _bean archive_. We will see in detail in the next paragraph what is a _bean archive_ exactly. But first, let us see more on this `beans.xml` file.
+
+
+==== The `beans.xml` file in CDI 1.0
+
+The `beans.xml` is a very simple XML file. In CDI 1.0 it has the following format.
+
+[[app-listing]]
+[source,xml]
+.An empty `beans.xml` file in CDI 1.0
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                           http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+</beans>
+----
+
+The namespace is `http://java.sun.com/xml/ns/javaee` and the schema location is `http://java.sun.com/xml/ns/javaee/beans_1_0.xsd`. It is important to note that, because it changed in CDI 1.1 and later.
+
+==== The `beans.xml` file in CDI 1.1 and later
+
+Be careful, because between version 1.0 and 1.1 something odd happened: the namespace changed and the location of the XML schema changed also. Let us have a look at those new values right now.
+
+[[app-listing]]
+[source,xml]
+.A second beans.xml file for CDI 1.1 and CDI 1.2
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                           http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
+
+       bean-discovery-mode="annotated"
+       version="1.1">
+</beans>
+----
+
+
+So if you need to migrate a CDI 1.0 application to a more recent version, you need to check your `beans.xml` files.
+
+Now you could think that the XML Schema for CDI 1.2 is `beans_1_2.xsd` at the same address than the previous version. In fact there is no such `beans_1_2.xsd` schema. CDI 1.2 is a maintenance release, the schema has not been modified.
+
+==== Version and bean discovery mode
+
+The root element of this file is `beans`. In CDI 1.0 it has no attribute defined. This changed in CDI 1.1, where two attributes were introduced:
+
+* `version`, set to 1.1 by default;
+* `bean-discovery-mode`, which is mandatory.
+
+This `bean-discovery-mode` may take three values: `annotated`, `all` and `none`. Let us see that in details.
+
+// TODO: revoir ça en fonction de la façon dont les beans.xml se surchargent dans un WAR
+The bean discovery mode `none` means that no type from this archive will be analyzed. This bean archive is just empty. You may wonder what is the purpose of adding a `beans.xml` file in an archive to make it a bean archive, and then to tell CDI: dont do anything with this! There is indeed a case where we need this kind if thing. Remember that in web archives, you may have JAR in your `WEB-INF/lib` with `beans.xml` files in them. If you do not want them to be seen as bean archives, then you can put a `beans.xml` file in your `WEB-INF` directory that will override those  local `beans.xml` files. And in this global `beans.xml` file, you can set the bean discovery mode to none to shut down everything.
+
+The bean discovery mode `annotated` means that only the annotated types will be considered by CDI. This is the recommended value. It just works as you expect it. All your annotated beans will be taken into account by the CDI container.
+
+The last mode is the `all` mode and you should be very careful with it, because all the types in the archive will be used by the CDI container. So if you have crafted your archive very carefully and you know that indeed all your types are CDI types, then you can use it. In all the other cases, use the `annotated` mode.
+
+There are no other attributes added to this `beans` element.
+
+==== Subelements of the `beans` root element
+
+CDI defines several subelement to this `beans` root element. We are not going to see them right now. Presenting the list of those subelements here whould not make sense, since we do not know the concepts they define. We will see them one by one throughout this book, one at a time.
