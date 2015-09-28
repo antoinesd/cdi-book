@@ -41,7 +41,7 @@ Since CDI could not find a way to build an instance of the `PostRepository` type
 
 How can we solve that? Precisely by defining a producer fo the `PostRepository` type. There are three ways of defining such a producer.
 
-* The first one is to add an `@Inject` annotation on the constructor of this class.
+* The first one is to add an `@Inject` annotation on the constructor of this class. In fact we already saw this possibility in the previous paragraph.
 * The second one is to add a `@Produces` annotation on a method that returns an instance of `PostRepository`.
 * The third one is to add a `@Produces` annotation on a field of the right type.
 
@@ -68,7 +68,7 @@ public class InMemoryPostRepository implements PostRepository {
 }
 ----
 
-Of course, if our class has several constructors, only one should be annotated. If more than one constructor is annotated, then CDI will raise an error.
+If our class has several constructors, only one should be annotated. If more than one constructor is annotated, then CDI will raise an error.
 
 CDI will then call this constructor to build an instance of `InMemoryPostRepository`, and will need values for the parameters of this constructor. These parameters will have to be injected, so CDI will look for values for them. If it cannot find ways to build them, an error will be raised. The example we just wrote is very naive, and we will have trouble to make it work, because CDI will have trouble finding an `int` value to inject in this constructor. So in this particular case, using an annotated constructor is certainly not the best way to go! Do not worry, we are going to see others.
 
@@ -112,17 +112,17 @@ public class PostRepositoryProducer {
 
 If we run our example again, the error message is gone.
 
-Note that a producer method (that is, a method annotated with `@Produces`) is one way among others for CDI to build a bean. If we add an explicit no-arg constructor to our `InMemoryPostRepository` class, then CDI will have two ways to build an instance of `PostRepository`, leading to an ambiguous dependency, and another error. We will see ways of dealing with this later in this chapter
+Let us note two things about this producer method.
+
+First, a producer method may have parameters. Since this method is called by CDI, and not by our code explicitly, CDI will have to provide values for those parameters. Those values will be injected by CDI. So all the parameters of a producer method are treated as injection points when CDI calls this method.
+
+Second, a producer method might return a null value. Of course in that case, odd things may happen. This is still possible, and handled by CDI. There are restrictions though, that we will see later in this book.
 
 A producer method can be nearly any kind of method. It can be static or non-static, private, protected, public or package protected. It should be _seen_ by CDI, so it should be a method of a managed bean, or a method of an EJB.
 
-A producer method might return a null value. Of course in that case, odd things may happen. This is still possible, and handled by CDI. There are restrictions though, that we will see later in this book.
-
-A producer method may have parameters. Since this method is called by CDI, those parameter have to be injected. So all the parameters of a producer method are treated as injection points when CDI calls this method.
-
 ==== Producer fields
 
-The `@Produces` annotation can also be put on a field. This may looks odd, because a method call may look so much logical! There is in fact one case where it is extremely useful: the case where this field is itself injected. Let us look at the following example.
+The `@Produces` annotation can also be put on a field. This may looks odd, because a method call may look so much logical! There is in fact one case where it is extremely useful: the case where this field holds a resource, and is itself injected. There are many examples of that in the Java EE world. Let us look at the following example.
 
 [[app_listing]]
 .An injected producer field
@@ -131,17 +131,28 @@ The `@Produces` annotation can also be put on a field. This may looks odd, becau
 @Stateless
 public class PostEJB {
 
-    @PersistenceContext(unitName="PostPersistenceUnit") @Produces
+    @PersistenceContext(unitName="PostPersistenceUnit")
+    @Produces
     private EntityManager entityManager;
 
     // rest of the class
 }
 ----
 
-The field `entityManager` if an EJB field, due to the `@Stateless` annotation. So the Java EE container will set the `entityManager` field prior to any method call on this EJB. It is in fact the recommended way of getting a JPA entity manager in a Java EE context.
+The field `entityManager` if an EJB field, due to the `@Stateless` annotation on its class. So the Java EE container, because of the `@PersistenceContext` annotation will look for a `PostPersistenceUnit`  persistence unit, declared in a `persistence.xml` file. It will then create the corresponding `EntityManagerFactory` and then a `EntityManager`, to be injected in the `entityManager` field. This will take place prior to any method call on this EJB. It is in fact the recommended way of getting a JPA entity manager in a Java EE context.
 
-The fact is: we can use this field to create a CDI producer, just by putting the `@Produces` annotation on this field.
+Now that we have an we have a `EntityManager`, we still have two possibilities to build a producer.
+
+The first one is to create a getter for this field, and annotate this getter with the `@Produce` annotation. This will work perfectly well, and is the _producer method_ pattern we saw in the previous paragraph.
+
+The second one is to simply put the annotation `@Produces` on this field. It will do the trick: CDI can read the value it needs directly from the field, without having to go through a setter.
 
 This pattern is extremely useful to add any kind of Java EE resource (whether it is a datasource, a web service, a JMS queue) to a CDI application and use it directly.
 
 This pattern can be used in any application: an injected field can become itself a producer for other types.
+
+==== Having more than one producer for a given type
+
+With all these ways to define producers, it is very easy to have several producers for a given type. In certain cases, it might even be desirable. For instance, we can have a producer method (that is, a method annotated with `@Produces`) and an explicit no-arg constructor to our `InMemoryPostRepository` class. Maybe our application needs this no-arg constructor for some reason, and for another reason, we need to build our bean using this producer method.
+
+The problem is, that CDI has two ways to build an instance of `PostRepository`, the empty constructor and the producer method. This leads to an ambiguous dependency, and CDI will raise an error. Fortunately, there are ways to resolve this ambiguity. We will see ways of dealing with this later in this chapter.

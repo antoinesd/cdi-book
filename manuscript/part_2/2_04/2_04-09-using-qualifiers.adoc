@@ -1,0 +1,402 @@
+=== Using qualifiers to define CDI Bean Types
+
+Probably the first question that comes to mind at this point is the following: what happens if we have more that one implementation for a given interface? CDI will probably be in trouble to choose from those implementations. It is quite easy to test that, so let us do it, and write another implementation for our repository. This time we will not repeat the mistake we did: it will be concurrent aware!
+
+[[app_listing]]
+.A second, concurrent aware, implementation of the `PostRepository` interface
+[source,java]
+----
+package chap04.repository;
+
+import chap04.model.Post;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class InMemoryConcurrentPostRepository implements PostRepository {
+
+    private AtomicLong id = new AtomicLong(0L);
+    private ConcurrentMap<Long, Post> posts = new ConcurrentHashMap<>();
+
+    @Override
+    public void save(Post post) {
+        long postId = id.getAndIncrement();
+        posts.put(postId, post);
+    }
+}
+----
+
+Let us add this class to our first, simple example, and see what happens. Well, as we can see, it does not work too well. In fact, an error is raised, which is the following.
+
+[[app_listing]]
+.Error raised for two implementations of the same interface
+[source]
+----
+Exception in thread "main" org.jboss.weld.exceptions.DeploymentException: WELD-001409: Ambiguous dependencies for type PostRepository with qualifiers @Default
+  at injection point [BackedAnnotatedField] @Inject private chap04.service.PostServiceImpl.postRepository
+  at chap04.service.PostServiceImpl.postRepository(PostServiceImpl.java:0)
+  Possible dependencies:
+  - Managed Bean [class chap04.repository.InMemoryPostRepository] with qualifiers [@Any @Default],
+  - Managed Bean [class chap04.repository.InMemoryConcurrentPostRepository] with qualifiers [@Any @Default]
+----
+
+There are details that we cannot understand yet in this error message, we will see all these later in this part. But in a nutshell, CDI complains because it sees two possible implementations for the `PostRepository` dependency, and has no rule to tell which one to choose.
+
+CDI sees two types (here `InMemoryPostRepository` and `InMemoryConcurrentPostRepository`) that match the type we need to inject: `PostRepository`. And we can see in the error message a reference to a notion we have not seen yet: the notion of _qualifier_.
+
+ Wha is a CDI qualifier? In a nutshell, it is an annotation that brings some semantic to a Java type. CDI sees this annotation and can tell two beans that have the same Java type. Thus, CDI can choose which bean should be used, with this qualifier.
+
+CDI defines a default qualifier: `@Default`. All the beans have this qualifier, thus the presence of this reference in the error message.
+
+==== Using a qualifier on a simple example
+
+From a pure technical point of view, a qualifier is a very simple Java element: it is just an annotation.
+
+This annotation can be put along with the `@Produces` annotation. This is a very simple way to tell CDI that this field or method produces elements qualified by the annotation we put. Let us see a simple example.
+
+We saw that we could inject persistence contexts in an EJB field. Suppose we have two databases: one for our posts, and another one for our users. We then have two different persistence contexts, since one persistence context is bound to a single database.
+
+[[app_listing]]
+.An EJB with two entity managers
+[source,java]
+----
+@Stateless
+public class PostAndUserEJB {
+
+    @PersistenceContext(unitName="PostPersistenceUnit")
+    private EntityManager postEntityManager;
+
+    @PersistenceContext(unitName="UserPersistenceUnit")
+    private EntityManager userEntityManager;
+
+    // rest of the class
+}
+----
+
+We cannot use those two fields as CDI producers, just because they have the same Java type: `EntityManager`. It we write this code and try to inject a `EntityManager` somewhere, we will get an error, since the type of those fields is the same:
+
+CDI allows us to add semantic using qualifiers. It just tells CDI exactly what are those fields: the first one deals with posts, and the second one with users. This is exactly what qualifiers are for.
+
+[[app_listing]]
+.An EJB with two entity managers, and qualified producers
+[source,java]
+----
+@Stateless
+public class PostAndUserEJB {
+
+    @PersistenceContext(unitName="PostPersistenceUnit")
+    @Produces @DBPost
+    private EntityManager postEntityManager;
+
+    @PersistenceContext(unitName="UserPersistenceUnit")
+    @Produces @DBUser
+    private EntityManager userEntityManager;
+
+    // rest of the class
+}
+----
+
+On this second example, we put the `@Produces` annotation on each field, making them CDI producers. Along with the `@Produces` annotation, we add another annotation `@DBPost` and `@DBUser`. Those annotations are qualifiers, and CDI uses them to tell `postEntityManager` from `userEntityManager`. We will see in a moment how these annotations are built.
+
+The rest is very easy to guess: we use the exact same way to qualify an injection point, so that CDI can tell which bean should be injected in what field.
+
+[[app_listing]]
+.Injection with a qualifier
+[source,java]
+----
+public class PostService {
+
+    @Inject @DBPost
+    private EntityManager entityManager;
+
+    // rest of the class
+}
+----
+
+On this last example, CDI knows that is should inject the entity manager qualified by `@DBPost`.
+
+==== Writing a qualifier
+
+This is all great, qualifiers are our silver bullet that will solve our ambiguous producers problems at once. There is just one element missing: how does CDI know that those annotations we used, `@DBPost` and `@DBUser` are qualifiers? We know how to write annotations in Java, but what kind if CDI magic does make an annotation a qualifier?
+
+Well, there is indeed some kind of magic here, called meta-annotation. A qualifier is an annotation (no doubt about that!). Of course This annotation has to be seen by CDI, so it has to be put in a bean archive. What makes it a qualifier is the fact that it is itself annotated with a special CDI annotation: `@Qualifier`. When CDI sees that this annotation is annotated by `@Qualifier`, it records it as such, so that we can use it in our code.
+
+Let us create `@DBPost`, since we need to be able to use it.
+
+[[app_listing]]
+.Defining the `@DBPost` qualifier
+[source,java]
+----
+import javax.inject.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Qualifier // <1>
+@Retention(RetentionPolicy.RUNTIME) // <2>
+@Target({ElementType.METHOD, // <3>
+         ElementType.FIELD,
+         ElementType.PARAMETER,
+         ElementType.TYPE})
+public @interface DBPost {
+}
+----
+<1> This is the annotation CDI needs to tell that `DBPost` is a qualifier
+<2> Of course a qualifier is analyzed by CDI when we launch our application, se we need it at runtime
+<3> those are the Java elements we can put our `DBPost` annotation on. This list has to be compatible with `@Produces` and `@Inject`, since a qualifier has to be put with those two annotations.
+
+A qualifier might look a little tricky to create. The use of this meta-annotation is not a very common pattern. The fact is: CDI relies a lot on annotations, and uses this pattern in many places. So this is the right time to get used to it.
+
+This pattern is in fact very easy to follow. Just create the annotation you need, add this special CDI annotation to it, `@Qualifier` in our example, and that is it, we have a new qualifier.
+
+===== Qualifiers with attributes
+
+It is legal for a qualifier to define attributes. In that case, CDI will compare the two annotations along with the values of their attributes. Those values are compared with their respective `equals()` method, as we expected.
+
+A qualifier may also define attributes that are not taken into account in the comparison. In this case, this attribute should be annotated with `@Nonbinding`.
+
+In the case an annotation attribute type is an array, then it should be annotated with `@Nonbinding`. If not, then non predictable or implementation dependent results will occur.
+
+Let us see that on an example. We could have created one annotation `@DB` with a default value to tell from the user database and the post database.
+
+[[app_listing]]
+.Defining the `DBType` enumeration
+[source,java]
+----
+public enum DBType {
+
+    POST, USER
+}
+----
+
+[[app_listing]]
+.Defining the `DB` qualifier, with a `DBype` attribute
+[source,java]
+----
+import javax.enterprise.util.Nonbinding;
+import javax.inject.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Qualifier // <1>
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD,
+         ElementType.FIELD,
+         ElementType.PARAMETER,
+         ElementType.TYPE})
+public @interface DB {
+
+    DBType value(); // <2>
+
+    @Nonbinding String comment() default ""; // <3>
+}
+----
+<1> The definition of this qualifier is the same as the previous one
+<2> Here we declare the `value()` attribute
+<3> And here the `comment()` attribute, which is made optional
+
+So we can now use this qualifier on the produce side in this way.
+
+[[app_listing]]
+.Redefining the entity manager producers
+[source,java]
+----
+@Stateless
+public class PostAndUserEJB {
+
+    @PersistenceContext(unitName="PostPersistenceUnit")
+    @Produces @DB(DBType.POST) // <1>
+    private EntityManager postEntityManager;
+
+    @PersistenceContext(unitName="UserPersistenceUnit")
+    @Produces @DB(value=DBType.USER, comment="This is the User DB") // <2>
+    private EntityManager userEntityManager;
+
+    // rest of the class
+}
+----
+<1> We do not need to tell that its attribute is the `value()` attribute, due to the way annotations work in Java
+<2> Since we set a non-default value for the `comment()` attribute, we need to tell that `DBType.USER` is the value of the `value` attribute
+
+==== Injecting by type, injecting by qualifier
+
+CDI has in fact two ways of telling which bean should be injected where.
+
+It can discriminate beans based on their Java type. But we have already seen that relying only on the Java type is not enough. We saw it on the entity manager example. On one hand, we have the `EntityManager` type, and on the other hand we have different databases that cannot be discriminated solely on the type of the injected object.
+
+So we need more information, and this information is brought by qualifiers. A qualifier can be seen as an element that is there to add the piece of information we need along with the type of a bean. It tells CDI that this injection point needs an `EntityManager` that points to our user database for instance.
+
+Qualifiers are just there to add information to qualify producers and injection points in a CDI application. We might not need them, there are just here to help us.
+
+==== Qualifiers of a bean
+
+The notion of qualifier is of course linked to the notion of bean. We say, in the CDI context, that a bean has qualifiers. But this is quite an abstract notion, because we never really see this bean. What we see is where and how it is produced, and where and how it is used, or injected.
+
+In fact, a bean has all the qualifiers defined on its producer (method, field or constructor), plus a number of qualifiers CDI adds with certain default rules that we are going to see. This defines the qualifiers possessed by a bean.
+
+And on the other hand, when we use a bean, that is, when a bean is injected in our code, this injection point is bound to have a set of qualifiers defined on it.
+
+So this notion of qualifier can be seen from three points of view:
+
+* the qualifiers that a bean has
+* the qualifiers defined at the producer level
+* the qualifiers defined at the injection point
+
+===== Adding a qualifier on a producer
+
+We saw that a producer could be a method or a field, thus adding a qualifier on those two elements makes perfect sense.
+
+===== Adding a qualifier on a type
+
+We also saw that CDI sees the `InMemoryPostRepository` and `InMemoryConcurrentPostRepository` classes as two possible instances of the `PostRepository` interface, without any kind of information, metadata or configuration from us. It is its default behavior. To tell those two implementations, we can add a qualifier directly on the classes themselves. This pattern will be the following.
+
+[[app_listing]]
+.Qualifying types
+[source,java]
+----
+@SimpleRepository
+public class InMemoryPostRepository implements PostRepository {
+    // content of the class
+}
+
+@ConcurrentRepository
+public class InMemoryConcurrentPostRepository implements PostRepository {
+    // content of the class
+}
+----
+
+The two annotations `@SimpleRepository` and `@ConcurrentRepository` are two qualifiers that CDI uses to tell those two implementations. Using them on the injection points will tell CDI which one to use on which place.
+
+===== Qualifiers on the injected constructor
+
+We also saw the case of a CDI bean that has no empty constructor, due to the presence of one or more constructors with arguments. We saw that one of those constructors can be annotated with `@Inject`, allowing CDI to use this constructor to build this bean using this constructor. And at last, we saw that, in this case, all the parameters of this constructor are injected by CDI, since it is CDI itself that calls this constructor.
+
+We do not need to annotate those parameters with `@Inject`, since this is the default CDI behavior. But we can put qualifiers on them. CDI will use those qualifiers to tell which bean it should inject. The pattern is the following.
+
+[[app_listing]]
+.Qualifying injected parameters
+[source,java]
+----
+public class PostServiceImpl implements PostService {
+
+    @Inject // <1>
+    public PostServiceImpl(
+        @ConcurrentRepository postRepository) { // <2>
+        // content of the constructor
+    }
+
+    // rest of the class
+}
+----
+<1> Tells CDI that it should use this constructor to create an instance of `PostService`
+<2> Tells CDI to use the `InMemoryConcurrentPostRepository` bean to call this constructor
+
+===== Adding a qualifier on an injection point
+
+Any number of qualifiers can be added on a CDI injection point. CDI will look for a bean that matches all the defined qualifiers. If no bean, or more than one bean matches the definition, then an error will be raised. Of course, this bean can have more qualifier than needed to be injected. The set of all the qualifiers a bean has has to be a subset of the needed qualifiers.
+
+==== Existing qualifiers
+
+CDI defines four qualifiers:
+
+* `@Named`
+* `@New`
+* `@Default`
+* `@Any`
+
+
+===== The `@Named` qualifier
+
+This qualifier has a special status, as giving a name to a bean is mandatory for certain categories of beans in the Java EE world. But we can also give names to our beans outside of this context, just for the sake of the readability of our code.
+
+This annotation defines a `value` attribute, which holds the name of the annotated bean.
+
+===== The `@New` qualifier
+
+This qualifier was defined in CDI 1.0, and deprecated in CDI 1.1. So you should not use it in your code, apart from using it for legacy reasons. We are not going to cover this annotation in details. Instead of injecting `@New` beans, you should inject `@Dependent` beans.
+
+The `@New` annotation can take a default attribute which type is a class. This class is the one to instantiate to inject the annotated bean. If the value attribute is not specified, then the class of the bean will be instantiated.
+
+===== The `@Default` qualifier
+
+CDI adds the `@Default` qualifier on all the beans that have no qualifier. There is an exception for the `@Named` qualifier: a bean that has this qualifier will get the `@Default` qualifier also. So any producer that has no qualifier, or that has the `@Named` qualifier as its only qualifier, has this `@Default` qualifier.
+
+Adding this qualifier explicitly is perfectly legal from a pure technical point of view, but would not make a lot of sense: let CDI handle this qualifier for us.
+
+The same goes for the injection point. CDI adds the `@Default` qualifier on any injection point that defines no qualifier. The use of the `@Named` qualifier on injection points is not recommended. The `@Named` qualifier implies string-based bean identification, and this approach is not the recommended one any more.
+
+
+===== The `@Any` qualifier
+
+The `@Any` qualifier is present on all the beans CDI can handle, except for the `@New` beans that you should not use in your application. So one could think that this qualifier is useless, since it is present everywhere. It has in fact a very precise use, that we will see later, when we talk about programatic lookup.
+
+The fact that this qualifier is present on all producers explains the error message we saw when we created ambiguous injection points and producers.
+
+==== Injection by qualifier, injecting by type
+
+So at this point, we have two ways of producing and injection beans. The first one relies on the Java type system. It works very well, leads to very simple and clean code, as well as robust patterns. But as we saw, most of the time it is not precise enough, since we may want to produce several beans of different kinds, but with the same type. We saw the example of the `EntityManager`, and there are many other. Many configuration parameters of our applications are injected in various places, and they are all `String`, `int`, or other very general Java types.
+
+So CDI introduces the notion of _qualifier_ to add precision on the Java type of a bean. A qualifier is a just a simple annotation, that we can add both on the producing side, and on the injection side.
+
+The full CDI Bean Type is thus the combination of the Java types (classes and interfaces) of a given bean, and its qualifiers.
+
+In some cases, we might want to not take into account all the Java type hierarchy. For instance, we might want to add to the CDI Bean Type, only the interfaces, and not the implementing class, nor the `Object` class. And even for the interfaces, some of them do not carry any relevant information for our CDI application. It might be the case for `Serializable` or `Cloneable`.
+
+The question is: can we remove some Java types that a bean has from the CDI Bean Type? It turns out that the answer is yes.
+
+We can add an annotation on the production side that we tell CDI what Java types to take into account when building the CDI Bean Type. This annotation is simply `@Typed`, and it gives the list of those Java type. Let us go back to our `InMemoryConcurrentPostRepository` example, and let us add the `Serializable` interface to its declaration.
+
+[[app_listing]]
+.The CDI Bean Type of the `InMemoryConcurrentPostRepository` class
+[source,java]
+----
+package chap04.repository;
+
+import chap04.model.Post;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class InMemoryConcurrentPostRepository implements PostRepository, Serializable {
+
+    // content of the class
+}
+----
+
+How does CDI build the CDI Bean Type of this bean?
+
+First, this class does not have any qualifier, so CDI automatically adds the `@Any` and `@Default` qualifiers to it. If we had added an explicit qualifier, then the `@Default` qualifier would not have been there.
+
+Then CDI adds the Java types: `InMemoryConcurrentPostRepository` of course, but also `Object`, as it is the case for all the beans. Then it also adds the two declared interfaces: `PostRepository` and `Serializable`.
+
+Now the question is: do we really need the `Object` type and the `Serializable` Java types? They are so general, that they do not carry much information. Having general types in our CDI Bean Type set might lead to weird errors in our applications. Suppose we forget to add a dependant JAR for instance, with some important producers in it. The error we might get is that there are too many beans with the type `Object` to inject at a given injection point. What we would like to have is an error stating that this injection point has no matching bean to inject.
+
+So we may add the `@Typed` annotation to the definition of our bean.
+
+[[app_listing]]
+.The CDI Bean Type of the `InMemoryConcurrentPostRepository` class
+[source,java]
+----
+package chap04.repository;
+
+import chap04.model.Post;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Typed(PostRepository.class)
+public class InMemoryConcurrentPostRepository implements PostRepository, Serializable {
+
+    // content of the class
+}
+----
+
+This time, the only Java type we have in the CDI Bean Type is `PostRepository`, and this is what we expect.
+
+So the `@Typed` annotation, is another annotation we have in our toolbox to select which Java type CDI gives to a bean, among the available Java types a bean has.
