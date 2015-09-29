@@ -1,3 +1,4 @@
+
 === Injection points
 
 We had a first glimpse at what dependency injection is in CDI: a field of a bean was annotated with `@Inject` in our first example, and we saw that CDI just put an instance of the right type in that field. It worked quite magically, but there is in fact no magic behind that. CDI could find a bean definition of the right type, and could wire this injection point and this bean together. CDI used this annotation to create a bean and store it in the annotated field.

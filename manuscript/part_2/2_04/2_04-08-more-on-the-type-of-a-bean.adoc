@@ -1,3 +1,4 @@
+
 === What is the type of a bean?
 
 We already talked about the type of beans in the CDI context. We saw that CDI would associate producers and injection points based on the type of those two elements. In the Java world, this notion of type is very well defined, but a bit restrictive to fit the needs of CDI. Let us see that in details, beginning with this notion of Jav type, and let us present what does CDI need exactly.

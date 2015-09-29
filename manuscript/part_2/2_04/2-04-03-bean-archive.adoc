@@ -1,4 +1,5 @@
-=== Bean archive
+
+=== The notion of Bean archive
 
 We introduced the notion of bean archive in our first example, without defining it. Let us do that now. As CDI works in both the Java SE world and the Java EE world, this notion of bean archive is defined in both worlds, with some differences.
 
@@ -39,7 +40,6 @@ In a nutshell, the `beans.xml` can be put:
 * in the `WEB-INF/classes/META-INF` directory
 * in the `META-INF` directory of any JAR put in the `WEB-INF/lib` directory.
 
-// TODO: comportement à préciser
 If a `beans.xml` file is found in the `WEB-INF` directory, then it overrides the `beans.xml` files that can be found in the JAR files of the `WEB-INF/lib` directory.
 
 If a `beans.xml` file is found in the `WEB-INF/classes/META-INF` directory, then the `WEB-INF/classes` is considered a bean archive by CDI. The classes from this directory will be analyzed by the CDI container.

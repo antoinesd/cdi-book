@@ -1,3 +1,4 @@
+
 === Using qualifiers to define CDI Bean Types
 
 Probably the first question that comes to mind at this point is the following: what happens if we have more that one implementation for a given interface? CDI will probably be in trouble to choose from those implementations. It is quite easy to test that, so let us do it, and write another implementation for our repository. This time we will not repeat the mistake we did: it will be concurrent aware!
