@@ -1,4 +1,5 @@
-=== More on the `beans.xml` file
+
+=== Writing a `beans.xml` file
 
 We saw in the previous part that without this `beans.xml` file, our CDI application was not working at all. In fact, this file defines a very important notion in the CDI space: the notion of _bean archive_. We will see in detail in the next paragraph what is a _bean archive_ exactly. But first, let us see more on this `beans.xml` file.
 
@@ -54,7 +55,6 @@ The root element of this file is `beans`. In CDI 1.0 it has no attribute defined
 
 This `bean-discovery-mode` may take three values: `annotated`, `all` and `none`. Let us see that in details.
 
-// TODO: revoir ça en fonction de la façon dont les beans.xml se surchargent dans un WAR
 The bean discovery mode `none` means that no type from this archive will be analyzed. This bean archive is just empty. You may wonder what is the purpose of adding a `beans.xml` file in an archive to make it a bean archive, and then to tell CDI: dont do anything with this! There is indeed a case where we need this kind if thing. Remember that in web archives, you may have JAR in your `WEB-INF/lib` with `beans.xml` files in them. If you do not want them to be seen as bean archives, then you can put a `beans.xml` file in your `WEB-INF` directory that will override those  local `beans.xml` files. And in this global `beans.xml` file, you can set the bean discovery mode to none to shut down everything.
 
 The bean discovery mode `annotated` means that only the annotated types will be considered by CDI. This is the recommended value. It just works as you expect it. All your annotated beans will be taken into account by the CDI container.

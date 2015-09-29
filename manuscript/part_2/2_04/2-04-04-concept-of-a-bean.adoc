@@ -1,3 +1,4 @@
+
 === What is a CDI bean?
 
 The concept of CDI bean is as important as the concept of bean archive. It is central, and needs to be properly explained before going further into the presentation of CDI.
