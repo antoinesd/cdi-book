@@ -20,13 +20,16 @@ include::2_04/2_04-08-more-on-the-type-of-a-bean.adoc[]
 include::2_04/2_04-09-using-qualifiers.adoc[]
 include::2_04/2_04-10-advanced-concepts-in-qualifiying.adoc[]
 
-
-=== Getting more flexibility with Programmatic lookup
-
-* @Any
-* Instance<T>
-* AnnotationLiteral, TypeLiteral
-
-=== Using @Stereotype to simplify @Alternative
 === Wrap-up
 
+This quite lengthy chapter built the foundation for the rest of this book. We saw several fundamental notions, that are the bare bones of CDI.
+
+First the notion of bean, which central in CDI. A bean is this special object that CDI can manage for us. So far we saw that it can be used for injection in other beans, and can be used to produce other beans. This very powerful injection / production mechanism is at the heart of CDI.
+
+Then we saw the notion of CDI Bean Type. This notion relies on two other notions: the classical Java bean type, with classes and interfaces, and the notion of qualifiers. We saw that in some cases, recognizing a bean just by its Java type was not enough. There is indeed a gap between a bean that is a `BigDecimal` for instance, and the business type of that bean, which is the price of a product. Qualifying a bean is there to fill in this gap: it is about adding semantic to a bean which type is too common, or too generic. Adding a qualifier on a `String` object makes it very easy to tell that this particuliar string of characters is in fact an OAuth2 token, for instance.
+
+Specifying the precise type of a bean through the CDI Bean Type system is about associating bean producers and injection points. Which producer should be used for what injection point? To answer this question, CDI needs to match both CDI Bean Types.
+
+But in some cases, and of course the first that comes to mind is the testing context, we need to override the producing side. We need to provide mock objects to be injected in place of the normal objects. CDI offers a very easy to set up mechanism to do that, which is the `@Alternative` mechanism. In complex CDI applications, this `@Alternative` mechanism might not be enough, so CDI provides a more precise way to override a bean, also more restrictive, which is the `@Specializes` mechanism.
+
+And as a wrapper to all these notions, we saw the notion of Bean Archive. Basically, a bean archive is a Java archive with CDI beans in it. It is defined by the presence of a special file, the `beans.xml` file, which, most of the time, should be put in the `META-INF` folder of this archive.
