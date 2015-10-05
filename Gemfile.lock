@@ -2,21 +2,18 @@ GEM
   remote: https://rubygems.org/
   specs:
     asciidoctor (1.5.2)
-    asciidoctor-diagram (1.2.1)
+    asciidoctor-diagram (1.3.1)
       asciidoctor (~> 1.5.0)
-      rjb (~> 1.4.8)
-    celluloid (0.16.0)
-      timers (~> 4.0.0)
     coderay (1.1.0)
     em-websocket (0.5.1)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
-    eventmachine (1.0.7)
-    ffi (1.9.8)
+    eventmachine (1.0.8)
+    ffi (1.9.10)
     formatador (0.2.5)
-    guard (2.12.5)
+    guard (2.13.0)
       formatador (>= 0.2.4)
-      listen (~> 2.7)
+      listen (>= 2.7, <= 4.0)
       lumberjack (~> 1.0)
       nenv (~> 0.1)
       notiffany (~> 0.0)
@@ -34,24 +31,25 @@ GEM
     guard-rake (1.0.0)
       guard
       rake
-    hitimes (1.2.2)
+    guard-shell (0.7.1)
+      guard (>= 2.0.0)
+      guard-compat (~> 1.0)
     http_parser.rb (0.6.0)
-    listen (2.10.0)
-      celluloid (~> 0.16.0)
+    listen (3.0.3)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
     lumberjack (1.0.9)
     method_source (0.8.2)
     mini_portile (0.6.2)
-    multi_json (1.11.0)
+    multi_json (1.11.2)
     nenv (0.2.0)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
-    notiffany (0.0.6)
+    notiffany (0.0.8)
       nenv (~> 0.1)
       shellany (~> 0.0)
     posix-spawn (0.3.11)
-    pry (0.10.1)
+    pry (0.10.2)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
@@ -59,18 +57,15 @@ GEM
       posix-spawn (~> 0.3.6)
       yajl-ruby (~> 1.2.0)
     rake (10.4.2)
-    rb-fsevent (0.9.4)
+    rb-fsevent (0.9.6)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
-    rjb (1.4.9)
     shellany (0.0.1)
     slop (3.6.0)
     spoon (0.0.4)
       ffi
     thor (0.19.1)
     tilt (2.0.1)
-    timers (4.0.1)
-      hitimes
     yajl-ruby (1.2.1)
 
 PLATFORMS
@@ -82,6 +77,7 @@ DEPENDENCIES
   guard-livereload
   guard-process
   guard-rake
+  guard-shell
   nokogiri
   pygments.rb
   rake

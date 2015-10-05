@@ -1,10 +1,4 @@
-.basic micro-blogging example
-[plantuml, generated_chap02-1, svg]
-----
 @startuml
-
-
-
 PostService ..> UserRepository : Uses
 PostService ..> PostRepository : Uses
 PostService .> NotificationService : Uses
@@ -47,6 +41,4 @@ class JpaPostRepository{
     +List<Post> getAllPostFromUser(User)
     -EntityManager getEntityManager()
 }
-
 @enduml
-----

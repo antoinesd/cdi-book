@@ -5,10 +5,9 @@ ifndef::allbook[]
 :sectlink:
 :sectanchors:
 :sectid:
-:data-uri:
 :icons: font
 :source-language: java
-:imagesdir: ../../images
+:imagesdir: ../images
 :codedir: ../../code
 :sourcedir: {codedir}/src/main/java
 :testdir: {codedir}/src/test/java
