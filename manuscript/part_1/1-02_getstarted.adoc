@@ -32,7 +32,9 @@ This set of posts is called user's timeline.
 
 We could build a simple schema of such an application like this:
 
-include::1-02_schema_microblogging.adoc[]
+.basic micro-blogging example
+plantuml::part_1/1-02_schema_microblogging.puml[generated_chap02-1, format=svg]
+
 
 The `PostService` class is the main service entry point.
 For this class we can get the timeline and submit a new post for a given user.

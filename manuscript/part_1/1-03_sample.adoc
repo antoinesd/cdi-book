@@ -1,5 +1,118 @@
+include::../header.adoc[]
+
 == The example Application
+
+The best way to learn a new technology is probably to have a development goal.
+CDI contains a lot of nice features, some of them may be hard to catch on their theoretical aspect an rather obvious to understand with a concrete use case.
+
+That's why we chose to illustrate the book with a "real-life" application.
+Of course the book will make the focus on the CDI and server-side part of the application, yet the other parts will be interesting to study for people who need to discover other application aspect and how they are integrated with.
+
+=== Goal of this application
+
+Beyond being a support to learn CDI concept having an example application is also a way to talk about real life aspects of development with CDI.
+We won't dive too deeply in these aspects, but we find interesting to show the best practices around an enterprise development project.
+
+The mains aspects we'll present are described below.
+Note that all these secondary aspects won't be described in detail but you'll have an introduction to them to start with your workflow and tooling if you are new to these approaches.
+
+==== Architecture conception
+
+Books introducing a technology are often only focused on the technical aspect of the tool or framework introduced by the book.
+As CDI is an integration technology framework, it's very important to show how it brings goo practices in your application architecture.
+
+Dependency injection has been a great help to bring standardization in architecture, but with CDI new aspects have to be taken into consideration.
+Event mechanism and portable extension included in CDI ar new tools to design your application architecture.
+Without making it central all example in the book will ptomote good architecture practice (or warn you if they don't)
+
+==== Testing
+
+Being able to test your code is fundamental to produce reusable and extensible code.
+Some developers even think that tests are as important than the application code.
+We won't go into these philosophical arguments but will stay on a pragmatical ground: impossible to be a good developer if don't know how to test your code.
+
+As CDI is relying on a component container, code testing can reveal itself a bit tricky.
+So We'll show you how to write your tests and will have a smal focus on test each time we'll have to introduce a new concept.
+
+CDI-unit framework will help us to create test on basic example.
+For more complexes ones, Arquillian testing framework will be our tool.
+
+//todo: add a link to Arquillian book.
+
+==== Third party framework integration
+
+Our example application will give us the occasion to integrate a third party framework with CDI.
+In other words the chapters dealing with advanced CDI part will be done with this use case.
+
+You'll discover the best practives for such an integration and will have keyd to integrate your legacy code to your new applications with CDI.
+
+==== Build packaging and running a CDI application
+
+Finally our example will always follow the good practice in terms of packaging.
+
+Our source will always come with a Maven build file allowing it to be build and tested in your IDE, command line, or build server.
+
+When we'll use some "tricks" in the build or packaging we'll explain it to help you keep up with these practice.
+
 
 === Meet SeeDeeEye the private Social network
 
+We decided to build our example by developing a small micro-blogging engine.
+The goal here is to have a concrete application with real use case to ease your understanding of different CDI aspects.
+
+On the architecture side such an application allow us to start with very small services using basic CDI features and go to broader ones.
+On the feature side, developing SeeDeeEye will require us to use nearly all CDI features from basic injection to advances integration features.
+
+==== Technologies included
+
+Beyond CDI, our micro-blogging engine will make usage of the following third parties technologies:
+
+* JBoss WildFly server to have most technologies below already integrated
+* JPA to persist our users in relational database
+* The NoSQL database MongoDB to store and manage post
+* JSF and PrimeFaces for the UI
+* JAX-RS for exposing our REST API
+* Apache DeltaSpike to help us working with CDI
+
+You don't need to have specific knowledge on these technologies.
+We'll introduce what's necessary to help understanding their interaction with CDI, or how we should proceed to integrate them.
+
+==== Application organization
+
+Schema below shows a very simplified architecture for our application:
+
+.SeeDeeEye architecture at 10000 feet
+plantuml::part_1/1-03_schema_seedeeeye.puml[generated_chap03-1, format=svg]
+
+Different services defined with CDI beans will be used in the application
+
+* UserService: service to register, load user information
+* PostService: service to manage posts and linked them their users and their followers
+* SearchService: service to handle search in various repositories of the application.
+* TimelineService: in charge of managing a user's posts collection (filter,
+* SecurityServices: dealing with security and connection to third parties online services
+* NotificationService: to dispatch notification when an event occurs in the application
+* PostRepository: manage storage of Posts
+* UserRepository: manage the storage of users
+
 === Requirements for the application
+
+As we already said, we son't expect you to be a Java EE expert to follow our example.
+So no previous knowledge is required to understand how the included technologies use CDI.
+
+However we won't go into much detail regarding the part not related to CDI.
+You'll be free to dig by yourself in code related to these techs to learn them by yourself.
+
+This said, the only requirement to follow our example application construction is to install an IDE to have a confortable way to produce CDI code.
+
+=== Getting started with SeeDeeEye
+
+To start with SeeDeeEye all you have to do is to clone the Github repository by issuing the following command in your terminal:
+
+ [source, console]
+ ----
+ $ git clone https://github.com/antoinesd/SeeDeeEye.git
+ ----
+
+If you have a Github account and want to add your own code to the application you may want to to fork the repository first and then clone your fork.
+

@@ -1,0 +1,20 @@
+@startuml
+UserService ..> UserRepository : Uses
+PostService ..> UserService : Uses
+PostService ..> PostRepository : Uses
+TimelineService ..> UserService : Uses
+TimelineService ..> PostService : Uses
+PostService ..> NotificationService : Uses
+UserService ..> SecurityService : Uses
+SearchService ..> PostRepository : Uses
+SearchService ..> UserRepository : Uses
+
+interface UserService
+interface PostService
+interface SearchService
+interface TimelineService
+interface SecurityService
+interface NotificationService
+interface PostRepository
+interface UserRepository
+@enduml
