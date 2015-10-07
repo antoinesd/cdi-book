@@ -1,0 +1,9 @@
+- Every chapter must open with Manning's chapter opener bullets. I've attached a file with examples (Chapter-openers-and-summaries.pdf).
+
+- Every chapter must also end with a summary that consists of nothing but bullets. Each bullet summarizes a major topic that you taught in the chapter, and includes a reason why that topic is relevant or useful. You can see examples in the file I just mentioned.
+
+- For teaching a difficult topic, you can use an approach documented in another attached file (Diagram-first.pdf). The basic idea is you start with a concrete example ("Say you want to do X"), then provide a diagram and some text, and then some code. Then you delve more deeply into the topic, focusing in on individual aspects (don't be afraid of repeating yourself--repetition can help people learn and remember what you are teaching), and finally conclude with a generalization about what you just taught. We can go over this file in a meeting if you wish.
+
+- Before writing a chapter, think through what you are teaching, how you plan to teach it, and what diagrams and examples you will use. If you do that planning, the chapter will practically write itself. The Chapter_Plan_worksheet.rtf has some questions to ask yourself as part of your planning process.
+
+- I've also attached guidelines you can use when revising chapter 1 (Chapter 1 Instructions.doc).
