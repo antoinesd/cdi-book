@@ -7,7 +7,8 @@ ifndef::allbook[]
 :sectid:
 :icons: font
 :source-language: java
-:imagesdir: ../images
+:imagesdir: ../../images
+:imagesoutdir: ../../images
 :codedir: ../../code
 :sourcedir: {codedir}/src/main/java
 :testdir: {codedir}/src/test/java
