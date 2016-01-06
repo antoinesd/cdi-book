@@ -7,9 +7,7 @@
     <artifactId>book</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <!--<modules>
-        <module>code</module>
-    </modules>-->
+
 
     <name>Book generator</name>
     <description>project hosting source of CDI 2 in action book with
@@ -23,48 +21,8 @@
         <asciidoctorj.diagram.version>1.3.1</asciidoctorj.diagram.version>
         <maven.build.timestamp.format>MMMM dd, yyyy</maven.build.timestamp.format>
         <revisiondate>${maven.build.timestamp}</revisiondate>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se</artifactId>
-            <!-- 2.2.15.Final -->
-            <!-- 3.0.0.Alpha12 -->
-            <version>2.2.15.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
-            <version>4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-core</artifactId>
-            <version>1.1.5.Final</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-container-spi</artifactId>
-            <version>1.1.5.Final</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-container-test-api</artifactId>
-            <version>1.1.5.Final</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <build>
         <defaultGoal>process-resources</defaultGoal>
