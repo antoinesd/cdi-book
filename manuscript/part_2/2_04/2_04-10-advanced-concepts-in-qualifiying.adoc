@@ -1,27 +1,32 @@
 
 === Advanced concepts in qualifying bean
 
-There are two concepts we need to go through on the topic of the CDI Bean Type system. Those two concepts are `@Alternative` and `@Specializes`. These concepts are quite complex, but in some vey precise cases, needed in CDI applications.
+We have gone through all the elements CDI uses to define the CDI bean type of a bean, and the different ways it uses to wire producers and injection points together.
 
-==== Introduction
+There are still two fundamental concepts we need to go through on the topic of the CDI Bean Type system. Those two concepts are `@Alternative` and `@Specializes`. They are quite complex, but in some vey precise cases, needed in CDI applications.
 
 Suppose we have a working CDI application with many producers and injection points. Everything was very carefully designed and written, and the application heavily relies on qualifiers to associate producers and injection points.
 
-And for some reason, testing, debugging, you name it, we need to substitute a given bean of a given type with another bean. The Java type of this second bean is different, but the qualifiers are the same. We want to provide a class that should be used by CDI to create a given bean, and inject everywhere in our application instead of the first one. This can become a real nightmare to do, especially if our application is large an complex.
+The fact is that, in your testing environment, you need to mock the access to your database, or to a given service. What you want in fact is to change the producer of this database or service, so that it is wired with the injection points in a transparent way. There should be a natural way to do that, since the classpath when you run your tests in not the same as the one used in the production mode.
 
-The solution cannot rely on adding some kind of information (qualifier for instance) on the injection points. First it would be very error prone (suppose we forget one). And it would also be very complex, this would not lead to a reliable solution.
+The exact Java type of this mock bean is different, but the qualifiers may be the same. What we want to do is to provide this mock and have CDI inject everywhere in our application instead of the real object. This could become a real nightmare to do, especially if your application is large an complex. We want a simple solution, and indeed CDI has one.
 
-Plus, since CDI offers the possibility to get an instance of a bean programmatically, a point that will be fully described at the end of this chapter. This possibility makes this solution a non-solution, since it will fail with programmatic lookup.
+But we can also imagine other use cases. Suppose our application is internationalized. We could imagine having a bunch of supported locales, each represented by sets of classes, put in different packages. These classes are in fact models for CDI beans, and are meant to be injected, or are referenced by Java Server Faces templates. One way of organizing this is to set the correct set of class as the alternative in a given deployment scenario using a given locale.
 
-So the only reliable way to do that is to act on the producing side. An approach one could think of could be to create a class with the exact same Java types. The simplest way to do that is to extend the class we want to substitute and the same qualifiers to it. But by doing that, we would create an ambiguity in our CDI application, since we would define two beans with the same CDI Bean Type. We cannot add a special qualifier to it, since we would then need to add this qualifier everywhere on the injection side, a solution that we discarded.
+
+==== Bringing the `@Alternative` concept
+
+The solution cannot rely on adding some kind of information (qualifier for instance) on the injection points. First it would be very error prone (suppose we forget one). And it would also be very tedious to set up. This would not lead to a reliable solution.
+
+Plus, since CDI offers the possibility to get an instance of a bean programmatically, a point that will be fully described at the end of this chapter. This possibility makes this solution a non-solution, since it would fail with programmatic lookup.
+
+The only reliable way to do that is to act on the producing side. An approach one could think of could be to create a class with the exact same Java types. The simplest way to do that is to extend the class we want to substitute and add the same qualifiers to it. But by doing that, we would create an ambiguity in our CDI application, since we would define two beans with the same CDI Bean Type. Adding a special qualifier to it is not a solution, since we would then need to add this qualifier everywhere on the injection side, a solution that we discarded.
 
 This is exactly for this kind of situation that the `@Alternative` concept has been created in CDI. The bean we want to substitute to the normal, injected bean, is declared as the _alternative_ of the normal bean, and then, CDI will magically inject this alternative in place of the normal bean.
 
-==== Creating an alternative bean
-
 ===== The `@Alternative` annotation
 
-From a technical point of view, creating an alternative bean is really simple. We just need to add the `@Alternative` annotation where the bean is produced and we are done.
+From a technical point of view, creating an alternative bean is really simple. We just need to create a producer for this bean, and add the `@Alternative` annotation where the bean is produced and we are done.
 
 [[app_listing]]
 .Declaring the `InMemoryConcurrentPostRepository` class as an alternative using an annotation
@@ -44,9 +49,9 @@ Adding an annotation is very simple, but it requires the compilation of the clas
 
 The first one is the case where this alternative class is a separate class, created for this case. Adding this annotation to this class is the natural way of doing it. If this class is a test class, it will not be deployed at runtime. If this class is some temporary class that we need to add to our application for debugging or auditing purposes, then we can put it in a separate JAR and remove that JAR when we do not need it anymore. In both cases, we do not need to recompile all our application to declare this alternative.
 
-The second case is a bit more complex. We want a class that is already in our application to become the alternative. If we decide to add this annotation to it, then we will need to recompile everything, and go through all the testing and deployment process. This way might be costly, too costly for our needs.
+The second case is a bit more complex. We want a class that is already in our application to become the alternative. If we decide to add this annotation to it, then we will need to recompile this class, and go through all the testing and deployment process of this project. If this is a Maven project automatically handled by a continuous integration server, going through all these steps may be costly, especially for such a simple need.
 
-Instead of doing it that way, we can also add the declaration of alternatives in the `beans.xml` file. Using this way, we do not need to recompile our application, we only need to redeploy it with the modified `beans.xml`file. It is good to keep in mind this way of modifying the configuration of Java EE elements, since it may prove much more efficient than having to recompile and rebuild everything.
+Instead of declaring this alternative using an annotation, we can also declare it in the `beans.xml` file. Using this way, we do not need to recompile anything, we only need to redeploy it with the modified `beans.xml`file. It is good to keep in mind this way of modifying the configuration of Java EE elements, since it may prove much more efficient than having to recompile and rebuild a whole project.
 
 Declaring an alternative in the `beans.xml` configuration file is really easy. Let us see the following example.
 
@@ -71,20 +76,13 @@ All we need is to declare the alternative class in the `alternatives` XML subele
 
 It is possible to have more than one bean with the same CDI Bean Types annotated with `@Alternative`. Of course this case will raise errors due to ambiguities in the resolution of which of those beans should be used to injection. Referencing one of these classes in the `beans.xml` file will resolve the ambiguity.
 
+// TODO José : ajouter un exemple
+
 ===== Selecting an alternative bean with the `@Priority` annotation
 
 There is also another way to choose from several beans annotated with `@Alternative`. This way consists in adding a `@Priority` annotation along with the `@Alternative` annotation. This annotation will make this bean the chosen one among the other alternatives. The `@Priority` annotation takes an `int` attribute that has no default value. So we must give a value to this priority.
 
-The `@Priority` annotation does not come rom CDI. It comes from `javax.annotation`, and its exact meaning is left to the specifications that use it. CDI does indeed mention it for alternatives, but does not give precision on the way this attribute is used. So far we assume that only one alternative can be annotated with `@Priority`.
-
-
-===== Alternative use cases
-
-Alternatives are a very powerful tool that can be used in several use cases.
-
-The first one of course is when we need to inject mock objects in a testing environment. Declaring our mock class as an alternative makes it very easy to inject this mock object instead of the runtime bean. The mocked class is only known in the test context, and will not be deployed at runtime (if it is the case, fix it!). So all we need to do if to extend the class of the real bean, sparkle some mocking magic on it, put the same qualifiers on this class, and add declare it as an alternative, either by annotating it, or by declaring it in the `beans.xml` file.
-
-But we can also imagine other use cases. Suppose our application is internationalized. We could imagine having a bunch of supported locales, each represented by sets of classes, put in different packages. These classes are in fact models for CDI beans, and are meant to be injected, or are referenced by JSF templates. One way of organizing this is to set the correct set of class as the alternative in a given deployment scenario using a given locale.
+The `@Priority` annotation does not come from CDI but from `javax.annotation`, and its exact meaning is left to the specifications that use it. CDI does indeed mention it for alternatives, but does not give precision on the way this attribute is used. So far we assume that only one alternative can be annotated with `@Priority`.
 
 ==== Creating a `@Specializes` bean
 
@@ -167,14 +165,14 @@ private PostRepository repository;
 
 Indeed, this annotation fixes our code in production, since the injected bean has to have the `@Concurrent` qualifier.
 
-And then we realize that our test code does not work anymore! The `MockInMemoryConcurrentPostRepository` is not injected; the test code still injects the`InMemoryConcurrentPostRepository`. Why so? Simply because the qualifiers are not inherited. The `MockInMemoryConcurrentPostRepository` does not have the qualifier `@Concurrent` and thus is not a candidate for injection here. This will probably not look natural for many people, but logical with all the rules we have written and used so far.
+And then we realize that our test code does not work anymore! The `MockInMemoryConcurrentPostRepository` is not injected; the test code still injects the `InMemoryConcurrentPostRepository`. Why so? Simply because the qualifiers are not inherited. The `MockInMemoryConcurrentPostRepository` does not have the qualifier `@Concurrent` and thus is not a candidate for injection here. This will probably not look natural for many people, but logical with all the rules we have written and used so far.
 
-Let us have a look back at we did exactly. What are we doing here? We have to classes `A` and `B`, with `B`extending `A`. We extend a class, add the `@Alternative` annotation on it thinking that it will fully override the class we extend, and in fact it does not, because the annotations are not inherited.
+Let us have a look back at we did exactly. What are we doing here? We have to classes `A` and `B`, with `B` extending `A`. We extend a class, add the `@Alternative` annotation on it thinking that it will fully override the class we extend, and in fact it does not, because the annotations are not inherited.
 
-Most of the time this is not what we want. This is precisely to overcome this problem that the specialization has been added to CDI. In a nutshell, adding the `@Specializes` annotation to the overriding class will do the trick: CDI will take it in place of the overridden class, wherever this class is used.
+Most of the time this is not what we want. What we want is our `MockInMemoryConcurrentPostRepository` class to have the `@Concurrent` qualifier. This is precisely to overcome this problem that the specialization has been added to CDI. In a nutshell, adding the `@Specializes` annotation to the overriding class will do the trick: CDI will take it in place of the overridden class.
 
 When a bean _specializes_ another bean then we are sure that this other bean is not used as a bean by CDI. It is not seen, not instantiated, nothing.
 
-For a bean to be a specialization of another bean, either its class must directly extends the class of this other bean, either its producing method must directly override the producing method of the first bean. Then the `@Specializes` annotation must be added to the class or to the producing method, as the case may be. Note that it the producer is in fact a field, no specialization can be set up, since a field cannot be overridden.
+For a bean to be a specialization of another bean, either its class must directly extends the class of this other bean, either its producing method must directly override the producing method of the first bean. Then the `@Specializes` annotation must be added to the class or to the producing method, as the case may be. Note that if the producer is in fact a field, no specialization can be set up, since a field cannot be overridden.
 
 This specialization has a side effect, which is probably the desired effect in most cases. If the original bean declares itself one or several producing methods, or observers, those will not be seen by CDI, and thus not activated. Once again, this is probably what we want, since specialization will be used, most of the time, in a testing environment.
