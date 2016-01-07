@@ -1,19 +1,23 @@
 
 === The notion of Bean archive
 
-We introduced the notion of bean archive in our first example, without defining it. Let us do that now. As CDI works in both the Java SE world and the Java EE world, this notion of bean archive is defined in both worlds, with some differences.
+We introduced the notion of bean archive in our first example, without defining it. The object of this paragraph is to precisely define what a bean archive is in the CDI context. As CDI works in both the Java SE world and the Java EE world, this notion of bean archive is defined in both worlds, with some differences.
+
+This paragraph covers everything you need to know about bean archives in the CDI sense. It is a set of definitions to fully understand how bean archives work in CDI, both in the Java SE space and the Java EE space. 
+
+==== The purpose of a bean archive
 
 Let us suppose for now that a bean archive is a simple JAR. Indeed a JAR can be a bean archive, but other Java containers can be bean archives too.
 
-What is the purpose of a bean archive? Well, a CDI container analyzes the content of all the bean archives it knows, looking for its supported annotations and descriptors. It then builds the object graph and all the information it needs so that our application can work. A JAR or any other archive is the most general sense that is not a bean archive is not analyzed by CDI.
+What is the purpose of a bean archive? Well, a CDI container analyzes the content of all the bean archives it knows, looking for its supported annotations and descriptors. It then builds an object graph and gather all the information it needs so that our application can work. A JAR or any other archive is the most general sense that is not a bean archive is not analyzed by CDI.
 
-So a bean archive is a very important notion in CDI: it defines where CDI is going to find what it needs for our application to work properly.
+So a bean archive is a very important notion in CDI: it defines where CDI is going to look for the information it needs for our application to work properly.
 
-In fact, most of the time, when you get a CDI error telling you that your bean is not known, or has not been discovered, it comes from an archive problem: the JAR with the faulty bean has not been analyzed by CDI. So understanding how bean archives work is important prior to understanding anything else in CDI.
+In fact, most of the time, when you get a CDI error telling you that some information is not known (a producer for instance), or has not been discovered, it comes from an archive problem: most probably the JAR with the faulty bean has not been analyzed by CDI. So understanding how bean archives work is important prior to understanding anything else in CDI.
 
-Once again, we must consider two cases: the case of a CDI application that is part of a Java EE application, and the case of a standalone CDI application.
+We must consider two cases: the case of a CDI application that is part of a Java EE application, and the case of a standalone CDI application.
 
-In all cases, an archive is a classical Java language notion. An archive can be:
+A bean archive is built on top of a Java archive. In all cases, a Java archive is a classical Java language notion. Such an archive can be:
 
 * a directory on the classpath or a JAR file in the Java SE world, or
 * an EAR, a WAR, or a RAR in the Java EE world.
@@ -24,14 +28,17 @@ So what makes a Java archive, a CDI bean archive? The answer is simple: the pres
 
 In the Java EE world, there are other kind of archives, so more places to put a `beans.xml` file. But basically the rule is the same: the `beans.xml` file should be put in a `META-INF` directory. There is one exception to this rule though. In the case of a WAR archive, the `beans.xml` file can also be put in the `WEB-INF` directory directly.
 
-What probably comes to mind now is: what happens if we have more than one `beans.xml` file? The answer is quite simple, and there are indeed error cases, that we are going to see.
+What probably comes to mind now is the following question: what happens if you have more than one `beans.xml` file in the set of all the JARs that compose your application? The answer is quite simple, and there are indeed error cases, that we are going to see.
 
 In both the Java SE and Java EE cases, as long as an archive (in the Java sense) has only one `beans.xml` file, everything will be handled properly. An error case can be raised if a configuration has more than one `beans.xml` file in one given archive.
 
 ==== The Web archive (WAR) case
 
-The case of the WAR is quite complex, since there are several places where the `beans.xml` can be put. Usually a WAR relies on home made classes, that can be packaged in JAR files put in the `WEB-INF/lib`, or put directly in the `WEB-INF/classes`. Thus it is logical to enable to put the `beans.xml` file in the `WEB-INF/classes` directory.
+// TODO Antoine : peux-tu me relire et valider le contenu technique, je pense qu'il y a des erreurs la-dedans
 
+The case of the WAR is quite complex, since there are several places where the `beans.xml` can be put. Usually a WAR relies on home made classes, that can be packaged in JAR files put in the `WEB-INF/lib` directory, or put directly in the `WEB-INF/classes` directory. Thus it is logical to enable to put the `beans.xml` file in the `META-INF` directory of the `WEB-INF/classes` directory.
+
+// TODO Antoine : je pense que ce paragraphe est faux
 On the other hand, if you want to build a WAR that depends on JAR files that already contain `beans.xml` files, you will probably want to be able to override the definitions from those files. Taking into account the  `beans.xml` file from the `WEB-INF/classes` directory would not make sense: it would give a global scope to something defined locally. So the decision has been taken to allow a global `beans.xml` file in the `WEB-INF` directory.
 
 In a nutshell, the `beans.xml` can be put:
@@ -40,14 +47,16 @@ In a nutshell, the `beans.xml` can be put:
 * in the `WEB-INF/classes/META-INF` directory
 * in the `META-INF` directory of any JAR put in the `WEB-INF/lib` directory.
 
+// TODO Antoine : idem
 If a `beans.xml` file is found in the `WEB-INF` directory, then it overrides the `beans.xml` files that can be found in the JAR files of the `WEB-INF/lib` directory.
 
 If a `beans.xml` file is found in the `WEB-INF/classes/META-INF` directory, then the `WEB-INF/classes` is considered a bean archive by CDI. The classes from this directory will be analyzed by the CDI container.
 
 If two `beans.xml` are found in both the `WEB-INF` directory and the `WEB-INF/classes/META-INF` directory, then an error is raised. As a web archive designer, you should not be doing that.
 
-Of course, any JAR from the `WEB-INF/lib` that contains a `beans.xml` file in its META-INF` directory is a bean archive.
+Of course, any JAR from the `WEB-INF/lib` that contains a `beans.xml` file in its `META-INF` directory is a bean archive.
 
+// TODO Antoine : idem
 If a `beans.xml` file is found in the `WEB-INF` directory, it overrides all the `beans.xml` files that could be found in the JAR of the `WEB-INF/lib` directory.
 
 ==== The Enterprise archive (EAR) case
@@ -72,7 +81,9 @@ Normal rules apply to this archive. Thus, it is a bean archive if it has a `bean
 
 A RAR archive file contains Java EE connectors used to access enterprise information system. Typically, one such connector exists for each type of resource needed by a Java EE resource. The architecture of the Java EE platform defines the notion of Java EE Connector, the Java EE standard for such adapter components. Those components are packaged in a special archive file: the RAR file.
 
-In this case, the CDI container looks for all the JAR that this RAR depends on. All the previous rules stand in telling if a JAR is a bean archive or not. There is no `beans.xml` file defined at the RAR level, as it is the case for the WAR file.
+In this case, the CDI container looks for all the JAR that this RAR depends on. All the previous rules stand in telling if a JAR is a bean archive or not.
+
+There is no `beans.xml` file defined at the RAR level.
 
 ==== Embedded EJB
 

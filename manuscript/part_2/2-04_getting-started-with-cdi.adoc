@@ -10,8 +10,8 @@ What does this specification do? Well, it defines many things, many concepts, an
 So before deep diving in all these abstract and complex concepts, let us write a first, very simple application. This application will have a `beans.xml` file, an injection point, and we are going to run it in a Weld container. A Weld container is the piece of software we need to run a CDI application. Weld is an implementation of the CDI specification, it has a special status among all the existing implementations: it is the reference implementation. You do not need to know anything more about Weld.
 
 include::2_04/2-04-01-writing-you-first.adoc[]
-include::2_04/2-04-02-the-content-of-beans.adoc[]
 include::2_04/2-04-03-bean-archive.adoc[]
+include::2_04/2-04-02-the-content-of-beans.adoc[]
 include::2_04/2-04-04-concept-of-a-bean.adoc[]
 include::2_04/2-04-05-where-do-we-go.adoc[]
 include::2_04/2-04-06-injection-point.adoc[]
