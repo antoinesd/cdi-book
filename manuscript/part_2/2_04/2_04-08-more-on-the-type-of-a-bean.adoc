@@ -1,7 +1,9 @@
 
-=== What is the type of a bean?
+=== Defining CDI bean type?
 
-We already talked about the type of beans in the CDI context. We saw that CDI would associate producers and injection points based on the type of those two elements. In the Java world, this notion of type is very well defined, but a bit restrictive to fit the needs of CDI. Let us see that in details, beginning with this notion of Jav type, and let us present what does CDI need exactly.
+We saw that CDI would associate producers and injection points based on the type of those two elements. In the Java world, this notion of type is very well defined. The problem is that it is not rich enough to fit the needs of CDI.
+
+The purpose of this section is to explain how the Java type system is used by CDI to define the CDI bean type, what does CDI miss, and what CDI brings to fill the gap.
 
 ==== Bean types are Java types
 
@@ -26,9 +28,7 @@ From the Java type system point of view, this class has two explicitly defined t
 
 But this class also extends the `Object` class, as it is the case for all the Java classes. And indeed, CDI recognizes that. So if we have an injection point of type `Object` (it may look odd, and in fact it is!), it can be injected with an instance of the `InMemoryPostRepository` class. Of course, you should not do that, because an injection point of type `Object` can be injected with so many types that you will probably be in trouble.
 
-So far, the types seen by CDI are the plain Java types.
-
-In fact, a bean type may be the following.
+So far, the types seen by CDI are the plain Java types. A bean type may be the following.
 
 * Any interface, class or abstract class can be a CDI Bean Type.
 * Any parameterized Java type, as long as the parameter has a defined value. For instance `List<String>` is a legal CDI Bean Type, whereas `List<E>` is not.
@@ -48,19 +48,23 @@ There are three cases to consider.
 * If the defined type of the producer is a class, then the CDI Bean Type is the set of composed of this class, all its super-classes including the `Object` class, and all the implemented interfaces if any, and their super-interfaces if any.
 * And if the defined type of the producer is an array or a primitive type, then the CDI Bean Type is the set composed of this array or primitive type, and the `Object` type.
 
-So far, a CDI Bean Type is not just one type, but a set of types, with possibly some inheritance relations between them, but not necessarily.
+So far, a CDI Bean Type is not just one type, but a set of types, with possibly some inheritance relations between them, but not necessarily. Apart for arrays and primitive types, there are no difference with the canonical Java type system.
 
 ==== Bean types in the Java EE world
 
-The Java EE world brings three notions that have an impact on the definition of CDI Bean Types.
+The Java EE world is a bit more complex than that. It brings three notions that have an impact on the definition of CDI Bean Types:
+
+* resources: we don't really care about the implementing class of a datasource or a JMS queue, so we would prefer not to see it in the CDI bean type.
+* managed beans: this case is different since we have the implementing class.
+* session beans: this case is more complex, because a session bean exposes its type to the Java EE container in a special way.
 
 ===== The case of Resources
 
-Resources are elements that may be defined outside of a Java EE application itself. There are usually defined at the Java EE application server level. Think of a JMS queue, a database connection, that can be exposed through a `DataSource` or a JPA `EntityManager`. In fact an `EntityManager` is bound to a transaction more than a database connection, but this is the object with which interact in a Java EE code.
+Resources are elements that may be defined outside of a Java EE application itself. There are usually defined at the Java EE application server level. Think of a JMS queue, a database connection, that can be exposed through a `DataSource` or a JPA `EntityManager`. In fact an `EntityManager` is bound to a transaction more than a database connection, but this is the object with which we interact in a Java EE code.
 
-Java EE allows for the injection of such resources in our code, through annotated fields or setters. Those objects are injected either through fields or method parameters.
+Java EE allows for the injection of such resources in our code, through annotated fields or setters.
 
-The CDI Bean Type of such an injected resource in simply the CDI Bean Type of the injected field or parameter. Most of the time, the declaration of this field or parameter will be an interface. We already defined the CDI Bean Type of an interface, it is simply the set composed of this interface and all its super-interfaces, and the `Object` type.
+The CDI Bean Type of such an injected resource in simply the CDI Bean Type of the injected field or parameter. Most of the time, the declaration of this field or parameter will be an interface. We already defined the CDI Bean Type of an interface, it is simply the set composed of this interface and all its super-interfaces, and the `Object` type. So the real implementing class of this interface, which usually comes from the Java EE container itself, or the Java Database Connectivity (JDBC) driver, is not part of the CDI bean type.
 
 ===== The case of Managed Beans
 
