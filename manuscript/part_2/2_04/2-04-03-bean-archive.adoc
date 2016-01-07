@@ -7,9 +7,9 @@ This paragraph covers everything you need to know about bean archives in the CDI
 
 ==== The purpose of a bean archive
 
-Let us suppose for now that a bean archive is a simple JAR. Indeed a JAR can be a bean archive, but other Java containers can be bean archives too.
-
 What is the purpose of a bean archive? Well, a CDI container analyzes the content of all the bean archives it knows, looking for its supported annotations and descriptors. It then builds an object graph and gather all the information it needs so that our application can work. A JAR or any other archive is the most general sense that is not a bean archive is not analyzed by CDI.
+
+Let us suppose for now that a bean archive is a simple JAR. Indeed a JAR can be a bean archive, but other Java containers can be bean archives too.
 
 So a bean archive is a very important notion in CDI: it defines where CDI is going to look for the information it needs for our application to work properly.
 
@@ -34,12 +34,9 @@ In both the Java SE and Java EE cases, as long as an archive (in the Java sense)
 
 ==== The Web archive (WAR) case
 
-// TODO Antoine : peux-tu me relire et valider le contenu technique, je pense qu'il y a des erreurs la-dedans
-
 The case of the WAR is quite complex, since there are several places where the `beans.xml` can be put. Usually a WAR relies on home made classes, that can be packaged in JAR files put in the `WEB-INF/lib` directory, or put directly in the `WEB-INF/classes` directory. Thus it is logical to enable to put the `beans.xml` file in the `META-INF` directory of the `WEB-INF/classes` directory.
 
-// TODO Antoine : je pense que ce paragraphe est faux
-On the other hand, if you want to build a WAR that depends on JAR files that already contain `beans.xml` files, you will probably want to be able to override the definitions from those files. Taking into account the  `beans.xml` file from the `WEB-INF/classes` directory would not make sense: it would give a global scope to something defined locally. So the decision has been taken to allow a global `beans.xml` file in the `WEB-INF` directory.
+For some reasons, since the `WEB-INF` directory of a WAR is also a place where metadata is put for this web archive, you can also put your `beans.xml` file there.
 
 In a nutshell, the `beans.xml` can be put:
 
@@ -47,17 +44,12 @@ In a nutshell, the `beans.xml` can be put:
 * in the `WEB-INF/classes/META-INF` directory
 * in the `META-INF` directory of any JAR put in the `WEB-INF/lib` directory.
 
-// TODO Antoine : idem
-If a `beans.xml` file is found in the `WEB-INF` directory, then it overrides the `beans.xml` files that can be found in the JAR files of the `WEB-INF/lib` directory.
+If a `beans.xml` file is found in the `WEB-INF/classes/META-INF` directory or the `WEB-INF` directory, then the `WEB-INF/classes` is considered a bean archive by CDI. The classes from this directory will be analyzed by the CDI container.
 
-If a `beans.xml` file is found in the `WEB-INF/classes/META-INF` directory, then the `WEB-INF/classes` is considered a bean archive by CDI. The classes from this directory will be analyzed by the CDI container.
-
-If two `beans.xml` are found in both the `WEB-INF` directory and the `WEB-INF/classes/META-INF` directory, then an error is raised. As a web archive designer, you should not be doing that.
+If two `beans.xml` are found in both the `WEB-INF` directory and the `WEB-INF/classes/META-INF` directory, then non-specified behavior will occur. An error may be raised. As a web archive designer, you should not be doing that.
 
 Of course, any JAR from the `WEB-INF/lib` that contains a `beans.xml` file in its `META-INF` directory is a bean archive.
 
-// TODO Antoine : idem
-If a `beans.xml` file is found in the `WEB-INF` directory, it overrides all the `beans.xml` files that could be found in the JAR of the `WEB-INF/lib` directory.
 
 ==== The Enterprise archive (EAR) case
 

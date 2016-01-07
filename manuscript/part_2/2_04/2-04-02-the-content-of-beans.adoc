@@ -54,7 +54,7 @@ The root element of this `beans.xml` file is `beans`. In CDI 1.0 it has no attri
 
 This `bean-discovery-mode` may take three values: `annotated`, `all` and `none`. Let us see that in details.
 
-The bean discovery mode `none` means that no type from this archive will be analyzed. This bean archive does exist, but you are telling CDI that it is empty. 
+The bean discovery mode `none` means that no type from this archive will be analyzed. This bean archive does exist, but you are telling CDI that it is empty.
 
 The bean discovery mode `annotated` means that only the annotated types will be considered by CDI. This is the recommended value. It just works as you expect it. All your annotated beans will be taken into account by the CDI container.
 
