@@ -1,7 +1,7 @@
 
 === Injection points
 
-// Todo Antoine Antoine : digramme pour expliquer l'injection de dépendances
+// TODO Antoine Antoine : digramme pour expliquer l'injection de dépendances
 
 We had a first glimpse at what dependency injection is in CDI: a field of a bean was annotated with `@Inject` in our first example, and we saw that CDI just put an instance of the right type in that field. It worked quite magically, but there is in fact no magic behind that. CDI could find a bean definition of the right type, and could wire this injection point and this bean together. CDI used this annotation to create a bean and store it in the annotated field.
 
@@ -46,7 +46,7 @@ We can have as many initializer methods as we want. Any method with any number o
 
 The simplest case is a setter method. In this case, it really looks like annotating the corresponding field, the only difference being: in that case CDI calls the setter instead of setting the value of this field directly using the Java Reflection API.
 
-==== How does CDI creates a CDI bean before injecting it?
+==== How does CDI instantiates a CDI bean before injecting it?
 
 // TODO Antoine José : ajouter un graphe
 
