@@ -65,3 +65,5 @@ There are no other attributes added to this `beans` element.
 ==== Subelements of the `beans` root element
 
 CDI defines several subelement to this `beans` root element. We are not going to see them right now. Presenting the list of those subelements here whould not make sense, since we do not know the concepts they define. We will see them one by one throughout this book, one at a time.
+
+In the early versions of CDI, the bean definitions were carried in XML metadata, namely in the `beans.xml` file. Since version 1.2, defining beans in this XML file has been made optional, everything can be done using annotations. For backward compatibility reasons, the `beans.xml` file is still there, and still supported. For some cases it is still needed: not everything can be done with annotations. But in many cases, we do not need it anymore.
