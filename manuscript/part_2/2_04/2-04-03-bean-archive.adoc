@@ -3,7 +3,7 @@
 
 We introduced the notion of bean archive in our first example, without defining it. The object of this paragraph is to precisely define what a bean archive is in the CDI context. As CDI works in both the Java SE world and the Java EE world, this notion of bean archive is defined in both worlds, with some differences.
 
-This paragraph covers everything you need to know about bean archives in the CDI sense. It is a set of definitions to fully understand how bean archives work in CDI, both in the Java SE space and the Java EE space. 
+This paragraph covers everything you need to know about bean archives in the CDI sense. It is a set of definitions to fully understand how bean archives work in CDI, both in the Java SE space and the Java EE space.
 
 ==== The purpose of a bean archive
 
