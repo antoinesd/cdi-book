@@ -1,10 +1,14 @@
 === Writing your first, minimal CDI application
 
-Let us first write a first and very simple CDI application. In this example, we are going to use CDI concepts that we have not defined yet. But seeing them in action will give us a first glimpse at what they are, and how they work together. In a second part, we will describe all those concepts in full details.
+This first paragraph is about writing a very simple CDI application. We will first create a Maven project, with the needed dependency, and a working directories and files structure. We will then create some interfaces and classes to see the CDI dependency injection in action on a running example. We are going to use CDI concepts that we have not defined yet. But seeing them in action will give us a first glimpse at what they are, and how they work together. We will then describe all those concepts in full details.
+
+At the end of this part, you will have a first basic but working CDI application, with an example of dependency injection. You will also have a working Maven environment with the needed dependencies and configuration.
 
 ==== Bootstrapping Weld
 
-As we already explained, a CDI application needs a container to work. This container is in fact an implementation of CDI. Weld is the reference implementation for CDI. This container is production ready, and used in supported application servers.
+As we already explained, a CDI application needs a container to work. This container is in fact an implementation of CDI. Weld is the reference implementation for CDI. This container is production ready, and used in supported application servers (JBoss EAP, ...).
+
+// TODO: add more application servers that are built on top of Weld
 
 To use Weld in a Java SE environment we need to add the following dependencies to our Maven project.
 
@@ -23,7 +27,7 @@ To use Weld in a Java SE environment we need to add the following dependencies t
 // TODO: fix the version of Weld
 The version used here is the 2.2.15.Final, which is the current version as of the writing of this book. Weld V2 supports CDI 1.2.
 
-Bootstraping Weld is done by using the following pattern. We have written it in a `main` method for the sake of simplicity.
+Bootstraping Weld is done by using the following example. We have written it in a `main` method for the sake of simplicity.
 
 [[app_listing]]
 .A minimal code to bootstrap Weld 2
@@ -38,19 +42,27 @@ public class BootstrapingWeld {
 
     public static void main(String... args) {
 
-        Weld weld = new Weld();
-        WeldContainer container = weld.initialize();
+        Weld weld = new Weld();//<1>
+        WeldContainer container = weld.initialize();//<2>
 
-        weld.shutdown();
+        weld.shutdown();//<3>
     }
 }
 ----
 
-This code is really very basic and very easy to understand. Weld is just a container. To start it up, we just create a `Weld` object, and call the `initialize()` method on it. At the end of our application, we should call the `shutdown()` method for Weld to clean up its used resources. In this example, this call is not really needed, since the JVM will be shutdown at the end of our `main` method anyway.
+<1> Weld is just a container. To start it up, we just create a `Weld` object...
+<2> ...and call the `initialize()` method on it.
+<3> At the end of our application, we should call the `shutdown()` method for Weld to clean up its used resources. In this example, this call is not really needed, since the JVM will be shutdown at the end of our `main` method anyway.
 
 Of course this code does not do much. It basically creates the Weld container, and shuts it down.
 
-But it is still interesting, because what we get if we run it is an error message. Weld is complaining for not finding a needed file: the `beans.xml` file. This file is in fact needed to define a _bean archive_. This _bean archive_ concept is a CDI concept, that we will define in the next part. A bean archive is linked to the presence or the absence of this `beans.xml` file. So the simple fact that this file is there has its importance in the CDI context. Now this file also declares elements that are used by CDI to initialize our application. Basically, this files contains information, that we call _metadata_, used to create our CDI application.
+But it is still interesting, because what we get if we run it is an error message. Weld is complaining for not finding a needed file: the `beans.xml` file.
+
+This file should be present for CDI to recognize the CDI nature of our application. Basically, this files contains information, that we call _metadata_, used to create our CDI application.
+
+The presence of this file tells CDI that our application is a _bean archive_. This _bean archive_ concept is a CDI concept, that we will define in the next part. A bean archive is linked to the presence or the absence of this `beans.xml` file.
+
+So the simple fact that this file is there has its importance in the CDI context.  
 
 ==== Adding a `beans.xml`file
 
@@ -66,24 +78,24 @@ So let us add the following `beans.xml` file to our application.
        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
                            http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd">
 
-       version="1.2"
-       bean-discovery-mode="all"
 </beans>
 ----
 
-It is indeed a very classical XML file. The namespace is `http://xmlns.jcp.org/xml/ns/javaee` and the schema location is `http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd`. The root element of this XML document is `beans`, and this element is empty. So we can see that this file does not define anything.
+It is indeed a very classical XML file. The namespace is `http://xmlns.jcp.org/xml/ns/javaee` and the schema location is `http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd`. The root element of this XML document is `beans`, and this element is empty. So this file does not define anything, but it should be there. Please note that the namespace of the `beans` element has changed with the versions of CDI. We will see that in details later in this part.
 
-Where should we put this file? In the `META-INF` directory of our application. We just need to be careful here if we are using Maven. In that case, the place to put the `beans.xml` file is `src/main/resources/META-INF`. It we put it in `src/main/java/META-INF` it will work also, but Maven will not package our application correctly, and the `beans.xml`file will not be added correctly to the JAR.
+Where should you put this file? In the `META-INF` directory of your application.
 
-Running our application again now works, and does not do anything, which the expected behavior. So now that we have a correctly configured application, let us add now some classes and interfaces to actually do something.
+If you followed this example carefully, you should have a Maven project in your favorite IDE, with the `BootstrapingWeld` class under the `src/main/java` standard Maven folder. If this is the case, and since the `beans.xml` file is a resource file, you should store it in the `META-INF` folder of your `src/main/resources` standard Maven folder. If you put `META-INF` folder under `src/main/java`, things will still work, but Maven will not package your application correctly, and will not add your resource `beans.xml` file in the JAR it will build.
+
+Running your application again now works, and does not do anything, which is the expected behavior. So now that you have correctly configured your application, let us add now some classes and interfaces to actually do something.
 
 ==== Adding some content to our application
 
-We used a simple example in the first part of this book. It was about posting messages to a repository. We used two classes: `PostService` and `PostRepository`. Let us take a simplified version of this very basic application.
+We used a simple example in the first part of this book. It was about posting messages to a repository. This example uses two classes: `PostService` and `PostRepository`. Let us take a simplified version of this very basic application.
 
-We have three very simple Java elements: one class and two interfaces.
+You have three very simple Java elements: one class and two interfaces.
 
-The first class is the `Post` class, used as a payload in our system. We removed the `User` class, for the sake of simplicity. You can add a `toString()` method to this `Post` class if you want to trace things in the example code.
+The first class is the `Post` class, used as a payload in your system. You can add a `toString()` method to this `Post` class if you want to trace things in the example code.
 
 [[app_listing]]
 .The `Post` class
@@ -92,10 +104,14 @@ The first class is the `Post` class, used as a payload in our system. We removed
 package chap04.model;
 
 public class Post {
+
+   public String toString() {
+      return "This is a Post";
+   }
 }
 ----
 
-The we have a `PostService` interface, that defines what we can do with posts. Our system is still very simple, we can only save posts in a repository.
+The second element of your application is the `PostService` interface, that defines what you can do with posts. This system is very simple, you can only save posts in a repository.
 
 [[app_listing]]
 .The `PostService` interface
@@ -111,7 +127,7 @@ public interface PostService {
 }
 ----
 
-And then we need to define a `PostRepository` interface, to save our posts in some kind a persistent backend. It could be a XML repository, a relational database, a NoSQL database, whatever.
+And then the third element is the `PostRepository` interface, to save your posts in some kind of a persistent backend. It could be a XML repository, a relational database, a NoSQL database, whatever.
 
 
 [[app_listing]]
@@ -128,7 +144,7 @@ public interface PostRepository {
 }
 ----
 
-Now we have a well-designed system that compiles properly. Of course, if we want it to save posts, we will need to provide implementations for our interfaces.
+Now you have a well-designed system that compiles properly. Of course, if you want it to save posts, you will need to provide implementations for your interfaces.
 
 The implementation of the `PostService` interface relies on the `PostRepository` interface.
 
@@ -155,9 +171,11 @@ public class PostServiceImpl implements PostService {
 }
 ----
 
-What is this `@Inject` annotation? Well, it is the first trace of the CDI magic we talked about earlier. It tells the CDI container (which is in fact a Weld container in this example): find a concrete class for the `PostRepository`, instantiate it, and when I call the `post()` method, I want that instance in the `postRepository` field. This is called dependency injection, CDI is quite good at that.
+What is this `@Inject` annotation? Well, it is the first trace of the CDI magic we talked about earlier. It tells the CDI container (which is in fact a Weld container in this example): find a concrete class for the `PostRepository`, instantiate it, and when you call the `post()` method, the `postRepository` field should hold this instance.
 
-CDI is very smart, but there are things it cannot do. It cannot build a concrete implementation of `PostRepository` on its own, so we need to provide one. Here we go. First, let us write a simple in memory implementation of our `PostRepository` interface.
+Having a properly created instance of `PostRepository` in the right field when the `post()` method is called works thanks to dependency injection. CDI is quite good at that.
+
+CDI is very smart, but there are things it cannot do. It cannot build a concrete implementation of the `PostRepository` interface on its own. At least you need to provide this class. Here is a simple implementation of this interface.
 
 [[app_listing]]
 .The `InMemoryPostRepository` class
@@ -180,16 +198,20 @@ public class InMemoryPostRepository implements PostRepository {
         long id = this.id++;
         posts.put(id, post);
     }
+
+    public String toString() {
+        return "This is an in memory post repository";
+    }
 }
 ----
 
-This implementation will do the job in very simple cases. It is not concurrent aware, so we should not call this class from multiple threads. If we do, we will certainly lose posts, and most probably corrupt our repository. So do not use such a naive implementation in production! But for our first, simple example, it will be enough. Once again, you can add a `toString()` method if you want to trace things precisely.
+This implementation will do the job in very simple cases. Do not use such a naive implementation in production! But for your first, simple example, it will be enough. Once again, you can add a `toString()` method if you want to trace things precisely.
 
-Be careful that CDI needs to be able to instantiate a class using the Java reflection API. We need to keep that in mind, and build implementation classes with empty constructors. Remember that the empty constructor is there only if there is no constructor defined in a class. If we add a non-empty constructor, then we need to also add the empty constructor explicitly if we want it to be there.
+Be careful that CDI needs to be able to instantiate a class using the Java reflection API. You need to keep that in mind, and build implementation classes with empty constructors. Remember that the empty constructor is there only if there is no constructor defined in a class. If we add a non-empty constructor, then we need to also add the empty constructor explicitly if we want it to be there.
 
 In fact, there are cases where CDI can use another constructor than the empty one. We will see this technique later.
 
-Notice that our system is designed with interfaces and does not use classes directly. This is a good practice. It you are aware of the SOLID design principle, programming against interfaces follows the L principle, that is the Liskov substitution principle.
+Notice that our system is designed with interfaces and does not use classes directly. This is a good practice. It you are aware of the SOLID design principle, programming against interfaces follows the L principle, that is the Liskov substitution principle. This well-known object programming principle states that you should always be able to substitute an object of a subtype where you declare that an object of a given type is needed. If you use interfaces for the parameter declarations of your method, then you will always be able to use this principle.
 
 ==== Running our first CDI application
 
@@ -230,18 +252,34 @@ public class BootstrapingWeld {
 
 This example does in fact two things, apart from bootstraping and shutting down the CDI container.
 
-It first get instances of the `PostRepository` and the `PostService` interfaces. The pattern to do that might look a little complex, with three chained method calls. It is in fact a Weld pattern, not a CDI one. Note that the objects returned are fully initialized: The instance of the `PostService` interface returned is built no the `PostServiceImpl` class, and has been injected with a `PostRepository` instance.
+It first get instances of the `PostRepository` and the `PostService` interfaces. The pattern to do that might look a little complex, with three chained method calls. It is in fact a Weld pattern, not a CDI one. Note that the objects returned are fully initialized: The instance of the `PostService` interface returned is built on the `PostServiceImpl` class, and has been injected with a `PostRepository` instance.
 
-What are the classes of the instances of `PostRepository` and `PostService` provided by Weld? We could expect the answer to be `InMemoryPostRepository` and `PostRepositoryImpl`. In fact it is not the case. For some reason, Weld (and all the other implementations of CDI) builds its own implementing classes. Of course these implementations are based on the one we provide, but they are still not the same. There are good reasons for Weld to work like that, we will see some of them later. It is good to have that in mind when designing CDI applications.
+What are the classes of the instances of `PostRepository` and `PostService` provided by Weld? We could expect the answer to be `InMemoryPostRepository` and `PostRepositoryImpl`. In fact it is not the case. For some reason, Weld (and all the other implementations of CDI) builds its own implementing classes. Of course these implementations are based on the one you provide, but they are still not the same. There are good reasons for Weld to work like that, we will see some of them later. It is good to have that in mind when designing CDI applications.
 
-This example will work if the attribute `bean-discovery-mode` of the `beans` XML element of our `beans.xml` file has been properly set to `all` If it is not the case, or this attribute is not present, then we will get errors running this example.
+To have this example to work, you should use the following `beans.xml`. Note that we just added two attributes to the `beans` root element: `bean-discovery-mode` and `version`. We will give more explanations on these attributes later in this part. If you fail to add them, you will get errors running this example.
+
+[[app-listing]]
+[source,xml]
+----
+.A first `beans.xml`file
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                           http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
+
+       version="1.2"
+       bean-discovery-mode="all">
+
+</beans>
+----
 
 ==== Wraping up our first example
 
-In a nutshell, we built the following:
+In a nutshell, you built the following:
 
 * a `META-INF\beans.xml` file, that defined a _bean archive_;
-* set of interfaces and implementing classes, tha defined _bean_ in the CDI sense;
+* a set of interfaces and implementing classes, that defined _bean_ in the CDI sense;
 * a running example with some explicit Weld calls.
 
 Let us browse through all what CDI did for us.
