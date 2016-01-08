@@ -3,14 +3,15 @@ include::../header.adoc[]
 [[chap01-introduction-to-cdi]]
 == Introduction to CDI
 
-This chapter is an introduction to the main concepts of CDI:
 
+.This chapter covers
+****
 * what is CDI in a nutshell,
 * what is dependency injection,
 * what is a context in the CDI sense,
 
 // TODO Antoine : compléter cette liste
-
+****
 
 One of the strength of the Java world is probably the vibrant open source community that it gathered in the last two decades.
 This community has been developing countless wonderful tools, frameworks and API.
@@ -334,9 +335,9 @@ This very powerful feature is called convention over configuration. CDI works wi
 We can change these rules to better suit the needs of our applications, but most of the time, it is better to avoid doing this.
 
 
-=== Code examples
+//=== Code examples
 
-//TODO: give code example here after removing of sample from scrtach to chapter 2
+//TODO: Is it still usefull with example in chapter 2 and the few examples we already gave above?
 
 === The CDI specification
 
@@ -351,7 +352,7 @@ Let's go thought this concept of specification to understand the impact on CDI
 
 ==== The JCP
 
-In early Java days, Sun Microsystem, which owned Java at the time, decided to to create a community gathering all interested actors in the Java platform.
+In early Java days, Sun Microsystems, which owned Java at the time, decided to to create a community gathering all interested actors in the Java platform.
 So they created the Java Community Process (JCP) to organize Java language and platform evolution.
 Today, under Oracle government, the JCP pursue it's work in specifying Java SE and Java EE platform.
 Here is how the JCP defines itself: 
