@@ -3,15 +3,15 @@
 [[chap04-getting-started]]
 == Getting started with CDI
 
-As we saw, CDI in itself is a specification, that is an abstract concept, or a set of abstract concepts, described in a paper document. Aside of this document, there are several implementations that are there to give life to this specification.
+As we saw in part 1, CDI in itself is a specification, that is an abstract concept, or a set of abstract concepts, described in a paper document. Aside of this document, there are several implementations that are there to give life to this specification.
 
-What does this specification do? Well, it defines many things, many concepts, and the way those concepts interact between themselves. The interactions between those concepts are many, and to understand the overall, you need to know CDI well. Basically, to understand CDI, you need to have a good understanding of CDI, which is a good example of the chicken and egg problem.
+What does this specification do? Well, it defines many things, many concepts, and the way those concepts interact between themselves. To understand the overall, you need to know CDI well. Basically, to understand CDI, you need to have a good understanding of CDI, which is a good example of the chicken and egg problem.
 
-So before deep diving in all these abstract and complex concepts, let us write a first, very simple application. This application will have a `beans.xml` file, an injection point, and we are going to run it in a Weld container. A Weld container is the piece of software we need to run a CDI application. Weld is an implementation of the CDI specification, it has a special status among all the existing implementations: it is the reference implementation.
+So before deep diving in all these abstract and complex concepts, let us write a first, very simple application. This application will have a `beans.xml` file, an injection point, and we are going to run it in a Weld container. A Weld container is the piece of software we need to run a CDI application. Weld is an implementation of the CDI specification, it has a special status among all the existing implementations: it is the reference implementation. You do not need to know anything more about Weld.
 
 include::2_04/2-04-01-writing-you-first.adoc[]
-include::2_04/2-04-02-the-content-of-beans.adoc[]
 include::2_04/2-04-03-bean-archive.adoc[]
+include::2_04/2-04-02-the-content-of-beans.adoc[]
 include::2_04/2-04-04-concept-of-a-bean.adoc[]
 include::2_04/2-04-05-where-do-we-go.adoc[]
 include::2_04/2-04-06-injection-point.adoc[]
@@ -22,14 +22,16 @@ include::2_04/2_04-10-advanced-concepts-in-qualifiying.adoc[]
 
 === Wrap-up
 
+// TODO Antoine José : on a besoin de plus d'infos sur ce qu'est un résumé... Marina : "the summary for a chapter cannot just be a recapitulation of what you taught in the chapter."
+
 This quite lengthy chapter built the foundation for the rest of this book. We saw several fundamental notions, that are the bare bones of CDI.
 
-First the notion of bean, which central in CDI. A bean is this special object that CDI can manage for us. So far we saw that it can be used for injection in other beans, and can be used to produce other beans. This very powerful injection / production mechanism is at the heart of CDI.
+First the notion of bean, which central in CDI. A bean is this special object that CDI can manage for you. So far we saw that it can be used for injection in other beans, and can be used to produce other beans. This very powerful injection / production mechanism is at the heart of CDI.
 
-Then we saw the notion of CDI Bean Type. This notion relies on two other notions: the classical Java bean type, with classes and interfaces, and the notion of qualifiers. We saw that in some cases, recognizing a bean just by its Java type was not enough. There is indeed a gap between a bean that is a `BigDecimal` for instance, and the business type of that bean, which is the price of a product. Qualifying a bean is there to fill in this gap: it is about adding semantic to a bean which type is too common, or too generic. Adding a qualifier on a `String` object makes it very easy to tell that this particuliar string of characters is in fact an OAuth2 token, for instance.
+Then we saw the notion of CDI Bean Type. This notion relies on two other notions: the classical Java bean type, with classes and interfaces, and the notion of qualifiers. We saw that in some cases, recognizing a bean just by its Java type was not enough. There is indeed a gap between a bean that is a `BigDecimal` for instance, and the business type of that bean, which is the price of a product. Qualifying a bean is there to fill in this gap: it is about adding semantic to a bean which type is too common, or too generic. Adding a qualifier on a `String` field makes it very easy to tell that this particular string of characters is in fact an OAuth2 token, for instance.
 
 Specifying the precise type of a bean through the CDI Bean Type system is about associating bean producers and injection points. Which producer should be used for what injection point? To answer this question, CDI needs to match both CDI Bean Types.
 
 But in some cases, and of course the first that comes to mind is the testing context, we need to override the producing side. We need to provide mock objects to be injected in place of the normal objects. CDI offers a very easy to set up mechanism to do that, which is the `@Alternative` mechanism. In complex CDI applications, this `@Alternative` mechanism might not be enough, so CDI provides a more precise way to override a bean, also more restrictive, which is the `@Specializes` mechanism.
 
-And as a wrapper to all these notions, we saw the notion of Bean Archive. Basically, a bean archive is a Java archive with CDI beans in it. It is defined by the presence of a special file, the `beans.xml` file, which, most of the time, should be put in the `META-INF` folder of this archive.
+And as a wrapper to all these notions, we saw the notion of Bean Archive. Basically, a bean archive is a Java archive with CDI beans in it. It is defined by the presence of a special file, the `beans.xml` file, which, most of the time, should be put in the `META-INF` folder of this archive. This `beans.xml` file is also a place to put some configuration information is a very efficient way for your CDI application. We will see more things to be put in this file in the next parts of this book.

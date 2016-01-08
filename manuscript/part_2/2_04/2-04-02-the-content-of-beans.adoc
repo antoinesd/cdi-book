@@ -1,7 +1,9 @@
 
 === Writing a `beans.xml` file
 
-We saw in the previous part that without this `beans.xml` file, our CDI application was not working at all. In fact, this file defines a very important notion in the CDI space: the notion of _bean archive_. We will see in detail in the next paragraph what is a _bean archive_ exactly. But first, let us see more on this `beans.xml` file.
+The previous paragraph was about defining the notion of bean archive in the CDI sense. We saw that it relies on the presence a special file, the `beans.xml` file in the `META-INF` directory. Without this `beans.xml` file, our CDI application was not working at all. Now that we understand the role this file plays in a CDI application, let us see what you should put in it.
+
+This paragraph covers the content of the `beans.xml` file, and how this content evolved from the 1.0 version to the 2.0 version.
 
 
 ==== The `beans.xml` file in CDI 1.0
@@ -24,7 +26,9 @@ The namespace is `http://java.sun.com/xml/ns/javaee` and the schema location is 
 
 ==== The `beans.xml` file in CDI 1.1 and later
 
-Be careful, because between version 1.0 and 1.1 something odd happened: the namespace changed and the location of the XML schema changed also. Let us have a look at those new values right now.
+Be careful, because between version 1.0 and 1.1 something odd happened: both the namespace of the root element of this file and the schema location have been changed. So if you need to migrate a CDI 1.0 application to a more recent version, you need to check your `beans.xml` files. Let us have a look at those new values right now.
+
+Note also that there is no specific schema for CDI 1.2 (`beans_1_2.xsd`). CDI 1.2 is a maintenance release, the schema has not been modified.
 
 [[app-listing]]
 [source,xml]
@@ -41,21 +45,16 @@ Be careful, because between version 1.0 and 1.1 something odd happened: the name
 </beans>
 ----
 
+==== The version and bean discovery mode attributes
 
-So if you need to migrate a CDI 1.0 application to a more recent version, you need to check your `beans.xml` files.
-
-Now you could think that the XML Schema for CDI 1.2 is `beans_1_2.xsd` at the same address than the previous version. In fact there is no such `beans_1_2.xsd` schema. CDI 1.2 is a maintenance release, the schema has not been modified.
-
-==== Version and bean discovery mode
-
-The root element of this file is `beans`. In CDI 1.0 it has no attribute defined. This changed in CDI 1.1, where two attributes were introduced:
+The root element of this `beans.xml` file is `beans`. In CDI 1.0 it has no attribute defined. This changed in CDI 1.1, where two attributes were introduced:
 
 * `version`, set to 1.1 by default;
-* `bean-discovery-mode`, which is mandatory.
+* `bean-discovery-mode`, which has no default value and is mandatory.
 
 This `bean-discovery-mode` may take three values: `annotated`, `all` and `none`. Let us see that in details.
 
-The bean discovery mode `none` means that no type from this archive will be analyzed. This bean archive is just empty. You may wonder what is the purpose of adding a `beans.xml` file in an archive to make it a bean archive, and then to tell CDI: dont do anything with this! There is indeed a case where we need this kind if thing. Remember that in web archives, you may have JAR in your `WEB-INF/lib` with `beans.xml` files in them. If you do not want them to be seen as bean archives, then you can put a `beans.xml` file in your `WEB-INF` directory that will override those  local `beans.xml` files. And in this global `beans.xml` file, you can set the bean discovery mode to none to shut down everything.
+The bean discovery mode `none` means that no type from this archive will be analyzed. This bean archive does exist, but you are telling CDI that it is empty.
 
 The bean discovery mode `annotated` means that only the annotated types will be considered by CDI. This is the recommended value. It just works as you expect it. All your annotated beans will be taken into account by the CDI container.
 
@@ -66,3 +65,5 @@ There are no other attributes added to this `beans` element.
 ==== Subelements of the `beans` root element
 
 CDI defines several subelement to this `beans` root element. We are not going to see them right now. Presenting the list of those subelements here whould not make sense, since we do not know the concepts they define. We will see them one by one throughout this book, one at a time.
+
+In the early versions of CDI, the bean definitions were carried in XML metadata, namely in the `beans.xml` file. Since version 1.2, defining beans in this XML file has been made optional, everything can be done using annotations. For backward compatibility reasons, the `beans.xml` file is still there, and still supported. For some cases it is still needed: not everything can be done with annotations. But in many cases, we do not need it anymore.

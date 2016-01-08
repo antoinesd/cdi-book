@@ -3,13 +3,13 @@
 
 From this point, we begin to have a good idea of the big picture of what CDI do with beans.
 
-* We saw that a bean lives in a bean archive, and we know what a bean archive is. We also saw the `beans.xml` file that makes an archive a bean archive.
-* We know that a bean has a type. Its type is based on its Java type, with more information brought by special annotations called _qualifiers_.
-* We also saw that a bean can be injected, but we still need to fully understand how CDI wires a certain type a bean to a given injection point.
+* We saw that a bean lives in a bean archive, and we know what a bean archive is. We also saw the role of the `beans.xml` file that makes an archive a bean archive.
+* We know that a bean has a type. Its type is based on its Java type. We still need to learn more on this point.
+* We also saw on an example that a bean can be injected, but we still need to fully understand how CDI wires a certain type a bean to a given injection point.
 * We know that beans are created for us by CDI, but we are missing many things to fully understand how we can tell CDI how to create our beans.
 
 Let us carry on in this presentation, with two fundamental notions: the injection point and the producers. Injection points are the places where CDI needs to put our beans, and the producers are the elements CDI will use to create instances of our beans.
 
-Then we will see in details the notion of CDI bean type. This notion in itself is quite complex, but CDI provides mechanisms to override its own notion of CDI bean type, with special ideas in mind on why we would need to do that. So we will see this in details, with precise examples. We will also see the impacts of the CDI bean type definition on both injection points and producers.
+Then we will see in details the notion of CDI bean type. This notion in itself is quite complex. CDI also provides mechanisms to override its own notion of CDI bean type, with special ideas in mind on why we would need to do that. So we will see this in details, with precise examples. We will also see the impacts of the CDI bean type definition on both injection points and producers.
 
-In fact, those three notions: CDI bean type, injection point and producers are closely linked together, and this is why we see them together in this part.
+In fact, those three notions: CDI bean type, injection point and producers are closely linked together, and this is why we see them together in the following sections.
