@@ -433,10 +433,10 @@ Most alternatives frameworks to CDI described in <<alternatives>> also implement
 
 Like most framework adding high level service on standard Java classes, CDI use a container to store all meta data and active components used in the current application.
 
+The CDI container is the heart of the framework.
 When running CDI in Java EE, this container is automatically provided to you by the Java EE server.
 When running CDI in Java SE, you'll have to boot this container as we will see in <<java_se_boot>>.
 
-The CDI container is the heart of the framework.
 It contains all the beans defined in your application and all the bean instances (Java Object) that were previously created in active contexts so you can request them again.
 It is also responsible to add powerful features to your components like eventing system, interceptor or decorator, among others.
 
@@ -576,3 +576,4 @@ The counter part of this lightness is less dynamic aspect than other framework a
 Dagger 2 is now led by Google.
 
 You'll find more information on Dagger on the project website: http://google.github.io/dagger/
+
