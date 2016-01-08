@@ -7,6 +7,7 @@ ifndef::allbook[]
 :sectid:
 :icons: font
 :source-language: java
+:source-highlighter: coderay
 :imagesdir: ../../images
 :imagesoutdir: ../../images
 :codedir: ../../code
