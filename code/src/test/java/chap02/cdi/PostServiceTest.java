@@ -34,10 +34,8 @@ public class PostServiceTest {
     
     @Test //<6>
     public void testPostMessage() throws Exception {
-
         ps.postMessage(new User(),new Post());
         Assert.assertEquals("1", neob.getCount());
-        
     }
 }
 // end::snippets[]

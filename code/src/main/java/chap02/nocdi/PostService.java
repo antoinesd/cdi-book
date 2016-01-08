@@ -34,14 +34,14 @@ public class PostService {
   public List<Post> getTimeLine(User user) {
     List<Post> res = new ArrayList<>();
     userRep.findFollowers(user)
-        .forEach(u -> res.addAll(postRep.getAllPostFromUser(u)));
+        .forEach(u -> res.addAll(postRep.getAllPostFromUser(u))); //<3>
     return res;
   }
 
   public void postMessage(User user, Post post) throws Exception {
     transManager.begin(); //<1>
     postRep.savePost(user, post);
-    notifServ.notifyUsers(userRep.findFollowers(user), post); //<3>
+    notifServ.notifyUsers(userRep.findFollowers(user), post); //<4>
     transManager.commit(); //<1>
   }
 }

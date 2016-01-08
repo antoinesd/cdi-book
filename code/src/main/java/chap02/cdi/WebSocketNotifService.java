@@ -16,7 +16,7 @@ import javax.enterprise.event.Observes;
 @ApplicationScoped
 public class WebSocketNotifService implements NotificationService {
   
-  void observeNewPost(@Observes NewPost np) {
+  void observeNewPost(@Observes NewPost np) { //<1>
     notifyUsers(np.getUsers(),np.getPost());
   }
   

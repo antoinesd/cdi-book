@@ -3,31 +3,44 @@ include::../header.adoc[]
 [[chap02-getting-started]]
 == Getting started
 
-Starting to work on a new framework is like travel into a foreign country.
+.This chapter covers
+****
+* Exploring a CDI example from scratch
+* Introducing the tools used in this book
+* Installing the environment required to run book examples
+* Introducing how CDI support in the major IDE
+* Giving an overview of other resources to help you learn CDI
+****
+
+Starting to work on a new framework is like traveling into a foreign country.
 It's exciting but can be a bit confusing.
 Discovering everything by yourself can be time consuming, and you could miss something important.
 
-This chapter will be your guide to prepare your travel in CDI land.
+This chapter will be your guide to prepare your journey in CDI land.
 See it like getting a tourist guide, plane ticket and packing the right stuff to visit this new framework.
 
-To give you an overview of what awaits you in this new land, we'll start with a concrete CDI example.  
+To give you an overview of what awaits you in this new land, we'll start with a concrete example from basic code to full CDI version.
+Then we'll present you the tools that will be used in the book example and will give you information to install them.
+After that we'll show you how the 3 major java IDE support CDI.
+And to finish, we'll list some online resources containing resource related to CDI.
 
-Concretely, in this chapter, we'll cover these points:
-
-* Exploration of a complete CDI example from scratch 
-* Introduction of the tools used in this book 
-* installation of the environment required to run examples of the book
-* how CDI is supported in the major IDE
-* others resources to help you learn CDI
 
 [[example]]
 === Example, from scratch to full CDI
 
-The best way to understand some of the problems solved by CDI is by taking an example.
+It can be quite complicated to understand what are the problems that CDI solves by starting with a theoretical explanation.
+So, the easiest way to get an overview of what CDI can bring to your development, is probably by taking an example from scratch.
+The following example won't show you all the features in CDI, but it will introduce most of its core concepts.
+
+To keep the focus on CDI, the code in this example has been simplified and a part of it won't be implemented.
+We'll start the example with standard Java code and add CDI in a step by step approach.
+
+==== Introducing the example
+
 Suppose we're planning to develop a micro-blogging platform.
-Users can sign up to the platform an
-A user can submit a new post and all her followers will receive a notification in the browser and see this new content.
-Each user can see her own post and the post of users she's following.
+Users can sign up to the platform and look for users already registered to follow them.
+A user can submit a new post and all his followers will receive a notification in the browser and see this new content.
+Each user can see his own posts and the posts of users he's following.
 This set of posts is called user's timeline.
 
 We could build a simple schema of such an application like this:
@@ -37,7 +50,7 @@ plantuml::part_1/1-02_schema_microblogging.puml[generated_chap02-1, format=svg]
 
 
 The `PostService` class is the main service entry point.
-For this class we can get the timeline and submit a new post for a given user.
+From this service class we can get the timeline and submit a new post for a given user.
 
 It uses two repositories to interact with users (`UserRepository`) and posts (`PostRepository`).
 Each of these repositories have one implementation based on a RDBMS and accessed through JPA engine.
@@ -51,10 +64,10 @@ Let's focus on PostService and see how it would be designed without CDI and then
 
 ==== Without CDI
 
-Without an integration framework like CDI, we'll have to instantiate the classes ourselves by sing the `new` keyword.
+Without an integration framework like CDI, we'll have to instantiate the classes ourselves by using the `new` keyword.
 
 Regarding `PostService`, we need to provide the class a way to initialize its 3 services.
-The most obvious solution to do so is to add a constructor taking the 3 types i parameter to perform this initialization.
+The most obvious solution to do so is to add a constructor taking the 3 types (and a transaction manager to perform database operation) as parameter to perform this initialization.
 
 The result would be:
 
@@ -66,9 +79,10 @@ include::{sourcedir}/chap02/nocdi/PostService.java[tags=snippets]
 ----
 <1> As we have to write to RDBMS, we need to handle transaction lifecycle
 <2> we need a constructor to initialize the required services with different implementations
-<3> If we want to notify other services, we'll have to add these to the class and the calls here
+<3> This Java 8 lambda expression is used to retrieve all post from all followers
+<4> If we want to notify other services, we'll have to add these to the class and the calls here
 
-Using the class above will bring the following issues:
+Using the class above will bring the following limitations:
 
 ===== Instantiation
 
@@ -97,11 +111,13 @@ PostService pst = new PostService(new MockNotificationService(),
     new MockTransactionManager());
 ----
 
-Another drawback of this instantiation is that the wiring between `PostService` and its dependent service is defined neither in `PostService` nor in the dependent components but in a third place that could be hard to find when browsing the code.
+Another drawback of this instantiation is that the wiring between `PostService` and its dependent service is defined neither in `PostService` nor in the dependent components but in a third place.
+For a small application, it's not a real problem, but if you go with a bigger one, that could make the code harder to understand and maintain.
 
 ===== Uniqueness
 
-Business application are designed in layer. Like we did in our small example with a service layer and a repository (storage layer).
+Business application are usually designed in layers.
+Like we did in our small example with a service layer and a repository (storage layer).
 For a lot of reason (concurrency issues, memory footprint), we often need that a given component is instantiated once for the whole application.
 
 This approach (called "Singleton Pattern") could be very tricky to implement from scratch.
@@ -119,8 +135,7 @@ Side effect of this is easy to guess:
 
 * the code is harder to read and maintain
 * the true value of code (business treatment) is burried in boilerplate code
-* technical code being repeated every is virtually impossible to maintain
-* your project technical debt reach to the moon before you realize it
+* technical code being repeated everywhere will make the code very hard to maintain
 
 
 ===== Coupling with non or hardly related services
@@ -128,7 +143,7 @@ Side effect of this is easy to guess:
 Last issue in <<postservice_without_cdi>>, is probably the notification part in `postMessage` method.
 It's not a real issue, but could become one, if notification goes beyond a simple call.
 
-If a new service is added later tot he application and this service needs to do a task when a post is save, you'll have to change the code of `postMessage` to add these call and of course add the corresponding service as a new field in `PostService`.
+If a new service is added later to the application and this service needs to do a task when a post is saved, you'll have to change the code of `postMessage` to add these call and of course add the corresponding service as a new field in `PostService`.
 
 ==== With CDI
 
@@ -156,7 +171,10 @@ The CDI container does this job for us by:
 * providing us a _bean instance_ each time the application needs one
 * managing injection of a bean instance at each _injection point_ (place having the `@Inject` annotation).
 
-When registering a bean, the container computes and associates its set of types, including its interfaces and even `Object` type.
+When registering a bean, the container associates it with its set of types, including its interfaces and even `Object` type.
+This process will be described in detail in part ###
+
+// TODO: add a ref to bean discovery part
 
 For instance the set of types content for the bean defined by `JpaPostRepository` class is:
 
@@ -164,7 +182,9 @@ For instance the set of types content for the bean defined by `JpaPostRepository
 * `PostRepository`
 * `Object`
 
-That means that an instance of this bean is potentially (with conditions will detail later) a candidate for any injection point on this types.
+That means that an instance of this bean is potentially (with conditions will detail later in ### ) a candidate for any injection point on this types.
+
+// TODO: link to typesafe resolution
 
 Thus we can avoid mentioning implementations wiring in our application.
 It's done naturally by the CDI container.
@@ -172,21 +192,25 @@ It's done naturally by the CDI container.
 You might wonder what will be the entry point to this bean world (i.e. how to get the bean instance for PostService)?
 We can get this instance in many ways. the most obvious being:
 
-* If we add `@Named` annotation on the class it will be accessible from user interface by Expression Language `#{postService.getTimeline(user)}`
-* We can add an _observer_ for the beginning of the _Application Context_. It'll be triggered automatically by the container when its boot phase is over.
+* If we add `@Named` annotation on the class it will be accessible by Expression Language `#{postService.getTimeline(user)}` in JSP or JSF.
+* We can add an _observer_ for the _Application Context_ initialization.
+It'll be triggered automatically by the container when its boot phase is over.
 * Eventually, we can access the container form outside CDI, thanks to the `CDI` class and its `getCurrent()` static method:
 
 .request an instance of `PostService` from outside CDI
 [source]
 PostService ps = CDI.getCurrent().select(PostService.class).get();
 
-===== Uniqueness
+===== Singleton
 
 The CDI container handle singleton pattern thanks to scopes and context management.
-When a bean has a normal scope (most scopes except `@Dependent`), the container guarantee that there will be only instance of this bean in the matching context.
+
+Scopes are annotations (like `@ApplicationScoped` we saw in <<postservice_with_cdi>>) that associates the bean with a given context (`ApplicationContext` for `@ApplicationScoped`).
+The lifecycle management brought by the container guarantee that there will be only instance of this bean in the matching context.
+
 In <<postservice_with_cdi>> example, the `PostService` class has the `@ApplicationScoped` annotation.
-It makes the container to register the bean from that class with application scope.
-So the container will ensure that the Application Context will hold maximum one instance of this bean, making it a singleton for the application.
+It makes the container to register the bean issued that class in the application context.
+So the container will ensure that the Application Context will hold maximum one instance of this bean, making it a singleton at the context level (for this particular example at the application level).
 
 ===== Technical code externalisation
 
@@ -199,7 +223,8 @@ It can be done with:
 In <<postservice_with_cdi>> example we chose the second approach, by using an interceptor provided by the Java Transactional API (JTA) specification.
 The `@Transactional` annotation is bound to an interceptor which takes care of transaction for us.
 When a method is intercepted, the code of the interceptor is called instead of the method.
-The interceptor receives all needed information on the intercepted method to be able to call it if its behaviour requires it.
+The interceptor receives all needed information on the intercepted method to be able to call it when required.
+However, note that an interceptor doesn't have to call the intercepted method (even if it's a rare use case)..
 
 As the interceptor code is provided by our JTA implementation, we have nothing else to do to use this feature.
 
@@ -207,9 +232,9 @@ This interceptor start a transaction, then call the original method and eventual
 
 ===== Decoupling with non or hardly related service
 
-With dependency injection, CDI provides a great way to loose the coupling (inter dependency) between all application beans.
+With dependency injection, CDI provides a great way to loose the coupling (inter dependency) between all application components.
 But it can do even more by allowing a given bean to communicate with another bean without any dependencies between them.
-This feature is done thanks CDI eventing system.
+This feature is done thanks to CDI eventing system.
 
 In <<postservice_with_cdi>> we injected the CDI `Event<T>` type with `NewPost` class as Event parameter type.
 
@@ -221,7 +246,7 @@ It allows us to trigger events of type `NewPost` which a simple class containing
 include::{sourcedir}/chap02/cdi/NewPost.java[tags=snippets]
 ----
 
-To observe this event an other bean need to define an observer method.
+To observe this event an other bean need only to define an observer method.
 It's as simple as shown below 
 
 .The `WebSocketNotifService` class
@@ -229,15 +254,24 @@ It's as simple as shown below
 ----
 include::{sourcedir}/chap02/cdi/WebSocketNotifService.java[tags=snippets]
 ----
+<1> an observer method is defined by annotating its first parameter with `@Observes`.
+Here the method observes an event of type `NewPost`.
 
 With this feature, a bean can send a notification to unknown bean at development time adding more decoupling and modularity to the application.
 
+==== Conclusion
 
+This little example, gave you a fast overview of the main CDI features like dependency injection, interceptor or events.
+It was the occasion to also see how the CDI programming model can enhance and structure your code.
+
+But of course, we only scratched the CDI surface.
+Part 2 and 3 of this book cover in detail all the basic and advanced CDI features.
 
 [[tools]]
 === Tools used in this book
 
-As the world of Java IDE (Integrated Development Environment) is moving rather fast (roughly a new major version each year), we decided to focus the example on the book on command line tools.
+The 3 major Java IDEs (Eclipse, NetBeans and IntelliJ) are evolving rather fast (roughly a new version every year).
+To avoid putting soon-to-be-obsolete content in this book, we choose to focus the example on the book on command line tools.
 
 In addition to JDK 8, these tools are:
 
@@ -251,18 +285,24 @@ This choice has many advantages:
 * our code and examples will be working in all IDE, since all of them integrate the tools above
 * this tools are commons to most professional development environment, so our example are also ready to be added to your continuous integration solution
 
-This said, we recommend that you use an IDE to work on our example, but you are free to choose the IDE that suits your need.
-As the command line tools we use in the book are perfectly integrated with the major Java IDE, there won't be any issue to use these tools and your IDE.
-In <<ide_support>> you'll get all the information to choose the best IDE for you.
+This said, we recommend that you use an IDE to work on our example, but you are free to choose the one that suits best your needs.
 
-Now let's discover the tools used all along  this book. 
+In <<ide_support>> we'll give you an overview of how the 3 IDE support CDI.
+
+Now let's discover the tools used all along this book.
+You'll learn how to install them in <<installation>>
 
 [[maven]]
 ==== Apache Maven
 
 Maven is probably the most popular build tool in the Java ecosystem.
 
-Its 2 main features are:
+You don't need to be a Maven expert to read this book and use the examples, but it's a good thing to understand what this tool is and its basic usage.
+
+In this book we'll use Maven to build, test and automatically deploy or run CDI application from command line.
+It will free us from the description of a lot of other tools (like application servers) and help us to be more focused on CDI.
+
+For our usage, Maven 2 main features are:
 
 * Java dependency management
 * Java project build
@@ -280,9 +320,8 @@ The most obvious being:
 * Transitive dependencies: when adding a third party library, project manager might also need to add dependencies for this library.
  So the project dependencies might lead to a lot of jar to your project
 * Size of the project: adding these extra jar will make the project much bigger than its code source
-* Binary in source project is a bad practice and should be avoided
 * Management of the libraries: when you decide to change version of library you have to remove the previous jar and a new one
-* Conflict management: when adding dependencies' dependencies, project may fall in dependency hell by having the same jar in multiple version in the project.
+* Conflict management: when adding dependencies' dependencies, project may fall in "dependency hell" by containing the same jar in multiple version in the project.
  
 Maven solves (or ease) all of these problems by providing a powerful solution to manage dependency in a Java project.
 This solution relies on online dedicated repositories for all java libraries and coordinate mechanism to design a specific library in a given version.
@@ -297,12 +336,18 @@ Thus, Maven suppose that there's a standard (conventional) way to build a java a
 This collection of steps (also called phases) are the Maven "standard lifecycle", i.e. the set of operation to perform a standard build.
 
 Of course standard build is not always the one needed by user so it can be modified by adding configuration and plugins to the Maven configuration file (`pom.xml` file).
-That's why maven file, is more a configuration file than an instruction file.
+That's why maven file, is more a configuration file than an build script file.
 
 For instance, the Maven convention suppose that the source code is placed in `src/main/java` folder of the project.
 So by default Maven will look for class to compile in this folder.
 If you want to have your source code in another folder, you'll have to add this information in the Maven configuration file.
 
+Maven plugins are a mean to hook on the build lifecycle to change the default maven behaviour.
+ With them you can add extra feature to your maven build.
+ For instance you could use a plugin to generate documentation in one the final phase of the build lifecycle.
+
+The main phases in the Maven default lifecycle are listed in the table below.
+As it is a lifecycle, when you ask maven to execute a given phase, all the previous ones are executed first (i.e. launching the `deploy` phase will trigger all previous phase from `validate` to `install` first)
 
 .Main phases in Maven default lifecycle
 |===
@@ -332,6 +377,8 @@ If you want to have your source code in another folder, you'll have to add this 
 |`deploy`
 |done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects.
 |===
+
+Keep in mind that, as you can use plugins to hook your own build, package or test behaviour to these phases, their definition is not absolute (for instance the definition of a valid package or its level of quality depends on your own definition for your project).
 
 In this book we'll mainly use the `test` and `deploy` phases to hook our own behaviour to Maven build. 
 
@@ -385,29 +432,24 @@ Below you'll find a simplified version of our example pom:
 
 </project>
 ----
-<1> coordinates of the current project (`groupId`, `artifactId` and `version` identify a unique 3rd party lib)
-<2> this section allows to define variables that will be used by Maven engine or this project configuration
-<3> this section defined all the third party libraries on which this project depends
-<4> this section defined how this project should be build.
+<1> coordinates of the current project. `groupId`, `artifactId` and `version` identify a unique resource (also called artifact) in maven.
+<2> variables definition that will be used by Maven engine or this project configuration
+<3> list of the project dependencies: all the third party libraries on which this project depends
+<4> the build section tells maven how this project should be build.
 It is mainly composed of plugins which alters the default Maven build behaviour
 
-With this pom file in the root folder of the project, the build of this project can be triggered by issuing the following command in the terminal:
+With this pom file in the root folder of the project, the build of this project can be triggered by issuing the following command (after Maven installation of course, as describe in <<installation>>) in the terminal:
  
-`mvn package'
+`mvn package`
 
 [[maven_conclusion]]
-===== Maven in this book
+===== Learning more on Maven
 
-You don't need to be a Maven expert to read this book and use the example, but it's a good thing to understand what this tool is and how to use it.
-
-In this book we'll use Maven to build, test and automatically deploy or run CDI application from command line.
-It will free us from the description of a lot of other tools (like application servers) and help us to be more focused on CDI. 
- 
-If you want to learn more about maven, you'll find more information on https://maven.apache.org/[Maven website].
+The section above is only a very light overview of Maven build tool. If you want to learn more about Maven, you'll find more information on https://maven.apache.org/[Maven website] (https://maven.apache.org/).
 You can also read the free books written by Sonatype (the company behind Maven):
 
-* http://books.sonatype.com/mvnex-book/reference/public-book.html[Maven by Example]
-* http://books.sonatype.com/mvnref-book/reference/[Maven the complete reference]
+* http://books.sonatype.com/mvnex-book/reference/public-book.html[Maven by Example] (http://books.sonatype.com/mvnex-book/reference/public-book.html)
+* http://books.sonatype.com/mvnref-book/reference/[Maven the complete reference] (http://books.sonatype.com/mvnref-book/reference/)
 
 
 [[git]]
@@ -426,29 +468,30 @@ Subversion (SVN) is probably the most popular solution build on this paradigm.
 Git is in this family with other solution like Mercurial or Bazaar.
 
 Git success brought new online platform to share code for open source project.
-The most popular platform today is probably http://github.com[Github].
+The most popular platform today is probably http://github.com[Github] (http://github.com).
 That's why you'll find the book code on Github and that git is required to get this code.
 // TODO: Add link to book repo
 
 Git is a very powerful and potentially complex tool, so starting describing how it works is well beyond this book.
-We'll only give you the required command to get the code repository from Github and how to switch from different branches to get the example amtching to the current chapter when needed.
+We'll only give you the required command to get the code repository from Github and how to switch to different versions of our code examples when needed.
  
 If you want to learn more about git, we suggest following resources:
  
-* Documentation on official https://git-scm.com/[Git Website]
-* Atlassian free https://www.atlassian.com/git/[Git tutorial]
+* Documentation on official https://git-scm.com/[Git Website] (https://git-scm.com/)
+* Atlassian free [Git tutorial] (https://www.atlassian.com/git/)
 
 [[arquillian]]
 ==== JBoss Arquillian
 
 Code testing is today a good practice widely adopted in serious project.
-It's an easy way to define how the code should behave by creating a kind of "active" specification for the project.
+It's an easy way to define how the code should behave by creating a kind of "executable" specification and "living" documentation for the project.
 
 At software level, it is common to distinguish unit tests and integration tests.
 
 While unit tests are useful to test business logic in our code, integration tests is useful to check that different component of the application work well together.
-When dealing with a technology like CDI where the componentization could also be part of business logic (CDI extension or interceptor could be part of it for instance), basic unit test could be not enough to effectively test the code.
-And yet, we do not wish to perform these tests as integration tests since their failure should stop the build in the same way than an unit test does. 
+
+When dealing with a technology like CDI where the framework could also be part of business logic (CDI extension or interceptor could be part of it for instance), basic unit test could be not enough to effectively test the code.
+And yet, we do not wish to perform these tests as integration tests since we might want to test only a small subset of the project and having to build and package the whole project may be overkill and make the test execution very long.
 
 JBoss Arquillian brings a solution to this need.
 
@@ -458,15 +501,15 @@ In an Arquillian test, the developer defined what is deployed (class, packages, 
 
 Arquillian container adapter may be choose among a huge collection and should be defined in the Maven configuration file.
 
-In this book examples we'll mainly use basic Weld and OWB embedded container adapter to test our code but keep in mind that Arquillian provide a wide range of container adapter for most Application server available.
+In this book examples we'll mainly use basic Weld and OpenWebBeans embedded container adapter to test our code but keep in mind that Arquillian provide a wide range of container adapter for most Application server available.
 
 ===== Arquillian example
 
 If we go back to our example in <<example>> we could want to test if the event of type `NewPost` fired in `PostService.postMessage()` is effectively triggered once.
 
-As we don't have a lot of business code here, this test is more a "let's test CDI" which is rather useless, but the goal here is to show you how Arquillian can be used to perform such a test.
+As we don't have a lot of business code here, this test is more a "let's test CDI" but the goal here is to show you how Arquillian can be used to perform such a test.
 
-First, let's start by how we added Arquillian engine in the project `pom.xml:`
+First, let's start by adding Arquillian engine in the project `pom.xml:`
 
 .Micro blogging `pom.xml` file with Arquillian dependencies
 [source, xml]
@@ -480,8 +523,8 @@ include::{codedir}/pom.xml[]
 So we just had to add 3 dependencies to be able to test our CDI code with Arquillian.
 Note that here we are using Junit but TestNG framework is also supported by Arquillian
 
-Next step, we need to add a bean in our test code to catch the number of event triggering.
-The `NewEventObserverBean` contains one listener that will increment an int each time it is called.
+Next step, we need to add a bean class in our test code to catch the number of event triggering.
+The `NewEventObserverBean` contains one observer that will increment an int each time it is called.
 
 .The `NewEventObserverBean` class
 [source]
@@ -505,6 +548,12 @@ include::{testdir}/chap02/cdi/PostServiceTest.java[tags=snippets]
 <5> the arquillian nature of the test allows us to inject CDI beans in test class
 <6> eventually we can use the injected beans to initiate code and test the outcome.
 
+Now you can launch the tests with the following Maven command:
+
+`mvn test`
+
+Maven will compile your project and test classes, then launch the arquillian test.
+
 ===== To learn more on Arquillian
 
 Most of the Arquillian test you'll see in this book will follow the same schema.
@@ -519,8 +568,8 @@ Yet Arquillian is a very interesting topic, if you want to learn more about it c
 [[installation]]
 === Installing your environment
 
-As we already said, the minimum tool requirement to follow the book example will be Maven.
-As maven needs a java compiler, you'll first need to install a the Java Development kit (JDK).
+As we already said, the minimum tool requirement to follow the book example will be Maven and Git (Arquillian will be added by Maven).
+As Maven needs a java compiler, you'll first need to install a the Java Development kit (JDK).
 
 ==== Install Java 8.x
 
@@ -533,18 +582,18 @@ Installing Java will depend on your operating system.
 ===== Windows and Mac OS X
 
 The simplest JDK to install on windows or Mac OS X is the one provided by Oracle.
-Go to http://www.oracle.com/technetwork/java/javase/downloads, click on the Java Download button.
+Go to Java SE dowload page (http://www.oracle.com/technetwork/java/javase/downloads), click on the Java Download button.
 
 On the next screen choose the Java SE Development Kit matching your platform.
 You may also need to Accept (and thus read) the Oracle License Agreement before downloading the installer.
 
 Installation is a classical executable (a dmg file containing an executable for Mac OS X) so the installation is quite straight forward.
 
-Should you encounter issues during the process, go back to the download page http://www.oracle.com/technetwork/java/javase/downloads and check the _Installation Instructions_ link.
+Should you encounter issues during the process, go back to the download page and check the _Installation Instructions_ link.
 
 ===== Linux
 
-While it's possible to install Oracle JDK under Linux (check the _Installation Instructions_ link on http://www.oracle.com/technetwork/java/javase/downloads if you want to do so), you might prefer install Open JDK packaged for your linux distribution.
+While it's possible to install Oracle JDK on Linux (check the _Installation Instructions_ link on http://www.oracle.com/technetwork/java/javase/downloads if you want to do so), you might prefer install Open JDK packaged for your Linux distribution.
 
 
 By doing that you'll be sure that all required dependencies for Java are also install by the process.
@@ -580,7 +629,7 @@ $ sudo apt-get install openjdk-8-jdk
 
 Maven is a java executable, so its only requirement is a JDK and the fact that the `JAVA_HOME` environment variable is configured to the proper path.
 
-the more straightforward way to install Maven is to download it from https://maven.apache.org/download.cgi and follow the install instruction on the page https://maven.apache.org/install.html
+the more straightforward way to install Maven is to download it from Maven homepage (https://maven.apache.org/download.cgi) and follow the install instruction on the installation page (https://maven.apache.org/install.html)
  
 For Linux or Mac OS X you may prefer install it from your package manager
 
@@ -625,6 +674,67 @@ or
 ----
 $ sudo port install maven3
 ----
+
+==== Install Git
+
+Installing the Git versioning system is quite straightforward.
+The detailed installation instruction can be found in the official online Git Documentation (https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+
+The paragraphs below sum up these instruction.
+
+===== Linux
+
+Depending your distribution you'll use `yum`, `fdn` or `apt`
+
+On Debian, Ubuntu or Linux Mint:
+
+[source, console]
+----
+$ sudo apt-get install git-all
+----
+
+On Fedora (before version 22), RHEL, Oracle Linux or CentOS:
+
+[source, console]
+----
+$ sudo yum install git-all
+----
+
+On Fedora from version 22 you may use:
+
+[source, console]
+----
+$ sudo fdn install git-all
+----
+
+
+===== Mac OS X
+
+The easiest way is probably by triggering XCode command line tools by trying run `git` in your command line.
+System will start downloading of some developer tools on your Mac including Git.
+
+you can still use your package manager (HomeBrew or macPorts)
+
+[source, console]
+----
+$ brew install git
+----
+
+or
+
+[source, console]
+----
+$ sudo port install git-core
+----
+
+You may also install Git with tru the GitHub client for Mac OS X (https://mac.github.com).
+
+
+====== Windows
+
+The simplest way to install Git on Windows is probably by installing GitHub client (https://windows.github.com).
+It will install the GUI client and all command lien tools.
+
 
 [[ide_support]]
 === CDI Support in major IDE
@@ -693,4 +803,14 @@ For instance it can alert you if you define an injection point with multiple mat
 * *EL support* that gives you code completion in JSF or JSP page to point to an existing CDI Bean and the link between the page and the bean code.
 
 
+=== Summary
 
+This chapter helped you to get ready for using CDI and get the most of the book content.
+More precisely, in this chapter we:
+
+* Demonstrated of some benefit of CDI with an example from scratch
+* Listed and explain the tools we'll use in this book
+* Gave you information to install your environment to use the material from the book
+* Gave you information on the different development environment to help you choose one.
+
+In the next chapter we'll start learning CDI by diving in its core concepts.
