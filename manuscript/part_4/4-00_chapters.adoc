@@ -1,0 +1,55 @@
+[[booting]]
+= Booting CDI in your environment
+
+[[java_se_boot]]
+== Using CDI in Java SE
+
+* available features under SE
+* active contexts
+
+== Building named beans in JSF with CDI
+
+== Using CDI in Java EE
+
+* related Java EE  specs
+
+== Using CDI in your favorite servlet engine 
+* Tomcat, Jetty, Undertow, Grizzli
+
+== Using CDI in OSGi
+
+* Introducing PAX-CDI
+* Karaf, Felix, equinox
+
+== Wrap-up
+
+= Exploring CDI ecosystem
+
+[[weld_specific]]
+== Learning Weld specific features
+
+== Learning OWB specific features
+
+== Testing your CDI application
+
+* CDI-unit, Arquillian
+
+== Apache DeltaSpike
+
+== Other Frameworks
+
+* Vraptor, picketLink, Camel
+
+==  Wrap-up
+
+= Getting the best of CDI in your projects
+
+== Adopting good practices through design patterns
+
+== Practical architectures examples
+
+== CDI recipes for a tasteful project
+
+== Wrap-up
+
+= The Future of CDI

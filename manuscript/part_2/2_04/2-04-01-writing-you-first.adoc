@@ -1,10 +1,10 @@
-=== Writing your first, minimal CDI application
+== Writing your first, minimal CDI application
 
 This first paragraph is about writing a very simple CDI application. We will first create a Maven project, with the needed dependency, and a working directories and files structure. We will then create some interfaces and classes to see the CDI dependency injection in action on a running example. We are going to use CDI concepts that we have not defined yet. But seeing them in action will give us a first glimpse at what they are, and how they work together. We will then describe all those concepts in full details.
 
 At the end of this part, you will have a first basic but working CDI application, with an example of dependency injection. You will also have a working Maven environment with the needed dependencies and configuration.
 
-==== Bootstrapping Weld
+=== Bootstrapping Weld
 
 As we already explained, a CDI application needs a container to work. This container is in fact an implementation of CDI. Weld is the reference implementation for CDI. This container is production ready, and used in supported application servers (JBoss EAP, ...).
 
@@ -64,7 +64,7 @@ The presence of this file tells CDI that our application is a _bean archive_. Th
 
 So the simple fact that this file is there has its importance in the CDI context.  
 
-==== Adding a `beans.xml`file
+=== Adding a `beans.xml`file
 
 So let us add the following `beans.xml` file to our application.
 
@@ -89,7 +89,7 @@ If you followed this example carefully, you should have a Maven project in your 
 
 Running your application again now works, and does not do anything, which is the expected behavior. So now that you have correctly configured your application, let us add now some classes and interfaces to actually do something.
 
-==== Adding some content to our application
+=== Adding some content to our application
 
 We used a simple example in the first part of this book. It was about posting messages to a repository. This example uses two classes: `PostService` and `PostRepository`. Let us take a simplified version of this very basic application.
 
@@ -213,7 +213,7 @@ In fact, there are cases where CDI can use another constructor than the empty on
 
 Notice that our system is designed with interfaces and does not use classes directly. This is a good practice. It you are aware of the SOLID design principle, programming against interfaces follows the L principle, that is the Liskov substitution principle. This well-known object programming principle states that you should always be able to substitute an object of a subtype where you declare that an object of a given type is needed. If you use interfaces for the parameter declarations of your method, then you will always be able to use this principle.
 
-==== Running our first CDI application
+=== Running our first CDI application
 
 At this point, we have a very simple, but fully working CDI application. Let us write the code to run it.
 
@@ -274,7 +274,7 @@ To have this example to work, you should use the following `beans.xml`. Note tha
 </beans>
 ----
 
-==== Wraping up our first example
+=== Wraping up our first example
 
 In a nutshell, you built the following:
 

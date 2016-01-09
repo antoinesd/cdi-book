@@ -3,37 +3,8 @@
 
 Advanced CDI concepts
 
-== Deploying your CDI Application
+:leveloffset: +1
 
-=== Discovery modes
+include::part_3/3-00_chapters.adoc[]
 
-=== Advanced Bean Archive design
-
-=== Beans.xml recipes
-
-=== Wrap-up
-
-==  Understanding CDI SPI
-
-=== Type meta-model
-
-=== CDI meta-model
-
-* usable in standard programming & extension
-
-=== CDI entry points
-
-=== SPI for portable extensions
-
-=== Wrap-up
-
-== Extending CDI
-
-=== Introducing portable extensions
- 
-=== CDI Lifecycle
- 
-=== Portable extension examples
- 
-=== Wrap-up
- 
+:leveloffset: -1

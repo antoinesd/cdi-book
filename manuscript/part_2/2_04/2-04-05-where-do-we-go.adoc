@@ -1,5 +1,4 @@
-
-=== Where do we go from here?
+== Where do we go from here?
 
 From this point, we begin to have a good idea of the big picture of what CDI do with beans.
 

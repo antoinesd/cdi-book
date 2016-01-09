@@ -1,11 +1,10 @@
-
-=== The notion of Bean archive
+== The notion of Bean archive
 
 We introduced the notion of bean archive in our first example, without defining it. The object of this paragraph is to precisely define what a bean archive is in the CDI context. As CDI works in both the Java SE world and the Java EE world, this notion of bean archive is defined in both worlds, with some differences.
 
 This paragraph covers everything you need to know about bean archives in the CDI sense. It is a set of definitions to fully understand how bean archives work in CDI, both in the Java SE space and the Java EE space.
 
-==== The purpose of a bean archive
+=== The purpose of a bean archive
 
 What is the purpose of a bean archive? Well, a CDI container analyzes the content of all the bean archives it knows, looking for its supported annotations and descriptors. It then builds an object graph and gather all the information it needs so that our application can work. A JAR or any other archive is the most general sense that is not a bean archive is not analyzed by CDI.
 
@@ -32,7 +31,7 @@ What probably comes to mind now is the following question: what happens if you h
 
 In both the Java SE and Java EE cases, as long as an archive (in the Java sense) has only one `beans.xml` file, everything will be handled properly. An error case can be raised if a configuration has more than one `beans.xml` file in one given archive.
 
-==== The Web archive (WAR) case
+=== The Web archive (WAR) case
 
 The case of the WAR is quite complex, since there are several places where the `beans.xml` can be put. Usually a WAR relies on home made classes, that can be packaged in JAR files put in the `WEB-INF/lib` directory, or put directly in the `WEB-INF/classes` directory. Thus it is logical to enable to put the `beans.xml` file in the `META-INF` directory of the `WEB-INF/classes` directory.
 
@@ -51,7 +50,7 @@ If two `beans.xml` are found in both the `WEB-INF` directory and the `WEB-INF/cl
 Of course, any JAR from the `WEB-INF/lib` that contains a `beans.xml` file in its `META-INF` directory is a bean archive.
 
 
-==== The Enterprise archive (EAR) case
+=== The Enterprise archive (EAR) case
 
 An Enterprise Archive can contain any kind of archive previously defined: JAR, WAR or RAR. Some of those JAR have a special semantic: they are called EJB JAR.
 
@@ -61,7 +60,7 @@ The EJB JAR files need to have a `beans.xml` file to be considered as bean archi
 
 There is no `beans.xml` file defined at the EAR level.
 
-==== The EJB JAR case
+=== The EJB JAR case
 
 An EJB JAR is a special kind of JAR that contains EJBs. It can contains a descriptor file: the `ejb-jar.xml` file. This file has been made optional in EJB 3.0, since the information is contains can now be setup in the EJB annotations.
 
@@ -69,7 +68,7 @@ If this file is present, it should be put in the `META-INF` directory of the EJB
 
 Normal rules apply to this archive. Thus, it is a bean archive if it has a `beans.xml` file in its `META-INF` directory. In that case, the content of this archive, and all the archives it depends on will be analyzed by the CDI container.
 
-==== The Connector archive (RAR) case
+=== The Connector archive (RAR) case
 
 A RAR archive file contains Java EE connectors used to access enterprise information system. Typically, one such connector exists for each type of resource needed by a Java EE resource. The architecture of the Java EE platform defines the notion of Java EE Connector, the Java EE standard for such adapter components. Those components are packaged in a special archive file: the RAR file.
 
@@ -77,14 +76,14 @@ In this case, the CDI container looks for all the JAR that this RAR depends on. 
 
 There is no `beans.xml` file defined at the RAR level.
 
-==== Embedded EJB
+=== Embedded EJB
 
 An embedded EJB container uses a system property called `javax.ejb.embeddable.modules`. This property works as a classpath, and defines all the archives this EJB container depends on. If this property is not defined, then the classpath is used instead of this property.
 
 In the case of an embedded EJB container, all the java archives are seen as bean archives.
 
 
-==== What happens if a class is present in more than one archive?
+=== What happens if a class is present in more than one archive?
 
 Enterprise applications may be so complex that it becomes more and more frequent to have classes present in more than  on archive. This is especially true for outside dependencies. It is nor rare to see a given library present more than once in the dependency tree of an application, sometimes with different version numbers!
 

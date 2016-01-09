@@ -2,6 +2,7 @@
 = Part II - Basic CDI concepts
 
 
+:leveloffset: +1
 
 include::part_2/2-04_getting-started-with-cdi.adoc[]
 
@@ -13,6 +14,7 @@ include::part_2/2-07_intercepting-and-decorating-beans.adoc[]
 
 include::part_2/2-08_using-events.adoc[]
 
+:leveloffset: -1
 
 
 

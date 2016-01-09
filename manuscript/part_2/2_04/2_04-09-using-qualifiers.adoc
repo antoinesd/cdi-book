@@ -1,5 +1,4 @@
-
-=== Using qualifiers to define CDI Bean Types
+== Using qualifiers to define CDI Bean Types
 
 Probably the first question that comes to mind at this point is the following: what happens if we have more that one implementation for a given interface? CDI will probably be in trouble to choose from those implementations.
 
@@ -52,7 +51,7 @@ What is a CDI qualifier? In a nutshell, it is an annotation that brings some sem
 
 CDI defines a default qualifier: `@Default`. All the CDI beans have this qualifier, thus the presence of this reference in the error message. As you can guess from the error messages, `@Any` is also a qualifier. We will explain precisely their role in the next section.
 
-==== Using a qualifier on a simple example
+=== Using a qualifier on a simple example
 
 From a pure technical point of view, a qualifier is a very simple Java element: it is just an annotation.
 
@@ -123,7 +122,7 @@ On this last example, CDI knows that is should inject the entity manager qualifi
 
 The CDI qualifier is a very powerful way to add semantic to a CDI bean. We will see in the next section how it is in fact added to the CDI bean type itself.
 
-==== Writing a qualifier
+=== Writing a qualifier
 
 This is all great, qualifiers are our silver bullet that will solve our ambiguous producers problems at once. There is just one element missing: how does CDI know that those annotations we used, `@DBPost` and `@DBUser` are qualifiers? We know how to write annotations in Java, but what kind if CDI magic does make an annotation a qualifier?
 
@@ -158,7 +157,7 @@ A qualifier might look a little tricky to create. The use of this meta-annotatio
 
 This pattern is in fact very easy to follow. Just create the annotation you need, add this special CDI annotation to it, `@Qualifier` in our example, and that is it, you have a new qualifier.
 
-===== Qualifiers with attributes
+==== Qualifiers with attributes
 
 It is legal for a qualifier to define attributes. In that case, CDI will compare the two annotations along with the values of their attributes. Those values are compared with their respective `equals()` method, as we might expect.
 
@@ -229,7 +228,7 @@ public class PostAndUserEJB {
 <1> We do not need to tell that its attribute is the `value()` attribute, due to the way annotations work in Java
 <2> Since we set a non-default value for the `comment()` attribute, we need to tell that `DBType.USER` is the value of the `value` attribute
 
-==== Injecting by type, injecting by qualifier
+=== Injecting by type, injecting by qualifier
 
 CDI has in fact two ways of telling which bean should be injected where.
 
@@ -239,7 +238,7 @@ So we need more information, and this information is brought by qualifiers. A qu
 
 Qualifiers are just there to add information to qualify producers and injection points in a CDI application. We might not need them, there are just here to help us.
 
-==== Qualifiers of a bean
+=== Qualifiers of a bean
 
 The notion of qualifier is of course linked to the notion of bean. We say, in the CDI context, that a bean has qualifiers. But this is quite an abstract notion, because we never really see this bean. What we see is where and how it is produced, and where and how it is used, or injected.
 
@@ -253,11 +252,11 @@ This notion of qualifier can be seen from three points of view:
 * the qualifiers defined at the producer level,
 * the qualifiers defined at the injection point.
 
-===== Adding a qualifier on a producer
+==== Adding a qualifier on a producer
 
 We saw that a producer could be a method or a field, thus adding a qualifier on those two elements makes perfect sense.
 
-===== Adding a qualifier on a type
+==== Adding a qualifier on a type
 
 We also saw that CDI sees the `InMemoryPostRepository` and `InMemoryConcurrentPostRepository` classes as two possible instances of the `PostRepository` interface, without any kind of information, metadata or configuration from us. It is its default behavior. To tell those two implementations, we can add a qualifier directly on the classes themselves. This pattern will be the following.
 
@@ -278,7 +277,7 @@ public class InMemoryConcurrentPostRepository implements PostRepository {
 
 The two annotations `@SimpleRepository` and `@ConcurrentRepository` are two qualifiers that CDI uses to tell those two implementations. Using them on the injection points will tell CDI which one to use on which place.
 
-===== Qualifiers on the injected constructor
+==== Qualifiers on the injected constructor
 
 We also saw the case of a CDI bean that has no empty constructor, due to the presence of one or more constructors with arguments. We saw that one of those constructors can be annotated with `@Inject`, allowing CDI to use this constructor to build this bean using this constructor. And at last, we saw that, in this case, all the parameters of this constructor are injected by CDI, since it is CDI itself that calls this constructor.
 
@@ -302,11 +301,11 @@ public class PostServiceImpl implements PostService {
 <1> Tells CDI that it should use this constructor to create an instance of `PostService`
 <2> Tells CDI to use the `InMemoryConcurrentPostRepository` bean to call this constructor
 
-===== Adding a qualifier on an injection point
+==== Adding a qualifier on an injection point
 
 Any number of qualifiers can be added on a CDI injection point. CDI will look for a bean that matches all the defined qualifiers. If no bean, or more than one bean matches the definition, then an error will be raised. Of course, this bean can have more qualifier than needed to be injected. The set of all the qualifiers a bean has has to be a subset of the needed qualifiers.
 
-==== Existing qualifiers
+=== Existing qualifiers
 
 CDI defines four qualifiers:
 
@@ -316,19 +315,19 @@ CDI defines four qualifiers:
 * `@Any`
 
 
-===== The `@Named` qualifier
+==== The `@Named` qualifier
 
 This qualifier has a special status, as giving a name to a bean is mandatory for certain categories of beans in the Java EE world. But we can also give names to our beans outside of this context, just for the sake of the readability of our code.
 
 This annotation defines a `value` attribute, which holds the name of the annotated bean.
 
-===== The `@New` qualifier
+==== The `@New` qualifier
 
 This qualifier was defined in CDI 1.0, and deprecated in CDI 1.1. So you should not use it in your code, apart from using it for legacy reasons. We are not going to cover this annotation in details. Instead of injecting `@New` beans, you should inject `@Dependent` beans.
 
 The `@New` annotation can take a default attribute which type is a class. This class is the one to instantiate to inject the annotated bean. If the value attribute is not specified, then the class of the bean will be instantiated.
 
-===== The `@Default` qualifier
+==== The `@Default` qualifier
 
 CDI adds the `@Default` qualifier on all the beans that have no qualifier. There is an exception for the `@Named` qualifier: a bean that has this qualifier will get the `@Default` qualifier also.
 
@@ -339,7 +338,7 @@ Adding this qualifier explicitly is perfectly legal from a pure technical point 
 The same goes for the injection point. CDI adds the `@Default` qualifier on any injection point that defines no qualifier. The use of the `@Named` qualifier on injection points is not recommended. The `@Named` qualifier implies string-based bean identification, and this approach is not the recommended one any more.
 
 
-===== The `@Any` qualifier
+==== The `@Any` qualifier
 
 The `@Any` qualifier is present on all the beans CDI can handle, except for the `@New` beans that you should not use in your application. So one could think that this qualifier is useless, since it is present everywhere. It has in fact a very precise use, that we will see later, when we talk about programmatic lookup.
 
@@ -362,7 +361,7 @@ So CDI introduces the notion of _qualifier_ to add precision on the Java type of
 
 The full CDI Bean Type is thus the combination of the Java types (classes and interfaces) of a given bean, and its qualifiers.
 
-==== Selecting Java types to be put in the CDI bean type
+=== Selecting Java types to be put in the CDI bean type
 
 In some cases, we might want to not take into account all the Java type hierarchy. For instance, we might want to add to the CDI Bean Type, only the interfaces, and not the implementing class, nor the `Object` class. And even for the interfaces, some of them do not carry any relevant information for our CDI application. It might be the case for `Serializable` or `Cloneable`.
 

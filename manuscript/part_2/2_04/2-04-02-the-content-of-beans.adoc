@@ -1,12 +1,11 @@
-
-=== Writing a `beans.xml` file
+== Writing a `beans.xml` file
 
 The previous paragraph was about defining the notion of bean archive in the CDI sense. We saw that it relies on the presence a special file, the `beans.xml` file in the `META-INF` directory. Without this `beans.xml` file, our CDI application was not working at all. Now that we understand the role this file plays in a CDI application, let us see what you should put in it.
 
 This paragraph covers the content of the `beans.xml` file, and how this content evolved from the 1.0 version to the 2.0 version.
 
 
-==== The `beans.xml` file in CDI 1.0
+=== The `beans.xml` file in CDI 1.0
 
 The `beans.xml` is a very simple XML file. In CDI 1.0 it has the following format.
 
@@ -24,7 +23,7 @@ The `beans.xml` is a very simple XML file. In CDI 1.0 it has the following forma
 
 The namespace is `http://java.sun.com/xml/ns/javaee` and the schema location is `http://java.sun.com/xml/ns/javaee/beans_1_0.xsd`. It is important to note that, because it changed in CDI 1.1 and later.
 
-==== The `beans.xml` file in CDI 1.1 and later
+=== The `beans.xml` file in CDI 1.1 and later
 
 Be careful, because between version 1.0 and 1.1 something odd happened: both the namespace of the root element of this file and the schema location have been changed. So if you need to migrate a CDI 1.0 application to a more recent version, you need to check your `beans.xml` files. Let us have a look at those new values right now.
 
@@ -45,7 +44,7 @@ Note also that there is no specific schema for CDI 1.2 (`beans_1_2.xsd`). CDI 1.
 </beans>
 ----
 
-==== The version and bean discovery mode attributes
+=== The version and bean discovery mode attributes
 
 The root element of this `beans.xml` file is `beans`. In CDI 1.0 it has no attribute defined. This changed in CDI 1.1, where two attributes were introduced:
 
@@ -62,7 +61,7 @@ The last mode is the `all` mode and you should be very careful with it, because 
 
 There are no other attributes added to this `beans` element.
 
-==== Subelements of the `beans` root element
+=== Subelements of the `beans` root element
 
 CDI defines several subelement to this `beans` root element. We are not going to see them right now. Presenting the list of those subelements here whould not make sense, since we do not know the concepts they define. We will see them one by one throughout this book, one at a time.
 

@@ -1,0 +1,34 @@
+= Deploying your CDI Application
+
+== Discovery modes
+
+== Advanced Bean Archive design
+
+== Beans.xml recipes
+
+== Wrap-up
+
+=  Understanding CDI SPI
+
+== Type meta-model
+
+== CDI meta-model
+
+* usable in standard programming & extension
+
+== CDI entry points
+
+== SPI for portable extensions
+
+== Wrap-up
+
+= Extending CDI
+
+== Introducing portable extensions
+ 
+== CDI Lifecycle
+ 
+== Portable extension examples
+ 
+== Wrap-up
+ 

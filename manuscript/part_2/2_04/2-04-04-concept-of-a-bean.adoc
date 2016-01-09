@@ -1,5 +1,4 @@
-
-=== What is a CDI bean?
+== What is a CDI bean?
 
 Now that we saw the concept of bean archive, and the role of the `beans.xml` file, we can move to the next notion: the CDI bean.
 
@@ -9,7 +8,7 @@ In a nutshell, a CDI bean is a basic Java bean that CDI knows about and can hand
 
 In this paragraph, we define several key notions: the type of a CDI bean, the lifecycle of a CDI bean, and the definition of a CDI bean.
 
-==== The type of a CDI bean
+=== The type of a CDI bean
 
 First, a bean is a Java object. So, as all Java objects, it has a type. From this point of view, there is no difference between a plain Java object and a CDI bean. Through the Java inheritance type system, any object can have several types: classes and interfaces. Of course CDI relies on the Java standard type system. So a CDI bean has all the types a Java bean has.
 
@@ -17,7 +16,7 @@ Now, for some reasons that we have not seen yet, the type of a bean in the CDI s
 
 We will see all the details on CDI types in a paragraph later in this chapter. So let us carry on with this simple idea for now, that the type of a CDI bean is the same as the type of a Java bean.
 
-==== The lifecycle of a CDI bean
+=== The lifecycle of a CDI bean
 
 The second important point is that a CDI bean is provided by a CDI container. You should not create a bean by yourself in a CDI application. Merely, you should make a request on the CDI container to get an instance of a bean, just as in the factory pattern. In fact, CDI implements the factory design pattern on this point. This request can be implicit. This is what you did in the first example you wrote, using the `@Inject` annotation.
 
@@ -25,7 +24,7 @@ There are two consequences of that. The first one is that a bean is bound to the
 
 // TODO José : diagramme pour le cycle de vie
 
-==== What is a managed bean?
+=== What is a managed bean?
 
 // TODO Antoine : consolider la notion de managed bean
 So a bean is an instance of a Java object, provided by a container (the CDI container). It can also be called a managed bean, since the container takes care of the creation and destruction of this bean. The container provides many things for beans. For instance, it can see that a method is called, thus allowing the interception of this call.
@@ -38,7 +37,7 @@ In the Java EE context, and for backward compatibility reasons, some special typ
 * EJBs are also managed beans in the Java EE context. EJB are defined in their own Java EE specification, and carry special semantics regarding how their methods are called.
 * Web services are the last special type of managed beans handled by CDI in the Java EE context.
 
-==== Defining CDI beans, metadata
+=== Defining CDI beans, metadata
 
 Defining a basic CDI bean is a very simple process. But there are many refinements that can be done: decoration, interception, specialization just to name a few. The overall process becomes more an more complex as we go deeper and deeper in the many functionalities offered by CDI. We are not going to see them all in this paragraph, but present them one by one later in this book.
 

@@ -1,14 +1,14 @@
 [[chap08-using-events]]
-== Using events to decouple your application modules
+= Using events to decouple your application modules
 
-=== Firing and observing events
+== Firing and observing events
 
-=== Asynchronous events
+== Asynchronous events
 
-=== Setting observers priority
+== Setting observers priority
 
-=== Conditional observers
+== Conditional observers
 
-=== Transactional observers
+== Transactional observers
 
-=== Wrap-up
+== Wrap-up

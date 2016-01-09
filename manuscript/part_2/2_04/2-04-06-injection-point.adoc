@@ -1,5 +1,4 @@
-
-=== Injection points
+== Injection points
 
 // TODO Antoine Antoine : digramme pour expliquer l'injection de dépendances
 
@@ -28,13 +27,13 @@ public @interface Inject {
 
 This annotation can be put on fields (and indeed we saw that), but it can also be put on constructors and methods. What does it mean to inject a constructor or a method?
 
-==== A constructor annotated with `@Inject`
+=== A constructor annotated with `@Inject`
 
 In fact, annotating a constructor with `@Inject` tells CDI that it can use that constructor to build an instance of this bean. We wrote previously that a bean needed its empty constructor to be built by CDI using the Java reflection API. This is the case most of the times, but there are cases where we can tell CDI to build beans in other ways, and this is one of them. There are limitations though, since only one constructor can be annotated in that way.
 
 All the parameters of this constructor (it can have more than one) will have to be resolved by CDI. In other words, CDI will have to build instances of the right type for each of those parameters.
 
-==== A method annotated with `@Inject`
+=== A method annotated with `@Inject`
 
 What does it mean to put the `@Inject` annotation on a method? There are several cases to consider.
 
@@ -46,7 +45,7 @@ We can have as many initializer methods as we want. Any method with any number o
 
 The simplest case is a setter method. In this case, it really looks like annotating the corresponding field, the only difference being: in that case CDI calls the setter instead of setting the value of this field directly using the Java Reflection API.
 
-==== How does CDI instantiates a CDI bean before injecting it?
+=== How does CDI instantiates a CDI bean before injecting it?
 
 // TODO Antoine José : ajouter un graphe
 
@@ -60,7 +59,7 @@ Third it calls all the initializer methods, injecting the proper beans as parame
 
 The `@Inject` annotation plays a crucial role in this process.
 
-==== Wrap-up on the `@Inject` annotation
+=== Wrap-up on the `@Inject` annotation
 
 The `@Inject` annotation can be put on three elements:
 

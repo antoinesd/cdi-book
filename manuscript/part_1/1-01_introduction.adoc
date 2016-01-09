@@ -1,7 +1,7 @@
 include::../header.adoc[]
 
 [[chap01-introduction-to-cdi]]
-== Introduction to CDI
+= Introduction to CDI
 
 
 .This chapter covers
@@ -56,13 +56,13 @@ Of course, not everything is available in the SE version of CDI, but you can sti
 In fact, integrating CDI in a legacy application can be a very efficient way to clean up your code, to decouple your old modules into CDI elements.
 It will help you make your code testable, which is one of the greatest problems when one deals with legacy.
 
-=== What is CDI?
+== What is CDI?
 
 The CDI acronym itself (Context and Dependency Injection) is built on two main ideas.
 The first one being dependency injection, and the second one the notion of context.
 Let us quickly describe those two notions.
 
-==== CDI in a nutshell
+=== CDI in a nutshell
 
 How does new ideas take shape in the Java space? The process is nearly always the same. As soon as new ideas emerge, some Open source implementation is produced.
 This implementation is watched by the community, some more contributors show up, bringing new ideas and improvements.
@@ -106,7 +106,7 @@ This has been the case for JPA, built on top of Hibernate and EclipseLink, and i
 So yes, the CDI reference implementation: Weld, can definitely be used in real production environment, and this is already the case.
 
 
-==== Dependency Injection
+=== Dependency Injection
 
 Let us first explain what is dependency injection.
 And let us begin by explaining where does this idea come from.
@@ -230,7 +230,7 @@ The framework will do the work for you. It is much easier to understand this cod
 This simple and basic pattern allows for better decoupling of the different modules of your application.
 The dependencies are expressed in a simple way, without any technical details.
 
-==== Context
+=== Context
 
 We spent some time to describe the notion of dependency injection, because it is probably the most widely needed concept in an application.
 Everybody has heard about dependency injection at some point.
@@ -280,7 +280,7 @@ CDI brings abstractions for all these notions: contexts, lifecycles,binding of o
 They are of course specific contexts for the well known notions of transaction, HTTP request or HTTP session.
 But we can also create our own contexts to suit the needs of our applications.
 
-=== Problems solved by CDI
+== Problems solved by CDI
 
 Having a powerful tool is not enough to solve the problems we face when dealing with modern applications, as architects or developers.
 When the only tool you have is a hammer, all problems begin to resemble nails.
@@ -335,11 +335,11 @@ This very powerful feature is called convention over configuration. CDI works wi
 We can change these rules to better suit the needs of our applications, but most of the time, it is better to avoid doing this.
 
 
-//=== Code examples
+//== Code examples
 
 //TODO: Is it still usefull with example in chapter 2 and the few examples we already gave above?
 
-=== The CDI specification
+== The CDI specification
 
 As we already said, CDI is a Java EE specification.
 
@@ -350,7 +350,7 @@ As we already said, CDI is a Java EE specification.
 Being a specification and part of Java EE umbrella spec has consequences on the way CDI is designed and will evolve.
 Let's go thought this concept of specification to understand the impact on CDI
 
-==== The JCP
+=== The JCP
 
 In early Java days, Sun Microsystems, which owned Java at the time, decided to to create a community gathering all interested actors in the Java platform.
 So they created the Java Community Process (JCP) to organize Java language and platform evolution.
@@ -370,13 +370,13 @@ ____
 
 So, each specification in Java SE or EE have been proposed by someone (most of the time a company) by a JSR submission.
 
-==== What is a JSR
+=== What is a JSR
 
 A JSR is a Java Specification Request. It's a small project to produce a specification document (and associated deliverable) which enhance the platform (Java SE or Java EE).
 It's the core JCP tools to produce standard technologies for Java SE and Java EE.
 To understand how it works and what it delivers, let's explore the details of a JSR. 
 
-===== Lifecycle of a JSR
+==== Lifecycle of a JSR
 The JCP defines a very detailed lifecycle for JSR which is specified in a JCP process document (which is specified like any other JSR).
 
 
@@ -403,7 +403,7 @@ When the EG decide their work is over, they deliver a "proposed final draft".
 This document is then subject to a approval vote by the EC.
 If this ballot is favorable, the document is accepted as a new specification.
 
-===== JSR Deliverable
+==== JSR Deliverable
 
 A JSR should delivers the following artifacts:
 
@@ -415,7 +415,7 @@ A JSR should delivers the following artifacts:
 All these deliverable are the specification leader responsibility.
 After the specification release (when the JSR is adopted by the EC), other third parties can create their own implementation of the specification and validate it with the TCK. 
 
-==== CDI JSRs
+=== CDI JSRs
 
 Regarding the CDI, the specification already had 3 JSRs:
 
@@ -429,7 +429,7 @@ Most alternatives frameworks to CDI described in <<alternatives>> also implement
 
 
 [[container]]
-=== The CDI container
+== The CDI container
 
 Like most framework adding high level service on standard Java classes, CDI use a container to store all meta data and active components used in the current application.
 
@@ -470,14 +470,14 @@ If there are no instance, it creates it and, optionally, add it to an active con
 And finally it sets the `service` field with the instance it found or just created.
 
 [[implementations]]
-=== The CDI implementations
+== The CDI implementations
 
 Specification is nothing without good implementations.
 CDI is lucky here with two excellent implementations: JBoss Weld and Apache OpenWebBeans.
 For CDI 1.0 there's also a third implementation: Caucho CanDI
 
 [[intro_weld]]
-==== JBoss Weld
+=== JBoss Weld
 
 JBoss Weld is the CDI reference implementation (RI).
 It is developed by Red Hat as an open source project under Apache License.
@@ -500,7 +500,7 @@ To learn more on Weld see <<weld_specific>> or visit JBoss Weld website (http://
 
 
 [[intro_owb]]
-==== Apache OpenWebBeans
+=== Apache OpenWebBeans
 
 OpenWebBeans got its name from early CDI project name.
 The implementation from the Apache foundation is of course under Apache License.
@@ -515,19 +515,19 @@ Apache OpenWebBeans is used in the following server:
 To learn more on OpenWebBeans see <<owb_specific>> or visit Apache OpenWebBeans web page (http://openwebbeans.apache.org/).
 
 [[intro_candi]]
-==== Caucho CanDI
+=== Caucho CanDI
 
 CanDI is a CDI 1.0 implementation at the heart of Caucho Resin 4.x.
 It is used to configure the server and provide all the integration layer between all the server technology.
 Unfortunately CanDI is not available as standalone solution.
 
 [[resources]]
-=== CDI website and other resources to lean CDI
+== CDI website and other resources to lean CDI
 
 //TODO: write part on CDI website
 
 [[cdi_alternatives]]
-=== Alternatives to CDI
+== Alternatives to CDI
 
 CDI is not the first or only solution to add dependency injection to your project.
 Other frameworks provide similar features with different flavours.
@@ -538,7 +538,7 @@ As CDI, they all implement JSR 330 (AtInject) specification.
 We are giving short introduction for each of these. If you need more information on this solution please refer to their website/documentation
 
 [[spring]]
-==== Spring Framework
+=== Spring Framework
 
 Spring is the open source framework who made the concept of Dependency Injection popular more than 10 years ago.
 The project is led by Pivotal under Apache License.
@@ -551,7 +551,7 @@ You'll find more information on Spring on the project website: http://spring.io
 
 
 [[guice]]
-==== Google Guice
+=== Google Guice
 
 Google launched Guice a few years after Spring.
 The project is also published under Apache License.
@@ -564,7 +564,7 @@ You'll find more information on Guice on the project website: https://github.com
 
 
 [[dagger]]
-==== Google Dagger
+=== Google Dagger
 
 Introduced in 2012 by Square, Dagger is one of the youngest in the Java IoC open source frameworks family.
 It is also developed under the Apache License.

@@ -1,22 +1,22 @@
 [[chap07-intercepting-and-decorating]]
-== Intercepting and decorating beans
+= Intercepting and decorating beans
 
-=== Why do we need method interception?
+== Why do we need method interception?
 
 * Security
 * Logging
 * Auditing
 
 
-=== How interception differs from decoration
+== How interception differs from decoration
 
 * Why do we need both?
 
-=== How to set up interception
+== How to set up interception
 * Interception and contexts: transaction
 
-=== How to set up decoration
+== How to set up decoration
 
-=== Setting @Stereotype to intercept and decorate
+== Setting @Stereotype to intercept and decorate
 
-=== Wrap-up
+== Wrap-up

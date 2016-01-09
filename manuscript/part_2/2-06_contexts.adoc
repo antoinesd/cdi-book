@@ -1,17 +1,17 @@
 [[chap05-contexts]]
-== Contexts
+= Contexts
 
-=== Understanding context?
+== Understanding context?
 
 * Contexts and scopes
 
-=== See the contexts in action
+== See the contexts in action
 
 * Request / Session / Application
 * Conversation (tabbed navigation)
 * Transaction
 * Build your own context
 
-=== Setting contexts with @Stereotype
+== Setting contexts with @Stereotype
 
-=== Wrap-up
+== Wrap-up

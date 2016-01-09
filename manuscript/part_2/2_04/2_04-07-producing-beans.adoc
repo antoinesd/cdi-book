@@ -1,5 +1,4 @@
-
-=== Creating producers
+== Creating producers
 
 This section is about the notion of CDI _producer_. A producer is a mean for CDI to create beans.
 
@@ -51,7 +50,7 @@ How can we solve that? Precisely by defining a producer fo the `PostRepository` 
 
 Let us examine those three possibilities. 
 
-==== Annotated constructor
+=== Annotated constructor
 
 Let us see how we can create a producer by adding the `@Inject` annotation on a constructor of a class.
 
@@ -78,7 +77,7 @@ CDI will then call this constructor to build an instance of `InMemoryPostReposit
 
 The example we just wrote is very naive, and will not work because of that: CDI cannot tell on its own what value should be injected for the `size` paramter. In this particular case, using an annotated constructor is not the right way to go. Do not worry, we are going to see others.
 
-==== Using a producer
+=== Using a producer
 
 Providing an explicit _producer_ to tell CDI how to create the missing instance is another possibility, and the one you should use in this case.
 
@@ -91,7 +90,7 @@ The `@Producer` annotation can be put on several elements of a class.
 
 Let us see examples of those two cases.
 
-===== Producer methods
+==== Producer methods
 
 We are going to create a producer method in this subsection, by adding a `@Producer` annotation on a method that returns a `PostRepository` interface. Let us add the following class to our example.
 
@@ -126,7 +125,7 @@ Second, a producer method might return a null value. Of course in that case, odd
 
 A producer method can be nearly any kind of method. It can be static or non-static, private, protected, public or package protected. It should be _seen_ by CDI, so it should be a method of a managed bean, or a method of an EJB.
 
-===== Producer fields
+==== Producer fields
 
 We are now exploring the second way of creating a producer: by putting the `@Produces` annotation on a field of the right type. This may looks odd, because a method call may look so much logical! There is in fact one case where it is extremely useful: the case where this field holds a resource, and is itself injected by the Java EE container. There are many examples of that in the Java EE world. Let us look at the following example.
 
@@ -157,7 +156,7 @@ This pattern is extremely useful to add any kind of Java EE resource (whether it
 
 This pattern can be used in any application: an injected field can become itself a producer for other types.
 
-===== Having more than one producer for a given type
+==== Having more than one producer for a given type
 
 With all these ways to define producers, it is very easy to have several producers for a given type. In certain cases, it might even be desirable. For instance, we can have a producer method and an explicit no-arg constructor to our `InMemoryPostRepository` class. Maybe our application needs this no-arg constructor for some reason, and for another reason, we need to build our bean using this producer method.
 

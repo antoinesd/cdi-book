@@ -1,5 +1,4 @@
-
-=== Advanced concepts in qualifying bean
+== Advanced concepts in qualifying bean
 
 We have gone through all the elements CDI uses to define the CDI bean type of a bean, and the different ways it uses to wire producers and injection points together.
 
@@ -14,7 +13,7 @@ The exact Java type of this mock bean is different, but the qualifiers may be th
 But we can also imagine other use cases. Suppose our application is internationalized. We could imagine having a bunch of supported locales, each represented by sets of classes, put in different packages. These classes are in fact models for CDI beans, and are meant to be injected, or are referenced by Java Server Faces templates. One way of organizing this is to set the correct set of class as the alternative in a given deployment scenario using a given locale.
 
 
-==== Bringing the `@Alternative` concept
+=== Bringing the `@Alternative` concept
 
 The solution cannot rely on adding some kind of information (qualifier for instance) on the injection points. First it would be very error prone (suppose we forget one). And it would also be very tedious to set up. This would not lead to a reliable solution.
 
@@ -24,7 +23,7 @@ The only reliable way to do that is to act on the producing side. An approach on
 
 This is exactly for this kind of situation that the `@Alternative` concept has been created in CDI. The bean we want to substitute to the normal, injected bean, is declared as the _alternative_ of the normal bean, and then, CDI will magically inject this alternative in place of the normal bean.
 
-===== The `@Alternative` annotation
+==== The `@Alternative` annotation
 
 From a technical point of view, creating an alternative bean is really simple. We just need to create a producer for this bean, and add the `@Alternative` annotation where the bean is produced and we are done.
 
@@ -43,7 +42,7 @@ public class InMemoryConcurrentPostRepository implements PostRepository, Seriali
 }
 ----
 
-===== Annotation versus XML declaration
+==== Annotation versus XML declaration
 
 Adding an annotation is very simple, but it requires the compilation of the class where we added the annotation. We must consider two cases here.
 
@@ -72,19 +71,19 @@ Declaring an alternative in the `beans.xml` configuration file is really easy. L
 
 All we need is to declare the alternative class in the `alternatives` XML subelement of the `beans` element.
 
-===== More than one bean annotated with `@Alternative`
+==== More than one bean annotated with `@Alternative`
 
 It is possible to have more than one bean with the same CDI Bean Types annotated with `@Alternative`. Of course this case will raise errors due to ambiguities in the resolution of which of those beans should be used to injection. Referencing one of these classes in the `beans.xml` file will resolve the ambiguity.
 
 // TODO José : ajouter un exemple
 
-===== Selecting an alternative bean with the `@Priority` annotation
+==== Selecting an alternative bean with the `@Priority` annotation
 
 There is also another way to choose from several beans annotated with `@Alternative`. This way consists in adding a `@Priority` annotation along with the `@Alternative` annotation. This annotation will make this bean the chosen one among the other alternatives. The `@Priority` annotation takes an `int` attribute that has no default value. So we must give a value to this priority.
 
 The `@Priority` annotation does not come from CDI but from `javax.annotation`, and its exact meaning is left to the specifications that use it. CDI does indeed mention it for alternatives, but does not give precision on the way this attribute is used. So far we assume that only one alternative can be annotated with `@Priority`.
 
-==== Creating a `@Specializes` bean
+=== Creating a `@Specializes` bean
 
 In a nutshell an alternative bean is a way to override a bean with another one. Inside this mechanism there are two ways to resolve further ambiguities. But unfortunately, there are still cases where alternatives are not enough to override a given bean definition.
 
