@@ -64,14 +64,14 @@ The presence of this file tells CDI that our application is a _bean archive_. Th
 
 So the simple fact that this file is there has its importance in the CDI context.  
 
-=== Adding a `beans.xml`file
+=== Adding a `beans.xml` file
 
 So let us add the following `beans.xml` file to our application.
 
 [[app-listing]]
+.A first `beans.xml` file
 [source,xml]
 ----
-.A first `beans.xml`file
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://xmlns.jcp.org/xml/ns/javaee"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

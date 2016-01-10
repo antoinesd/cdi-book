@@ -33,11 +33,9 @@ Why should we need producers? The answer to this question is very simple: becaus
 
 [[app_listing]]
 .Error met with a bean with no empty constructor
-[source,txt]
+[source,console]
 ----
-Exception in thread "main" org.jboss.weld.exceptions.DeploymentException: WELD-001408: Unsatisfied dependencies for type PostRepository with qualifiers @Default
-  at injection point [BackedAnnotatedField] @Inject private chap04.service.PostServiceImpl.postRepository
-  at chap04.service.PostServiceImpl.postRepository(PostServiceImpl.java:0)
+Exception in thread "main" org.jboss.weld.exceptions.DeploymentException: WELD-001408: Unsatisfied dependencies for type PostRepository with qualifiers @Default at injection point [BackedAnnotatedField] @Inject private chap04.service.PostServiceImpl.postRepository at chap04.service.PostServiceImpl.postRepository(PostServiceImpl.java:0)
 ----
 
 Since CDI could not find a way to build an instance of the `PostRepository` type, it could not build the `PostService` neither. All our object graph is broken.

@@ -1,6 +1,17 @@
 <<<
 = Part II - Basic CDI concepts
 
+As we saw in part 1, CDI in itself is a specification, that is an abstract concept, or a set of abstract concepts, described in a paper document. Aside of this document, there are several implementations that are there to give life to this specification.
+
+In this second part we'll detail all the basic concept fo the specification and show to use them.
+
+In chapter 3 we'll introduce the concept of bean, bean dfeinition and dependency injection.
+
+Chapter 4 will cover the concept of bean Lifecycle, before we'll dive into context management in chapter 5.
+
+Chapter 6 will deal with aspect oriented concepts with interceptors and decorators.
+
+This basic CDI concept part will be closed in chapter 7 by discussing events.
 
 :leveloffset: +1
 
