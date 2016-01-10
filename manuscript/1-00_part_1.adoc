@@ -1,6 +1,11 @@
 <<<
 = Part I - first steps with CDI
 
+Contexts and Dependency Injection (CDI) is a Java specification that was first released with Java EE 6 in december 2009.
+Promoting the concept of dependency injection with a modern and strong typed approach, CDI also provide components lifecycle management (contexts), eventing System and a powerful extension mechanism.
+In chapter 1, we'll introduce the CDI basic concepts like dependency injection and the implication of being a Java specification.
+
+In chapter 2 you'll see a CDI example from scratch and get information to set up your environment for using the book examples.
 
 
 :leveloffset: +1

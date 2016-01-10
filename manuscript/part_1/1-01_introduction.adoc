@@ -6,11 +6,11 @@ include::../header.adoc[]
 
 .This chapter covers
 ****
-* what is CDI in a nutshell,
-* what is dependency injection,
-* what is a context in the CDI sense,
-
-// TODO Antoine : compléter cette liste
+* defining CDI and its core concepts like Dependency Injection or Contexts management
+* listing some of the problems that CDI solve
+* defining the CDI role as a Java EE specification and its consequences
+* listing of website to get resource on CDI
+* listing of the main alternatives to CDI
 ****
 
 One of the strength of the Java world is probably the vibrant open source community that it gathered in the last two decades.
@@ -280,6 +280,48 @@ CDI brings abstractions for all these notions: contexts, lifecycles,binding of o
 They are of course specific contexts for the well known notions of transaction, HTTP request or HTTP session.
 But we can also create our own contexts to suit the needs of our applications.
 
+[[container]]
+=== The CDI container
+
+Like most framework adding high level service on standard Java classes, CDI use a container to store all meta data and active components used in the current application.
+
+The CDI container is the heart of the framework.
+When running CDI in Java EE, this container is automatically provided to you by the Java EE server.
+When running CDI in Java SE, you'll have to boot this container as we will see in <<java_se_boot>>.
+
+It contains all the beans defined in your application and all the bean instances (Java Object) that were previously created in active contexts so you can request them again.
+It is also responsible to add powerful features to your components like eventing system, interceptor or decorator, among others.
+
+But to have all the features provided by the container you have to follow the CDI programming model you'll learn in this book.
+For instance, you should never instantiate a bean class by yourself using `new` keyword.
+To get the benefit of CDI you'll have to delegate all instantiation to the CDI container.
+You'll discover other constraint for your code to stick to the CDI programming model.
+By the way, it's why it is called a framework, because it enforces you to observe a collection of rules defining your frame of work.
+These rules are more good practices and code standardization than real constraints as you'll discover in part 2.
+
+Once the container is up and running, it is ready to serve you by providing you with the beans you will request.
+But, strangely you'll discover that for most of the time, the container is invisible for you and that its "magic" is done automatically.
+
+For instance if we write:
+
+.Injection point "magic"
+[source]
+----
+public class MyBean {
+
+    @Inject //<1>
+    MyService service;
+}
+----
+<1> `@Inject` transform the field in an injection point
+
+When `MyBean` is used for the first time, the container must provides a bean of class `MyService` at the injection point.
+that means that the container looks for a bean having `MyService` in its type set.
+When it found it, it checks if an instance of these bean already exist in active context.
+If there are no instance, it creates it and, optionally, add it to an active context.
+And finally it sets the `service` field with the instance it found or just created.
+
+
 == Problems solved by CDI
 
 Having a powerful tool is not enough to solve the problems we face when dealing with modern applications, as architects or developers.
@@ -333,7 +375,6 @@ So it just wires that producer to all the injection points of the same type that
 This very powerful feature is called convention over configuration. CDI works with a set of general rules that are assumed to hold.
 
 We can change these rules to better suit the needs of our applications, but most of the time, it is better to avoid doing this.
-
 
 //== Code examples
 
@@ -427,47 +468,6 @@ All of these specifications have a dependency on *Dependency Injection for Java*
 This very light specification define basic annotations and interfaces for dependency injection.
 Most alternatives frameworks to CDI described in <<alternatives>> also implement this specification making easier to create basic code working for all Dependency Injection solutions.
 
-
-[[container]]
-== The CDI container
-
-Like most framework adding high level service on standard Java classes, CDI use a container to store all meta data and active components used in the current application.
-
-The CDI container is the heart of the framework.
-When running CDI in Java EE, this container is automatically provided to you by the Java EE server.
-When running CDI in Java SE, you'll have to boot this container as we will see in <<java_se_boot>>.
-
-It contains all the beans defined in your application and all the bean instances (Java Object) that were previously created in active contexts so you can request them again.
-It is also responsible to add powerful features to your components like eventing system, interceptor or decorator, among others.
-
-But to have all the features provided by the container you have to follow the CDI programming model you'll learn in this book.
-For instance, you should never instantiate a bean class by yourself using `new` keyword.
-To get the benefit of CDI you'll have to delegate all instantiation to the CDI container.
-You'll discover other constraint for your code to stick to the CDI programming model.
-By the way, it's why it is called a framework, because it enforces you to observe a collection of rules defining your frame of work.
-These rules are more good practices and code standardization than real constraints as you'll discover in part 2.
-
-Once the container is up and running, it is ready to serve you by providing you with the beans you will request.
-But, strangely you'll discover that for most of the time, the container is invisible for you and that its "magic" is done automatically.
-
-For instance if we write:
-
-.Injection point "magic"
-[source]
-----
-public class MyBean {
-
-    @Inject //<1>
-    MyService service;
-}
-----
-<1> `@Inject` transform the field in an injection point
-
-When `MyBean` is used for the first time, the container must provides a bean of class `MyService` at the injection point.
-that means that the container looks for a bean having `MyService` in its type set.
-When it found it, it checks if an instance of these bean already exist in active context.
-If there are no instance, it creates it and, optionally, add it to an active context.
-And finally it sets the `service` field with the instance it found or just created.
 
 [[implementations]]
 == The CDI implementations
@@ -576,4 +576,16 @@ The counter part of this lightness is less dynamic aspect than other framework a
 Dagger 2 is now led by Google.
 
 You'll find more information on Dagger on the project website: http://google.github.io/dagger/
+
+== Summary
+
+In this chapter we met CDI.
+We saw the main CDI concepts like Dependency Injection or context management and discovered how its programming model can help you focusing on the business code in your development.
+
+We also how being a JSR specification made CDI specific and present the two implementation for it.
+
+Finally we listed the alternatives solution to CDI and show how they differs from it.
+
+In the next chapter we'll show a CDI code example from scratch and help you getting ready to work with the book examples.
+
 
