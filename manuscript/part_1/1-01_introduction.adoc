@@ -1,91 +1,169 @@
+:chapter: 1
+:sectnums:
+:figure-caption: Figure {chapter}.
+:listing-caption: Listing {chapter}.
+:table-caption: Table {chapter}.
+:sectnumoffset: 0
 include::../header.adoc[]
 
 [[chap01-introduction-to-cdi]]
+
+////
+I inserted what I think is the correct set of declarations at the top of your file. I also adjusted your heading levels. Consult with Ben Berg for help. Also, I highly recommend a tool called AsciiDocFX (http://asciidocfx.com/); it has a built-in preview pane and you can easily generate PDFs with it. --MM
+////
+
 = Introduction to CDI
 
 
+////
+In addition to editing this chapter as though I am seeing it for the first time, I am copyediting this chapter for ESL issues. So you'll see some changes in punctuation, grammar, and spelling. If you want to see the individual changes in this file, instead of just seeing which lines have changed, I hear that IntelliJ has a very nice Diff tool you can use for that purpose (https://www.jetbrains.com/idea/help/running-intellij-idea-as-a-diff-or-merge-command-line-tool.html).
+
+Overall chapter comments:
+
+1. Each section and subsection needs an introduction that tells your readers what you are teaching in that section and why you are teaching it.
+
+2. Revise this chapter so that you provide a clear mental model of what CDI is and what it does. This means rearranging some of the material. I didn't copyedit the sections I am asking you to revise heavily, and I also didn't comment on those sections in depth.
+
+3. Rewrite several sections so they teach their topics starting with concrete information and moving to abstract information. Use graphics. See my notes under "Dependency injection."
+
+4. I commented on a few sections that I think could be moved to an appendix.
+
+5. Make sure that all your headings tell a complete story. If the heading were taken out of context, would readers have a good idea of what you are teaching? If not add more to the headings to make it clear.
+
+--MM
+////
+
 .This chapter covers
 ****
-* defining CDI and its core concepts like Dependency Injection or Contexts management
-* listing some of the problems that CDI solve
+* defining CDI and its core concepts, like dependency injection or Contexts management
+* listing some of the problems that CDI solves
 * defining the CDI role as a Java EE specification and its consequences
-* listing of website to get resource on CDI
-* listing of the main alternatives to CDI
+* websites where you can get more resources on CDI
+* a discussion of the main alternatives to CDI
+
+////
+In the first bullet, should it be "context" rather than "contexts"?
+
+I rewrote the fourth bullet, but really resource material should go into an appendix. --MM
+////
 ****
 
-One of the strength of the Java world is probably the vibrant open source community that it gathered in the last two decades.
-This community has been developing countless wonderful tools, frameworks and API.
-Some of those were in the end integrated in the JDK itself, some others have become _de facto_ standards.
+One of the strengths of the Java world is the vibrant open source community that it's gathered in the last two decades.
+This community has developed countless wonderful tools, frameworks, and APIs.
+Some of those have been integrated into the JDK itself, while others have become _de facto_ standards.
 
 Some of those standards were integrated in the Java Enterprise Edition platform (Java EE), both as a specification and a reference implementation.
-This is the case for Context and Dependency Injection, CDI.
+This is the case for Context and Dependency Injection (CDI).
 The CDI specification was first brought to the Java EE platform as a tool to glue together web page templates and middleware Java code.
 
-Through this book, we give you precise information about the technical possibilities brought to you by CDI: what can do CDI for you, and what the corner cases are.
-CDI has been designed with certain ideas in mind, and it is important, as an application architect or a developer to know them to use CDI right.
+////
+1: Move the following material (through to my comment labeled 2) into a separate section in this chapter. It doesn't belong in this introduction. That separate section is an overview of the book. --MM
+////
+Through this book, we give you precise information about the technical possibilities brought to you by CDI: what CDI can do for you, and what the corner cases are.
+CDI has been designed with certain ideas in mind, and it is important for you, as an application architect or a developer, to know how to use CDI correctly.
 This is the first step.
-Passed that, we will describe precisely how you should use CDI, and what patterns you should follow to build CDI applications.
-We provide many examples of code, patterns and snippets that you can easily reuse in the context of your own applications.
+After that, we describe precisely how you should use CDI, and what patterns you should follow to build CDI applications.
+We provide many examples of code, patterns, and snippets that you can easily reuse in the context of your own applications.
 
 The first part of this book gives you a quick overview of what CDI can bring to you and your applications.
-It browses all the most important ideas, without going too deep to the technical details.
-There are lots of examples and code samples.
+It browses all the most important ideas, without going too deeply to the technical details.
+We give lots of examples and code samples.
 The goal of those examples is twofold: first, answering the first questions you may have in mind, with simple answers and examples.
-It also shows you how to set up a working environment that we will use through all this book.
+Second, those examples show you how to set up a working environment that we will use through all this book.
 Setting up an environment means choosing an implementation.
 The implementation we choose is Weld, the reference one.
+////
+After the sentence,"Setting up an environment means choosing an implementation," add another sentence in which you explain what an "implmentation" is. --MM
+////
 
 The second part is a deep dive into all the concepts of CDI.
-Obviously the first part will leave some questions unanswered, and some corner cases unexplained, for the sake of simplicity.
-CDI brings many concepts to the Java EE platform, and we are going to describe all of them one by one.
+Obviously, for the sake of simplicity, the first part will leave some questions unanswered, and some corner cases unexplained.
+CDI brings many concepts to the Java EE platform, and in this part, we are describe them all one by one.
 This part might look tedious, just because CDI is a very rich framework, with many interesting things built in it.
 
-The third part describes the most advanced features of CDI: deployment, Service Provider Interface (SPI) and extensions.
-Not all applications developers will need a good understanding of every aspect we describe in this part.
-But it is still worth reading: many gems are hidden here! CDI can do a lot for you, probably much more than you think!
-The extension system can be used very efficiently to build new features that your application needs.
-We will talk here about several projects, especially Deltaspike, which became Duke’s Choice Award winner in 2014.
+The third part describes the most advanced features of CDI: deployment, Service Provider Interface (SPI), and extensions.
+Not all applications developers will need a good understanding of every aspect we describe in this part, but it is still worth reading: many gems are hidden here! CDI can do a lot for you, possibly much more than you think.
+You can use the extension system very efficiently to build new features that your application needs.
+In this part we will talk about several projects, especially Deltaspike, which became Duke’s Choice Award winner in 2014.
 The Duke's Choice Awards celebrate extreme innovation in the world of Java technology and are granted to the most innovative projects using the Java platform.
 
-The last part is about integrating CDI in your own environment and having it interact with your own existing applications.
+The last part is about integrating CDI in your own environment and having it interact with your existing applications.
 Despite the fact that CDI is quite new in the Java platform, and especially in the Java EE world, you can integrate it in your legacy code.
-From CDI 2.0, you do not need a Java EE application to use CDI: you can integrate it with Java SE.
+With CDI 2.0, you do not need a Java EE application to use CDI: you can integrate it with Java SE.
 This opens the door to many opportunities.
 Of course, not everything is available in the SE version of CDI, but you can still use many powerful features.
 
 In fact, integrating CDI in a legacy application can be a very efficient way to clean up your code, to decouple your old modules into CDI elements.
 It will help you make your code testable, which is one of the greatest problems when one deals with legacy.
+////
+@: From my comment labeled 1 to this comment, move this material to an "overview of this book" section later in this chapter. --MM
+////
+
+////
+Now add more to this introduction so that it is an overview of the chapter, not the book. --MM
+////
 
 == What is CDI?
 
-The CDI acronym itself (Context and Dependency Injection) is built on two main ideas.
-The first one being dependency injection, and the second one the notion of context.
+The CDI acronym itself (Context and Dependency Injection) is built on two main ideas,
+the first being dependency injection, and the second being the notion of context.
 Let us quickly describe those two notions.
 
-=== CDI in a nutshell
+////
+In the paragraph above, give more of an overview of what you are teaching in this section. Include a brief definition of CDI--what it is, not what it does.--MM
+////
 
-How does new ideas take shape in the Java space? The process is nearly always the same. As soon as new ideas emerge, some Open source implementation is produced.
+=== CDI in a nutshell
+////
+Add some graphics to this section to illustrate the processes you are teaching.
+
+Also, this section does not provide a clear idea of what CDI is and what it does. See my note 5 (later) about teaching topics by going from concrete to abstract. You need to add a mental model with graphics. You have some good material in the section, "The CDI container," that you could move to here. Let's discuss when we meet. --MM
+////
+
+////
+3 Remove this material from this point to comment 4. --MM
+////
+How do new ideas take shape in the Java space? The process is nearly always the same. As soon as new ideas emerge, some open source implementation is produced.
 This implementation is watched by the community, some more contributors show up, bringing new ideas and improvements.
 Other implementations may be built, taking into account the good ideas and the drawbacks of the previous ones.
-This darwinist-like process of selection and rejection is just how Open source works and brings more and more innovations every day.
+This Darwinist-like process of selection and rejection is just how open source works and brings more and more innovations every day.
 
 This community also used the Java platform as a basis to demonstrate new concepts in software development.
 From the first books describing design patterns to the articles and blog posts about clean code and best practices, the _sofware craftsmanship_ movement has shown many patterns and developed many _katas_ in Java.
 
-CDI is at the intersection of those two flows of ideas. The first one comes from the needs of a better integration between the middleware layer and the presentation layer.
+// Define katas above. --MM
+
+// 4 --MM
+
+CDI is at the intersection of two flows of ideas. The first one comes from the needs of a better integration between the middleware layer and the presentation layer.
 Allowing the reference of model beans in the presentation layer (namely in JSPs) just by naming them and letting the framework do the complex wiring was a great step forward in writing simpler and cleaner presentation components.
+
+////
+In the paragraph above, who or what is doing the allowing? The CDI specification? Dependency injection?
+////
 
 The second flow is the development of patterns of code based on __dependency injection__.
 We will talk more about dependency injection, since this is at the heart of CDI.
 This idea is clearly not new, but it took a while to shape it as it is now.
 CDI itself was not built from the ground as a standalone dependency injection framework.
-Its evolution took time and efforts.
-It is now a very mature specification, with, as we will see it, several very high quality implementations.
+Its evolution took time and effort.
+It is now a very mature specification, with, as you will see, several high-quality implementations.
+
+////
+Right after the first sentence in the paragraph above, briefly define dependency injection.
+
+Also, tell your readers where you will talk about dependency injection (such as by saying "later in this book" or "in chapter X").
+
+--MM
+////
 
 The Java platform itself relies on the ideas that are the foundation of Open source.
 As developed through a JSR, or Java Specification Request, part of the JCP, or the Java Community Process, CDI is one of the many specifications born on this open process.
 Such as many specifications, CDI is the result of a joint effort of many people and companies, that decided to bring their forces together to define the notion of Context and Dependency Injection for the Java EE platform.
 
+////
+
+////
 CDI is certainly not perfect, but keeps improving release after release, thanks to the constant efforts and contributions of the community.
 The book you have in your hands would not exist without this work.
 Everyone can contribute at different levels: from providing feedback to fixing a bug or submitting a new feature.
@@ -106,13 +184,32 @@ This has been the case for JPA, built on top of Hibernate and EclipseLink, and i
 So yes, the CDI reference implementation: Weld, can definitely be used in real production environment, and this is already the case.
 
 
-=== Dependency Injection
+=== Dependency injection
+////
+Manning style: Chapter titles and headings use sentence case. That means the only words that get capitilized are the first word in the title/heading, and any proper nouns. --MM
+////
 
-Let us first explain what is dependency injection.
-And let us begin by explaining where does this idea come from.
+////
+5: Teach dependency injection using the "diagram first" approach. We'll discuss this when we next meet. Briefly, "diagram first" means to teach a topic using the following techniques in the following order. These techniques are quite effective in helping your readers learn what you are teaching more easily.
+
+1. Go from concrete to abstract. Start with a scenario, something like, "Say you have problem X. Dependency injection (define briefly) solves that problem."
+2. Include a graphic of the problem and its solution. Before the graphic, discuss the graphic a bit. In the graphic and its caption, include enough information that, if the graphic were taken out of context, your readers will still know what you are teaching.
+3. Discuss the problem a bit further and include more graphics as needed, breaking it down into logical pieces.
+4. If what you are teaching includes some code, show the _output_ of the code, with some discussion.
+5. Show the code. Annotate the code if it needs it. If the code is really long, break it up into segments and discuss each segment one at a time.
+6. Reiterate the diagrams, discussion, and code until you have taught the topic.
+7. Include some simple, quickly done exercises (drap and drop code, multiple choice, etc.; I'll send you guidelines for exercises.).
+8. Finally, conclude with some generalizations about the topic.
+
+Because I am asking you to revise this section pretty heavily, I am not going to copyedit or edit any more of this section. I'll start again at "Context."
+
+--MM
+////
+Let us first explain what dependency injection is.
+And let us begin by explaining where this idea comes from.
 Dependency injection is in fact not a new idea.
 It comes from the notion of _Inversion of Control_.
-The idea of inversion of control was first expressed as the _Hollywood principle_: you do not call us, we call you. What does it mean?
+The idea of inversion of control was first expressed as the _Hollywood principle_: you don't call us, we call you. What does that mean?
 The explanation is give in the popular book _Design Patterns: Elements of Reusable Object-Oriented Software_, by Erich Gamma, Richard Helm, Ralph Johnson and John Vissides (Addison-Wesley, 1994).
 
 In the chapter _Template Method pattern_, we can read:
@@ -163,7 +260,7 @@ In fact, several other patterns described in the book by Erich Gamma _et ali_ ar
 * the template method pattern (that we took as an example), and
 * the strategy pattern.
 
-Inversion of Control is more general than Dependency Injection itself. Let us define now what dependency injection is.
+Inversion of control is more general than dependency injection itself. Let us define now what dependency injection is.
 
 We all know that accessing a resource through a global variable is definitely not something that you should do in your application.
 This is a very old design principle.
@@ -172,9 +269,9 @@ You think it just depends on what you provide to it, and it does not: it gets so
 Most of the time, in this context, you will have trouble writing a unit test for this method.
 You will end up writing complex code to mock this service locator, and if it is accessed in a static way, you will have a hard time doing that.
 
-So what does make Dependency Injection so special?
+So what does make dependency injection so special?
 The main difference with the Service Locator pattern for instance, is that it goes one step further in the Hollywood Principle.
-Do not call me __at all__!
+Do not call me _at all_!
 Dependency injection provides a very clean way to factor a dependency that is shared among all the methods of a class.
 
 In the following example, the class `CustomerDAO` needs a reference on an `EntityManager`.
@@ -200,7 +297,7 @@ public class CustomerDAO {
 Here we choose to express this dependency by annotating a field, CDI allows other ways to do that.
 We will see all the technical details later in this book.
 
-Without Dependency Injection (whether it is a CDI implementation or not), our `CustomerDAO` class would have probably used a service locator to get a reference to some kind of service, and then would have called the right method of that service to get the needed entity manager.
+Without dependency injection (whether it is a CDI implementation or not), our `CustomerDAO` class would have probably used a service locator to get a reference to some kind of service, and then would have called the right method of that service to get the needed entity manager.
 Basically, the `CustomerDAO` class would have carried some technical code to get the needed object.
 
 To avoid this, another way would have been to write our `CustomerDAO` in this way.
@@ -231,10 +328,16 @@ This simple and basic pattern allows for better decoupling of the different modu
 The dependencies are expressed in a simple way, without any technical details.
 
 === Context
+////
+Rewrite this section in the same way I've asked you to rewrite the section on dependencey injection, going from concrete to abstract and illustrating the concept with graphics. --MM
+////
 
-We spent some time to describe the notion of dependency injection, because it is probably the most widely needed concept in an application.
+We spent some time describing the notion of dependency injection, because it is probably the most widely needed concept in an application.
 Everybody has heard about dependency injection at some point.
 All the details are not necessarily known and understood, but at least the general concept is.
+////
+Rewrite the last sentence above so you aren't making assumptions about your readers. --MM
+////
 
 The second main concept of CDI is the concept of __context__.
 Let us spend some time to give a first explanation of this notion.
@@ -276,28 +379,41 @@ We can bind objects to a context: our customer objects are bound to their transa
 What does it mean to be bound to a context?
 Simply said, it means that the bounded objects have a lifecycle too, which is the same as the lifecycle of the context they are bound to.
 
-CDI brings abstractions for all these notions: contexts, lifecycles,binding of objects to contexts, etc...
+CDI brings abstractions for all these notions: contexts, lifecycles, binding of objects to contexts, etc...
 They are of course specific contexts for the well known notions of transaction, HTTP request or HTTP session.
 But we can also create our own contexts to suit the needs of our applications.
 
 [[container]]
 === The CDI container
+////
+Move this material to under "CDI in a nutshell." When you do that, rewrite and expand this section using the same principles I discussed for teaching about dependency injection. Right now this section is too short and takes a lot for granted. --MM
+////
 
-Like most framework adding high level service on standard Java classes, CDI use a container to store all meta data and active components used in the current application.
+Like most frameworks that add high-level services to standard Java classes, CDI uses a container to store all meta data and active components used in the current application.
 
 The CDI container is the heart of the framework.
 When running CDI in Java EE, this container is automatically provided to you by the Java EE server.
 When running CDI in Java SE, you'll have to boot this container as we will see in <<java_se_boot>>.
 
+////
+What is that link above? Will it make sense in the printed version of this book?
+
+In the first sentence below, what does "it" refer to? Give more context here--what is it, and why are you talking about it?
+--MM
+////
+
 It contains all the beans defined in your application and all the bean instances (Java Object) that were previously created in active contexts so you can request them again.
 It is also responsible to add powerful features to your components like eventing system, interceptor or decorator, among others.
 
-But to have all the features provided by the container you have to follow the CDI programming model you'll learn in this book.
+But to have all the features provided by the container, you have to follow the CDI programming model you'll learn in this book.
 For instance, you should never instantiate a bean class by yourself using `new` keyword.
 To get the benefit of CDI you'll have to delegate all instantiation to the CDI container.
-You'll discover other constraint for your code to stick to the CDI programming model.
+You'll discover other constraints for your code to stick to the CDI programming model.
 By the way, it's why it is called a framework, because it enforces you to observe a collection of rules defining your frame of work.
 These rules are more good practices and code standardization than real constraints as you'll discover in part 2.
+////
+Move your definition of framework to the first time you use the word "framework." Also, explain each of your sentences above. You are throwing out a lot of statements here without backing them up. You also do the same in the following paragraphs. --MM
+////
 
 Once the container is up and running, it is ready to serve you by providing you with the beans you will request.
 But, strangely you'll discover that for most of the time, the container is invisible for you and that its "magic" is done automatically.
@@ -315,7 +431,7 @@ public class MyBean {
 ----
 <1> `@Inject` transform the field in an injection point
 
-When `MyBean` is used for the first time, the container must provides a bean of class `MyService` at the injection point.
+When `MyBean` is used for the first time, the container must provide a bean of class `MyService` at the injection point.
 that means that the container looks for a bean having `MyService` in its type set.
 When it found it, it checks if an instance of these bean already exist in active context.
 If there are no instance, it creates it and, optionally, add it to an active context.
@@ -323,8 +439,11 @@ And finally it sets the `service` field with the instance it found or just creat
 
 
 == Problems solved by CDI
+////
+Revise this section in the same way I discussed for dependency injection. --MM
+////
 
-Having a powerful tool is not enough to solve the problems we face when dealing with modern applications, as architects or developers.
+Having a powerful tool is not enough to solve the problems architects and developers face when dealing with modern applications.
 When the only tool you have is a hammer, all problems begin to resemble nails.
 This proverb is not new and is perfect to illustrate this introduction.
 
@@ -336,14 +455,21 @@ If a problem cannot be solved using dependency injection, then it could be harmf
 
 // TODO José: ajouter un graphique pour illustrer ça
 
+////
+Define your terms in the following paragraph. For example, what do you mean by saying that CDI follows a horizontal direction of development? A bertical direction of development? --MM
+////
+
 CDI follows two directions of development.
 The first one is horizontal.
 Beside dependency injection, CDI provides other functionalities: interception or decoration.
 The second one is vertical.
-On top of dependency injection, CDI introduces the notion of production (how can I build this specific object?) or typing (how can I tell a SSH key from the name of a directory when both of them are modeled by a `String`?).
+On top of dependency injection, CDI introduces the notion of production (how can I build this specific object?) or typing (how can I distinguish an SSH key from the name of a directory when both of them are modeled by a `String`?).
 
 The powerful container that implements the CDI specification (in fact there are several implementations of such a container) can be used for many more things than just contexts and dependency injection.
 But the idea designers have in mind does not change: everything has to be kept simple and readable.
+////
+Who are the desingers in the sentence above? The peopel defining the CDI specification? Be explicit. --MM
+////
 
 How is it possible to make complex things simple? As we saw it on the first examples we showed, the syntax offered by CDI is kept extremely simple.
 You want to inject a dependency in a field?
@@ -373,29 +499,34 @@ In this very easy case, CDI sees that this field can be used as a producer of ty
 So it just wires that producer to all the injection points of the same type that we declared in our code.
 
 This very powerful feature is called convention over configuration. CDI works with a set of general rules that are assumed to hold.
-
+////
+Why is it called convention over configuration? --MM
+////
 We can change these rules to better suit the needs of our applications, but most of the time, it is better to avoid doing this.
 
-//== Code examples
+//= Code examples
 
 //TODO: Is it still usefull with example in chapter 2 and the few examples we already gave above?
 
 == The CDI specification
 
-As we already said, CDI is a Java EE specification.
+As we have said, CDI is a Java EE specification.
 
 * CDI 1.0 was released as part of Java EE 6 in 2009.
 * CDI 1.1 and its maintenance release CDI 1.2 were released as part of Java EE 7 specification in 2013 and 2014
 * CDI 2.0 is part of the Java EE 8 specification and allows user to use it outside Java EE as well.
 
 Being a specification and part of Java EE umbrella spec has consequences on the way CDI is designed and will evolve.
-Let's go thought this concept of specification to understand the impact on CDI
+Let's go through this concept of specification to understand the impact on CDI.
 
 === The JCP
+////
+Do your readers need all this background information? Or are you including it because you think it is interesting? If the latter, move it to an appendix. If the former, make it clear at the start of this discussion what you are teaching here and why you are teaching it. --MM
+////
 
 In early Java days, Sun Microsystems, which owned Java at the time, decided to to create a community gathering all interested actors in the Java platform.
 So they created the Java Community Process (JCP) to organize Java language and platform evolution.
-Today, under Oracle government, the JCP pursue it's work in specifying Java SE and Java EE platform.
+Today, under Oracle government, the JCP pursues its work in specifying Java SE and the Java EE platform.
 Here is how the JCP defines itself: 
 
 [quote, JCP definition by JCP,https://www.jcp.org]
@@ -406,12 +537,12 @@ Anyone can register and join the JCP and have a part in its process, and you don
  
 The work of the Java Community under the JCP program helps to ensure Java technology's standard of stability and cross-platform compatibility, enabling it to operate on hundreds of millions of devices, from desktop computers to consumer electronics to industrial robots.
 
-(...) Anyone can sign up to become a JCP Member and then participate on the Expert Group of a JSR or even submit their own JSR Proposals.
+(...) Anyone can sign up to become a JCP Member and then participate on the Expert Group of a JSR or even submit their own JSR [Java Specification Request] Proposals.
 ____
 
-So, each specification in Java SE or EE have been proposed by someone (most of the time a company) by a JSR submission.
+So, each specification in Java SE or EE have been proposed by someone (most of the time a company) through a JSR submission.
 
-=== What is a JSR
+=== What is a JSR?
 
 A JSR is a Java Specification Request. It's a small project to produce a specification document (and associated deliverable) which enhance the platform (Java SE or Java EE).
 It's the core JCP tools to produce standard technologies for Java SE and Java EE.
@@ -420,14 +551,15 @@ To understand how it works and what it delivers, let's explore the details of a 
 ==== Lifecycle of a JSR
 The JCP defines a very detailed lifecycle for JSR which is specified in a JCP process document (which is specified like any other JSR).
 
+// Review the guidelines for including images. They are not showing up. --MM
 
 [[jsr_lifecycle_fig]]
 .Lifecycle of a JSR (jcp.org)
-image::jsr_lifecycle.png[JSR Lifecycle]
+image::jsr_lifecycle.png[]
 
 Without going in too many details, let's review the main steps of this lifecycle to better understand how CDI is designed.
 A JSR is initiated by a company or an individual, by proposing a JSR proposal to the JCP.
-The JSP acknowledge the proposal by giving it an id number (e.g. JSR 365) to identify it during all its further life .
+The JSP acknowledge the proposal by giving it an ID number (e.g. JSR 365) to identify it during all its further life .
 This proposal is then discussed among the JCP and then voted by JCP Executive Committee (elected individuals or company).
 
 If the proposal is accepted it becomes a JSR and an Expert Group usually leaded by the individual or company representative who submitted the proposal. He becomes the specification leader of the proposal.
@@ -466,11 +598,14 @@ Regarding the CDI, the specification already had 3 JSRs:
 
 All of these specifications have a dependency on *Dependency Injection for Java* specification (JSR 330).
 This very light specification define basic annotations and interfaces for dependency injection.
-Most alternatives frameworks to CDI described in <<alternatives>> also implement this specification making easier to create basic code working for all Dependency Injection solutions.
+Most alternatives frameworks to CDI described in <<alternatives>> also implement this specification making easier to create basic code working for all dependency injection solutions.
 
 
 [[implementations]]
 == The CDI implementations
+////
+Give more of an introduction to this section. Give your readers a clear idea of what you are teaching and why you are teaching it. --MM
+////
 
 Specification is nothing without good implementations.
 CDI is lucky here with two excellent implementations: JBoss Weld and Apache OpenWebBeans.
@@ -522,25 +657,35 @@ It is used to configure the server and provide all the integration layer between
 Unfortunately CanDI is not available as standalone solution.
 
 [[resources]]
-== CDI website and other resources to lean CDI
 
-//TODO: write part on CDI website
+== The CDI website and other resources for learning CDI
+////
+Create an appendix titled "Resources" and move all the resource information (and maybe the CDI website information) into that appendix. --MM
+////
+
+////
+TODO: write part on CDI website
+////
 
 [[cdi_alternatives]]
 == Alternatives to CDI
 
 CDI is not the first or only solution to add dependency injection to your project.
-Other frameworks provide similar features with different flavours.
+Other frameworks provide similar features with different flavors.
 
-In this section we are introducing the 3 majors alternatives to CDI.
-As CDI, they all implement JSR 330 (AtInject) specification.
+In this section, we give a short introduction to the three major alternatives to CDI.
+As with CDI, they all implement the JSR 330 (AtInject) specification.
 
-We are giving short introduction for each of these. If you need more information on this solution please refer to their website/documentation
+////
+Add more information on what you mean when you say that these are alternatives to CDI. Are these things that your readers might consider using instead of CDI? Or in addition to CDI? --MM
+////
+
+If you need more information on any of these alternatives, refer to the specific websites and documentation.
 
 [[spring]]
 === Spring Framework
 
-Spring is the open source framework who made the concept of Dependency Injection popular more than 10 years ago.
+Spring is the open source framework that made the concept of dependency injection popular more than 10 years ago.
 The project is led by Pivotal under Apache License.
 Spring is probably the most popular dependency injection framework for Java.
 
@@ -578,14 +723,15 @@ Dagger 2 is now led by Google.
 You'll find more information on Dagger on the project website: http://google.github.io/dagger/
 
 == Summary
+////
+Rewrite this summary in the form of a bulleted list, where each bullet takes the form "Statement of fact. Relevance of that fact." I sent you some examples many months ago; I've re-sent them. We can discuss this in more detail when we meet. --MM
+////
 
 In this chapter we met CDI.
-We saw the main CDI concepts like Dependency Injection or context management and discovered how its programming model can help you focusing on the business code in your development.
+We saw the main CDI concepts like dependency injection or context management and discovered how its programming model can help you focusing on the business code in your development.
 
 We also how being a JSR specification made CDI specific and present the two implementation for it.
 
 Finally we listed the alternatives solution to CDI and show how they differs from it.
 
 In the next chapter we'll show a CDI code example from scratch and help you getting ready to work with the book examples.
-
-
