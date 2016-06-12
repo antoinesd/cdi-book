@@ -1,0 +1,3 @@
+== CDI Contexts
+
+To manage this notion in a clean way, CDI defines the notion of context.

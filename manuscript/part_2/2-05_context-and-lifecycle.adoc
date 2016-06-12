@@ -1,7 +1,22 @@
 [[chap05-lifecycle]]
 
 
-= Lifecycle
+= Context and Lifecycle
+
+This chapter covers
+****
+* Introduction the concept of context, and why this concept is needed
+* How the concept of lifecycle emerges from the notion of context
+****
+
+The notion of _context_ is in fact a very natural notion, that we use nearly all the time, probably without noticing it, or without giving it a technical existence. CDI brings this notion to life, materializing it in interfaces, classes and specification. Being able to explicitly manipulating context objects proves to be very powerful, enabling very clean and efficient patterns.
+
+
+include::2_05/2-05-01_managed-beans.adoc[]
+
+include::2_05/2-05-02_context.adoc[]
+
+
 == Why do you need a lifecycle?
 
 * Notion of managed bean
