@@ -1,4 +1,4 @@
-:chapter: 1
+nvet:chapter: 1
 :sectnums:
 :figure-caption: Figure {chapter}.
 :listing-caption: Listing {chapter}.

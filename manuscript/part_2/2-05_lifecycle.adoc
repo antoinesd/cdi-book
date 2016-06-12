@@ -1,0 +1,31 @@
+[[chap05-lifecycle]]
+
+
+= Lifecycle
+
+We saw in the previous chapters that CDI is about dependency injection, and we saw how this well-known concept has been implemented in CDI. One of the key point on this implementation is the double notion of _producer_ and _injection point_. At several points, we saw that CDI was able to decide on its own that a particular bean was to be created, able to tell its type and qualifiers, and to find out which implementing class to choose from.
+
+The process used by CDI to create beans is very powerful and completely transparent to the user. As developers, all we have to do is to declare dependencies. This can be done using annotations, making these declarations very lightweight. As most of the frameworks that can create beans on behalf of the user, CDI defines the notion of _lifecycle_.
+
+
+== Why do you need a lifecycle?
+
+A _lifecycle_ is an abstract notion of CDI. This notion is quite complex, as it touches many aspects of CDI, some of them we have not studied yet.
+
+The basics are very simple though. CDI needs to create a bean to inject it. This bean is used by the application you wrote, and at some point, not needed anymore. It is thus the responsibility of CDI to dispose this bean, to free the resources this bean may have used, and to make sure no leaking will occur.
+
+This simple exaplaination defines in itself the notion of lifecycle. From the creation to the disposal, nearly everything is handled by CDI.
+
+But if we think a little, we soon discover that this notion is far more complex than that.
+
+Suppose that we are writing some code that is going to be executed in a the `doGet()` method of a servlet. We can assume that all the  
+
+The beans injected by CDI will have to be created
+
+== Setting  up Callbacks on the bean lifecycle
+
+
+== Parallel with @Produces / @Disposes
+
+
+== Wrap-up
