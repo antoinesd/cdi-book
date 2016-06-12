@@ -1,6 +1,6 @@
 == One more look at manage beans
 
-We already saw what a _managed bean_ in CDI. It is simply a bean that is created by CDI and provided to our code, at the time and places where we need it. We saw that CDI was able to create a bean in order to inject it in a special place in our code, for instance, a field, as long as it has a way to create that bean. CDI has a very sophisticated way to associate an injection point and an implementing class, and can build that instance on its own.
+We already saw what a _managed bean_ in CDI. It is simply a bean that is created by CDI and provided to our code, at the time and places where we need it. We saw that CDI was able to create a bean in order to inject it in a special place in our code, for instance, a field, as long as it has a way to create that bean. We also saw the very sophisticated ways CDI has to associate an injection point and an implementing class, and how CDI can build the needed instances on its own.
 
 There is still one point that we did not talk about, which is the following. Once CDI has created an instance of a particular bean, what should it do with it? If another injection point needs the same type of bean (in the CDI sense), can the same object be injected, or should CDI create another one?
 
