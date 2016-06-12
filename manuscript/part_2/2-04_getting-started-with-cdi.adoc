@@ -12,29 +12,29 @@ include::../header.adoc[]
 * Explaining the bean resolution mechanism based on type and qualifiers
 ****
 
-Now that we had an introduction to the concept of specification and to the main CDI features, it's time to dive into the core concepts of the specification.
+Now that we had an introduction to the concept of specification and to the main CDI features, it's time to dive into the core concepts of CDI.
 
 Before deep diving in all these abstract and complex concepts, let us write a first, very simple application. This application will have a `beans.xml` file, an injection point, and we are going to run it in a Weld container. A Weld container is the piece of software we need to run a CDI application. Weld is an implementation of the CDI specification, it has a special status among all the existing implementations: it is the reference implementation. You do not need to know anything more about Weld.
 
-include::2_04/2-04-01-writing-you-first.adoc[]
+include::2_04/2-04-01_writing-you-first.adoc[]
 
-include::2_04/2-04-03-bean-archive.adoc[]
+include::2_04/2-04-03_bean-archive.adoc[]
 
-include::2_04/2-04-02-the-content-of-beans.adoc[]
+include::2_04/2-04-02_the-content-of-beans.adoc[]
 
-include::2_04/2-04-04-concept-of-a-bean.adoc[]
+include::2_04/2-04-04_concept-of-a-bean.adoc[]
 
-include::2_04/2-04-05-where-do-we-go.adoc[]
+include::2_04/2-04-05_where-do-we-go.adoc[]
 
-include::2_04/2-04-06-injection-point.adoc[]
+include::2_04/2-04-06_injection-point.adoc[]
 
-include::2_04/2_04-07-producing-beans.adoc[]
+include::2_04/2-04-07_producing-beans.adoc[]
 
-include::2_04/2_04-08-more-on-the-type-of-a-bean.adoc[]
+include::2_04/2-04-08_more-on-the-type-of-a-bean.adoc[]
 
-include::2_04/2_04-09-using-qualifiers.adoc[]
+include::2_04/2-04-09_using-qualifiers.adoc[]
 
-include::2_04/2_04-10-advanced-concepts-in-qualifiying.adoc[]
+include::2_04/2-04-10_advanced-concepts-in-qualifiying.adoc[]
 
 == Wrap-up
 
