@@ -1,3 +1,13 @@
-== CDI Contexts
+== Understanding CDI Scopes, Contexts and Lifecycles
 
-To manage this notion in a clean way, CDI defines the notion of context.
+To manage this notion in a clean way, CDI defines in fact two notions: the notion of _scope_ and the notion of _context_. Those two notions are linked together, and we need to understand them very precisely before we can go further.
+
+The scope of a bean determines when a bean is created and when it should be destroyed. If we consider our shopping session example, it is clear that the shopping cart should be created when the customer first log in, that is, when the shopping session starts, and should be destroyed once the customer leaves, at the end of this shopping session.
+
+=== Scoped beans
+
+In CDI, we say that the shopping cart bean is _scoped_. It means that it may be created once the shopping session has started, if needed. And it should be destroyed once the shopping session is finished. The shopping session is said to be the _context_ of the shopping cart bean. A scoped bean is always bound to a context.
+
+It is possible to create custom contexts in CDI, as we are going to see it.
+
+=== Context
