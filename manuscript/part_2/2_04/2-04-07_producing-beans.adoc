@@ -142,7 +142,7 @@ public class PostEJB {
 }
 ----
 
-The `PostEJB`class is an EJB class, due to the `@Stateless` annotation. So the field `entityManager` is an EJB field, injected by the Java EE container. The Java EE container, because of the `@PersistenceContext` annotation will look for a persistence unit called `PostPersistenceUnit`, declared in a `persistence.xml` file. It will then create the corresponding `EntityManagerFactory` and then a `EntityManager` object, to be injected in this `entityManager` field. This will take place prior to any method call on this EJB. It is in fact the recommended way of getting a JPA entity manager in a Java EE context.
+The `PostEJB` class is an EJB class, due to the `@Stateless` annotation. So the field `entityManager` is an EJB field, injected by the Java EE container. The Java EE container, because of the `@PersistenceContext` annotation will look for a persistence unit called `PostPersistenceUnit`, declared in a `persistence.xml` file. It will then create the corresponding `EntityManagerFactory` and then a `EntityManager` object, to be injected in this `entityManager` field. This will take place prior to any method call on this EJB. It is in fact the recommended way of getting a JPA entity manager in a Java EE context.
 
 Now that we have an we have an instance of `EntityManager`, we still have two possibilities to build a producer.
 
