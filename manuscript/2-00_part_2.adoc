@@ -5,7 +5,7 @@ As we saw in part 1, CDI in itself is a specification, that is an abstract conce
 
 In this second part we'll detail all the basic concept fo the specification and show to use them.
 
-In chapter 3 we'll introduce the concept of bean, bean dfeinition and dependency injection.
+In chapter 3 we'll introduce the concept of bean, bean definition and dependency injection.
 
 Chapter 4 will cover the concept of bean Lifecycle, before we'll dive into context management in chapter 5.
 
@@ -17,9 +17,7 @@ This basic CDI concept part will be closed in chapter 7 by discussing events.
 
 include::part_2/2-04_getting-started-with-cdi.adoc[]
 
-include::part_2/2-05_lifecycle.adoc[]
-
-include::part_2/2-06_contexts.adoc[]
+include::part_2/2-05_context-and-lifecycle.adoc[]
 
 include::part_2/2-07_intercepting-and-decorating-beans.adoc[]
 

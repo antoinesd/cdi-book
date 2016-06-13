@@ -1,0 +1,12 @@
+== One more look at manage beans
+
+We already saw what a _managed bean_ in CDI. It is simply a bean that is created by CDI and provided to our code, at the time and places where we need it. We saw that CDI was able to create a bean in order to inject it in a special place in our code, for instance, a field, as long as it has a way to create that bean. We also saw the very sophisticated ways CDI has to associate an injection point and an implementing class, and how CDI can build the needed instances on its own.
+
+There is still one point that we did not talk about, which is the following. Once CDI has created an instance of a particular bean, what should it do with it? If another injection point needs the same type of bean (in the CDI sense), can the same object be injected, or should CDI create another one?
+
+Suppose that we are creating a web application, and this injected object is the shopping cart. If we are dealing with a returning customer, we certainly want to use the same shopping cart. So in that case, we want CDI to inject the same object, so that our customer can continue her shopping.
+
+But if we detect that the customer is another one, we certainly do not want the first shopping cart to be injected. We want another one, newly created.
+
+The difference between those two use cases is in fact the context in which those two pieces of code are executed. The context here is clearly a session context (in the HTTP sense). The shopping cart bean is bound to the session context. What we want, is for CDI to handle this context automatically for us, deal with the details, and just inject the right shopping cart bean in the right place.
+

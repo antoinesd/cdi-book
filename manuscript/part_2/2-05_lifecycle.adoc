@@ -14,7 +14,7 @@ A _lifecycle_ is an abstract notion of CDI. This notion is quite complex, as it 
 
 The basics are very simple though. CDI needs to create a bean to inject it. This bean is used by the application you wrote, and at some point, not needed anymore. It is thus the responsibility of CDI to dispose this bean, to free the resources this bean may have used, and to make sure no leaking will occur.
 
-This simple exaplaination defines in itself the notion of lifecycle. From the creation to the disposal, nearly everything is handled by CDI.
+This simple explanation defines in itself the notion of lifecycle. From the creation to the disposal, nearly everything is handled by CDI.
 
 But if we think a little, we soon discover that this notion is far more complex than that.
 
