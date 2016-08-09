@@ -1,6 +1,7 @@
 ifndef::allbook[]
 :doctype: book
 :toc: right
+:toclevels: 4
 :numbered:
 :sectlink:
 :sectanchors:
