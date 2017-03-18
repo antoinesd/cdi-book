@@ -18,7 +18,7 @@ This simple explanation defines in itself the notion of lifecycle. From the crea
 
 But if we think a little, we soon discover that this notion is far more complex than that.
 
-Suppose that we are writing some code that is going to be executed in a the `doGet()` method of a servlet. We can assume that all the  
+Suppose that we are writing some code that is going to be executed in a the `doGet()` method of a servlet. We can assume that all the
 
 The beans injected by CDI will have to be created
 
