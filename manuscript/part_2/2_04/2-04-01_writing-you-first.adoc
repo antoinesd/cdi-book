@@ -1,16 +1,16 @@
 == Writing your first, minimal CDI application
 
-This first paragraph is about writing a very simple CDI application. We will first create a Maven project, with the needed dependency, and a working directories and files structure. We will then create some interfaces and classes to see the CDI dependency injection in action on a running example. We are going to use CDI concepts that we have not defined yet. But seeing them in action will give us a first glimpse at what they are, and how they work together. We will then describe all those concepts in full details.
+This first paragraph is about writing a very simple CDI application. We will first create a Maven project, with the needed dependencies, and a working directories and files structure. We will then create some interfaces and classes to see the CDI dependency injection in action on a running example. We are going to use CDI concepts that we have not defined yet. But seeing them in action will give us a first glimpse at what they are, and how they work together. We will then describe all those concepts in full details.
 
 At the end of this part, you will have a first basic but working CDI application, with an example of dependency injection. You will also have a working Maven environment with the needed dependencies and configuration.
 
 === Bootstrapping Weld
 
-As we already explained, a CDI application needs a container to work. This container is in fact an implementation of CDI. Weld is the reference implementation for CDI. This container is production ready, and used in supported application servers (JBoss EAP, ...).
+As we already explained, a CDI application needs a container to work. This container is a Java object that we need to create. It is also an implementation of CDI. Weld is an open source project that provides an implementation for CDI. It is the reference implementation for CDI, used in many application servers such as Wildfly, JBoss Enterprise Application Platform, Glassfish, Oracle Weblogic Server, Websphere application server and many others. Weld can also be used in plain servlet containers sur as Tomcat or Jetty, and Java SE applications.
 
 // TODO: add more application servers that are built on top of Weld
 
-To use Weld in a Java SE environment we need to add the following dependencies to our Maven project.
+To use Weld in a Java SE environment we need to add the following dependency to our Maven project.
 
 [[app-listing]]
 .Maven dependency to bootstrap Weld 2
@@ -27,7 +27,7 @@ To use Weld in a Java SE environment we need to add the following dependencies t
 // TODO: fix the version of Weld
 The version used here is the 2.2.15.Final, which is the current version as of the writing of this book. Weld V2 supports CDI 1.2.
 
-Bootstraping Weld is done by using the following example. We have written it in a `main` method for the sake of simplicity.
+Let us examine the following code, that creates a CDI container. We have written it in a `main` method for the sake of simplicity.
 
 [[app_listing]]
 .A minimal code to bootstrap Weld 2
@@ -56,7 +56,16 @@ public class BootstrapingWeld {
 
 Of course this code does not do much. It basically creates the Weld container, and shuts it down.
 
-But it is still interesting, because what we get if we run it is an error message. Weld is complaining for not finding a needed file: the `beans.xml` file.
+But it is still interesting, because what we get if we run it is the following error. Weld is complaining for not finding a needed file: the `beans.xml` file.
+
+[[app_listing]]
+.Exception thrown by executing the previous code
+[source,java]
+----
+Exception in thread "main" java.lang.IllegalStateException: WELD-ENV-000016: Missing beans.xml file in META-INF
+	at org.jboss.weld.environment.se.Weld.initialize(Weld.java:131)
+	at chap04.BootstrapingWeld.main(BootstrapingWeld.java:11)
+----
 
 This file should be present for CDI to recognize the CDI nature of our application. Basically, this files contains information, that we call _metadata_, used to create our CDI application.
 
