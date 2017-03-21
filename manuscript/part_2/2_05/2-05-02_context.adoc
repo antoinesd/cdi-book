@@ -3,8 +3,11 @@
 Let us now dive into the details of what scopes and contexts are, how you can handle them in CDI, and what you can do with them. It will also lead you naturally to the notion of lifecycle.
 
 
-=== Scope and scoped beans
+=== Scope and Context relationship
 
-We saw that this notion of scope is modeled by an annotation, that can be put on special classes.
+We saw that this notion of scope is modeled by an annotation, that can be put on special classes. To tell CDI that a given bean, obtained through an injection point, is
 
 === Context
+
+
+Regarder ActivateRequestContext

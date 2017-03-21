@@ -1,20 +1,79 @@
 == Managed beans, Scopes and Contexts
 
-We already saw what a _managed bean_ in CDI. It is simply a bean that is created by CDI and provided to our code, at the time and places where we need it. We saw that CDI was able to create a bean in order to inject it in a special place in our code, for instance, a field, as long as it has a way to create that bean. We also saw the very sophisticated ways CDI has to associate an injection point and an implementing class, and how CDI can build the needed instances on its own.
+We already saw what a _managed bean_ in CDI. It is simply a bean that is created by CDI and provided to our code, at the time and places where we need it. We saw that CDI was able to create a bean in order to inject it in special places in our code, for instance, a field, as long as it has a way to create that bean. We also saw the very sophisticated ways CDI has to associate an injection point and an implementing class, and how CDI can build the needed instances on its own.
 
-There is still one point that we did not talk about, which is the following. Once CDI has created an instance of a particular bean, what should it do with it? If another injection point needs the same type of bean (in the CDI sense), can the same object be injected, or should CDI create another one? The fact is: there is no single answer to this question. It depends on the bean, and what your application is doing with it.
+There is still one point that we did not talk about, which is the following. Suppose CDI has to inject two beans of the same type, in the CDI sense, at two different injection points. The question is: can the same object be injected, or should CDI create an instance for each injection point? The fact is: there is no single answer to this question. It depends on the bean, and what your application is doing with it.
 
-Suppose that we are creating a web application, and this injected object is the shopping cart. If we are dealing with a returning customer, we certainly want to use the same shopping cart. So in that case, we want CDI to inject the same object, so that our customer can continue her shopping.
+Suppose that we are creating a web application, and this injected bean is the shopping cart. If we are dealing with a returning customer, we certainly want to use the same shopping cart. So in that case, we want CDI to inject the same object, or at least a copy of it, so that our customer can continue her shopping.
 
-But if we detect that the customer is another one, we certainly do not want the first shopping cart to be injected. We want another one, newly created.
+But if we detect that the customer is a new customer, we certainly do not want the first shopping cart to be injected. We want another one, newly created.
 
-The difference between those two use cases is in fact the context in which those two pieces of code are executed. The context here is a session context, in the HTTP sense. The shopping cart bean is bound to the session context, and its session ID, that acts as a primary key for this context. What we want, is for CDI to handle this context automatically for us, deal with the details, and just inject the right shopping cart bean in the right place.
+=== Context
 
-We can see on this simple example, that to identify a cart bean, we need to provide an HTTP Session. We thus say that the cart bean is _bound_ to the HTTP Session context. This context gives the boundaries of this bean. Requesting a shopping cart without telling what HTTP Session this cart is bound would not make any sense.
+The difference between those two use cases is in fact the context in which those two pieces of code are executed. The context here is a session context, in the HTTP sense. W have two different sessions, identified by a session ID. The shopping cart bean is bound to the session context, and its session ID, that acts as a primary key for this context. The good news is that CDI can handle this context automatically for you, deal with the details, and just inject the right shopping cart bean in the right places.
 
-In the CDI world, a scope is a class annotated with the `@Scope` annotation. There are restriction on this class, that we are going to see later in this part.
+We can see on this simple example, that to identify a cart bean, CDI needs to know two things. First, it needs to know that this bean is bound to the HTTP Session Context. This is done by declaring it on the injection point itself, by adding an annotation to it. Second, CDI needs to know when this context starts, and when it ends. A context have boundaries. Inside theses boundaries the context is active, and inactive outside them.
 
-A context, on the other hand, is an interface, that should be implemented. Any object that implements the `Context` interface is said to be a context object, that models the context of CDI beans.
+=== Scope
 
-There is a third notion to understand now, which is the notion of `Contextual` bean. In fact, in CDI, any bean is bound to a context, thus a _contextual_ bean. This interface defines how a bean is created and destroyed, as we are going to see it.
+In the CDI world, this annotation is said to be a _scope_ annotation. A scope annotation is an annotation annotated with the CDI `@Scope` annotation. There is very little restriction on this annotation: it should only be available at runtime. This annotation does not know anything about the HTTP Session itself, it is just a tag, put on an injection point.
+
+=== Context and Scope relationship
+
+What is CDI going to do with this annotation? Well, it will look for the context that registered itself with this annotation. A context is an object that implements the `Context` interface. Among other things, this interface declares a `getScope()` method, that returns the annotation this context is associated with. This annotation is returned as a class object. The way this context registers itself to the CDI container is a bit technical, and we will see it later in this part. Let us just suppose that it is done. When the CDI container needs to create an object to inject it at an injection point annotated with a scope, it will look for the corresponding context, and will delegate the creation of the object to inject. One scope is always associated with a single context object.
+
+This context object is quite complex, and is here to handle all the technical details: injected bean creation, passivation, activation, etc. There are several contexts provided by CDI out of the box, and their code is sometimes really complex. In our simple HTTP Session example, handling the creation of a new shopping cart, its passivation once the customer left, or the activation of an already existing one, is handled by this context object.
+
+From an application developer perspective, you only have to deal with the scope annotations. If you have a bean bound to a session context, just put the right annotation on its injection points and that's it. CDI will handle the technical details for you, and you will not even see this context object. If you need a custom context, or what to know what is happening under the hood, then you need to understand how this context object works.
+
+=== Scope and threads relationship
+
+Let us have a deeper look at this context object, and how it can deal with threads.
+
+Suppose you need to write a web application for an online store. The web framework you are using imposes you to have a bean associated with each pages of this application. And this page needs a `cart` field, that is bound the the HTTP Session of the customer visiting the store. Declaring this in CDI is very simple`:
+
+- the field `cart` and the field `product` are both annotated with `@Inject`, this tells CDI to inject the right beans;
+- the field `cart` is also annotated with `@SessionScope`, that tells CDI that it should look for an existing instance of that bean, maybe in some kind of persistent backend;
+- the field `product` is also annotated with `@RequestScope`, that tells CDI to create a new product at each HTTP request.
+
+[[app_listing]]
+.A very simple page with a shopping cart
+[source,java]
+----
+public class ProductPage {
+
+    @Inject @SessionScope
+    private Cart cart;
+
+    @Inject @RequestScope
+    private Product product;
+}
+----
+
+As we saw, behind the curtain, there are two context objects, one for the request scope, and another one for the session scope. The job of those contexts are to create or activate the cart and the product objects. In this example, you see that the cart object has to be carried over from request to request, whilst the product object is a new one for each request.
+
+Suppose this product page has a fragment, defined in a different class, that also needs a reference on the product this page is displaying. The code you will write looks like the following.
+
+[[app_listing]]
+.A fragment of the product page
+[source,java]
+----
+public class ProductFragmentPage {
+
+    @Inject @RequestScope
+    private Product product;
+}
+----
+
+For this to work, quite obviously, the product object injected in both instances of `ProductPage` and `FragmentPage` has to be the same. If it is the same, our application will not work very well! How do we know that this product object has to be the same? Well, the common factor here is that the code of both classes, `ProductPage` and `ProductFragmentPage` is executed in the same HTTP thread.
+
+This leads to a subtle rule on the context objects, that handles the creation of these objects. For a given injected type (here `Cart` and `Product`), a given scope (here the request and the session), and a given thread (here the thread handling the HTTP request), there is only one instance of any injected bean. This rule imposes that the `product` field in those two different classes should be injected with the same instance of `Product`.
+
+The association between injection points in classes that have scopes, and instances to be injected, is called the mapping of a context. Each context has to keep track of these mappings. There is one mapping per thread.
+
+=== Scopes that span over different threads
+
+Things would be simple if this rule: a given HTTP request is handled by only one thread, would hold. It used to be in the past, but it is not the case anymore: servlets, REST services, even EJB have all asynchronous execution models. So what happens for contexts if an execution is carried from one thread, the classical HTTP thread, to another, the thread of the executor handling asynchronous executions?
+
+This case is of course handled by CDI. There are two kind of contexts: those which can propagate their mappings across threads and those which cannot. Carrying mappings from one thread to another leads to very complex questions, including but not limited to, race conditions. Not all contexts are able to do that.
 
