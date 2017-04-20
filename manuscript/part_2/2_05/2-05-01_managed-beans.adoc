@@ -71,9 +71,11 @@ This leads to a subtle rule on the context objects, that handles the creation of
 
 The association between injection points in classes that have scopes, and instances to be injected, is called the mapping of a context. Each context has to keep track of these mappings. There is one mapping per thread.
 
-=== Scopes that span over different threads
+=== Scopes that span over more than one thread
 
 Things would be simple if this rule: a given HTTP request is handled by only one thread, would hold. It used to be in the past, but it is not the case anymore: servlets, REST services, even EJB have all asynchronous execution models. So what happens for contexts if an execution is carried from one thread, the classical HTTP thread, to another, the thread of the executor handling asynchronous executions?
 
 This case is of course handled by CDI. There are two kind of contexts: those which can propagate their mappings across threads and those which cannot. Carrying mappings from one thread to another leads to very complex questions, including but not limited to, race conditions. Not all contexts are able to do that.
+
+
 
